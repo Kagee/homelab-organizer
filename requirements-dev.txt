@@ -5,7 +5,5 @@ pylint
 django-extensions
 Werkzeug
 pyOpenSSL
-types-beautifulsoup4
-types-lxml
 black
 pylint-django

@@ -16,5 +16,8 @@ hlo/settings/logging.py
 storage/
 */migrations/*
 logos/
-scraper-cache
 .vscode/
+scraper-cache/
+# symlinks
+.vscode
+scraper-cache

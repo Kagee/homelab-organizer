@@ -16,7 +16,10 @@ def remove(path):
         return False
 
 
-nuke = input("This will nuke and reinitialize you database. Superusers will be preserved. Continue? (y/N): ")
+nuke = input(
+    "This will nuke and reinitialize you database. Superusers will be"
+    " preserved. Continue? (y/N): "
+)
 if nuke.lower() != "y":
     print("Non-positive answer, bailig....!")
     sys.exit()
@@ -59,7 +62,7 @@ except OperationalError:
 sql_commands.append("COMMIT;")
 conn.close()
 
-print("Deleting databse ", "db-dev.sqlite3")
+print("Deleting database ", "db-dev.sqlite3")
 while True:
     try:
         remove(here / "db-dev.sqlite3")
@@ -67,7 +70,7 @@ while True:
     except PermissionError as pe:
         input(f"Failed to delete DB, please fix and press enter: {pe}")
 
-for migration in (here / Path("order_scraper/migrations/")).glob("0*.py"):
+for migration in (here / Path("hlo/migrations/")).glob("0*.py"):
     print("Deleting migration ", migration)
     remove(migration)
 
@@ -77,10 +80,10 @@ subprocess.run([sys.executable, "manage.py", "makemigrations"], check=False)
 print("Migrating migrations (creating DB)")
 subprocess.run([sys.executable, "manage.py", "migrate"], check=False)
 
-print("Initializing shops")
-subprocess.run(
-    [sys.executable, "manage.py", "scrape", "--init-shops"], check=False
-)
+#print("Initializing shops")
+#subprocess.run(
+#    [sys.executable, "manage.py", "scrape", "--init-shops"], check=False
+#)
 
 print("Restoring superusers")
 conn = sqlite3.connect("db-dev.sqlite3")
@@ -89,32 +92,32 @@ for sql in sql_commands:
     conn.execute(sql)
 conn.close()
 
-nuke = input("Load AliExpress to DB? (y/N): ")
-if nuke.lower() == "y":
-    subprocess.run(
-        [
-            sys.executable,
-            "manage.py",
-            "scrape",
-            "aliexpress",
-            "--load-to-db",
-            "--db-shop-id",
-            "3",
-        ],
-        check=False,
-    )
-
-nuke = input("Load Adafruit to DB? (y/N): ")
-if nuke.lower() == "y":
-    subprocess.run(
-        [
-            sys.executable,
-            "manage.py",
-            "scrape",
-            "adafruit",
-            "--load-to-db",
-            "--db-shop-id",
-            "1",
-        ],
-        check=False,
-    )
+# nuke = input("Load AliExpress to DB? (y/N): ")
+# if nuke.lower() == "y":
+#     subprocess.run(
+#         [
+#             sys.executable,
+#             "manage.py",
+#             "scrape",
+#             "aliexpress",
+#             "--load-to-db",
+#             "--db-shop-id",
+#             "3",
+#         ],
+#         check=False,
+#     )
+# 
+# nuke = input("Load Adafruit to DB? (y/N): ")
+# if nuke.lower() == "y":
+#     subprocess.run(
+#         [
+#             sys.executable,
+#             "manage.py",
+#             "scrape",
+#             "adafruit",
+#             "--load-to-db",
+#             "--db-shop-id",
+#             "1",
+#         ],
+#         check=False,
+#     )
