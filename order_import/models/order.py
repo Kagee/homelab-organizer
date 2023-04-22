@@ -7,7 +7,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import escape, format_html, format_html_join
 from djmoney.models.fields import MoneyField
-from djmoney.money import Money
 
 from .attachement import Attachement
 from .shop import Shop
@@ -97,6 +96,7 @@ class Order(models.Model):
                                 args=(i[1],),
                             ),
                             i[0],
+                            # pylint: disable=no-member
                             self.shop.item_url_template.format(item_id=i[2]),
                             self.shop.branch_name,
                         )
@@ -109,6 +109,7 @@ class Order(models.Model):
 
     @admin.display(description="Order ID")
     def order_url(self):
+        # pylint: disable=no-member
         return format_html(
             '{} (<a href="{}" target="_blank">View on {}</a>)',
             self.order_id,
@@ -126,7 +127,7 @@ class Order(models.Model):
     @admin.display(description="Order")
     def admin_list_render(self):
         return format_html(
-            (
+            (   # pylint: disable=no-member
                 f'<img src="{self.shop.icon.url}" width="25" />'
                 if self.shop.icon
                 else ""
@@ -136,7 +137,7 @@ class Order(models.Model):
         )
 
     def __str__(self):
-        return (
+        return (# pylint: disable=no-member
             f"{self.shop.branch_name} order #{self.order_id} with"
             # 2pylint: disable=no-member
             f" {self.items.count()} items"

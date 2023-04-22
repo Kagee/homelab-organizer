@@ -17,7 +17,7 @@ class Shop(models.Model):
         ),
         blank=True,
     )
-    icon = models.ImageField(upload_to="shop/icons", blank=True)
+    icon: models.ImageField = models.ImageField(upload_to="shop/icons", blank=True)
 
     def longname(self):
         return f"{self.branch_name}" + (
@@ -30,20 +30,13 @@ class Shop(models.Model):
     def list_icon(self):
         return (
             format_html(
+                # pylint: disable=no-member
                 f'<img src="{self.icon.url}" width="25"'
                 f" />&nbsp;&nbsp;&nbsp; {self.longname()}"
             )
             if self.icon
             else f"{self.longname()}"
         )
-
-    # @classmethod
-    # def icon_img(cls, obj, size):
-    #    return (
-    #        format_html(f'<img src="{self.icon.url}" width="{size}" />')
-    #        if self.icon
-    #        else ""
-    #    )
 
     order_url_template = models.CharField(
         max_length=250,

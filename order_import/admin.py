@@ -45,6 +45,8 @@ class ShopAdmin(admin.ModelAdmin):
             else ""
         )
 
+    # pylint: disable=arguments-differ
+    # they do not?
     def get_form(self, request, obj=None, **kwargs):
         form = super(ShopAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields["order_url_template"].widget.attrs[

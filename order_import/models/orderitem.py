@@ -66,6 +66,7 @@ class OrderItem(models.Model):
         return format_html(
             '{} (<a href="{}" target="_blank">Open item page on {}}</a>)',
             self.order_id,
+            # pylint: disable=no-member
             self.shop.order_url_template.format(order_id=self.order_id),
             self.shop.branch_name,
         )
@@ -79,5 +80,6 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return (
+            # pylint: disable=no-member
             f"{self.order.shop.branch_name} item #{self.item_id}: {self.name}"
         )

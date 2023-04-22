@@ -15,7 +15,7 @@ classifiers = [
 ]
 
 [project.urls]
-repository = "https://github.com/Kagee/homelab-organizer.git"
+repository = "https://gitlab.com/Kagee/homelab-organizer.git"
 
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]
@@ -30,6 +30,7 @@ extension-pkg-allow-list = [
   "lxml",
 ]
 load-plugins = "pylint_django"
+py-version = "3.9"
 
 [tool.pyright]
 # This makes pyright not mark code behind thinks like
@@ -52,8 +53,6 @@ notes = ["FIXME", "XXX", "TODO", "NOTE"]
 [tool.pylint."django foreign keys referenced by strings"]
 # A module containing Django settings to be used while linting.
 django-settings-module = "hlo.settings"
-
-
 
 [tool.black]
 line-length = 80
