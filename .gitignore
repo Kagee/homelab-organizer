@@ -13,6 +13,7 @@ hlo/settings/logging.py
 *.log
 *~
 .idea
+*.code-workspace
 storage/
 */migrations/*
 logos/
