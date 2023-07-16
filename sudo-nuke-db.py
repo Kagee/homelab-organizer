@@ -74,6 +74,10 @@ for migration in (here / Path("hlo/migrations/")).glob("0*.py"):
     print("Deleting migration ", migration)
     remove(migration)
 
+for migration in (here / Path("order_import/migrations/")).glob("0*.py"):
+    print("Deleting migration ", migration)
+    remove(migration)
+
 print("Recreating migrations")
 subprocess.run([sys.executable, "manage.py", "makemigrations"], check=False)
 
