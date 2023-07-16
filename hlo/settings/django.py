@@ -88,7 +88,7 @@ except ImportError:
         "loggers": {
             #'order_scraper.management.commands.scrapers.......'
             #'order_scraper.management.commands....'
-            "order_scraper.management.commands": {
+            "order_import.management.commands": {
                 "handlers": ["console", "file"],
                 "level": "DEBUG",  # Will be overriden by --verbosity
             }

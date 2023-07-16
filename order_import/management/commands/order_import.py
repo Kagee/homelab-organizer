@@ -1,5 +1,8 @@
 import logging
 import os
+from pathlib import Path
+import json
+from jsonschema import ValidationError, validate
 #from datetime import datetime
 from django.conf import settings
 from django.core.files import File
@@ -66,49 +69,60 @@ class Command(BaseCommand):
         # pylint: disable=attribute-defined-outside-init
         self.log = log
 
+    def valid_json(self, structure):
+        with open(settings.JSON_SCHEMA, encoding="utf-8") as schema_file:
+            schema = json.load(schema_file)
+            try:
+                validate(instance=structure, schema=schema)
+            except ValidationError as vde:
+                self.log.error(
+                    "JSON failed validation: %s at %s",
+                    vde.message,
+                    vde.json_path
+                )
+                return False
+        return True
+
     @no_translations
     def handle(self, *_, **options):
         options["verbosity"] = 3  # Force debug output
+
+        self.setup_logger(options)
+        
         if options["init_shops"]:
-            self.setup_logger(options)
+            
             self.log.debug("Initializing database with shops")
-            for shop in [
-                (
-                    "Adafruit",
-                    None,
-                    (
-                        "https://www.adafruit.com/index.php?"
-                        "main_page=account_history_info&order_id={order_id}"
-                    ),
-                    "https://www.adafruit.com/product/{item_id}",
-                ),
-                (
-                    "Amazon",
-                    "Amazon.de",
-                    "https://www.amazon.de/gp/your-account/order-details/?orderID={order_id}",
-                    "https://www.amazon.de/-/en/gp/product/{item_id}",
-                ),
-                (
-                    "Aliexpress",
-                    None,
-                    "https://www.aliexpress.com/p/order/detail.html?orderId={order_id}",
-                    "https://www.aliexpress.com/item/{item_id}.html",
-                ),
-            ]:
-                branch_name = shop[1] if shop[1] else shop[0]
+            self.log.debug(settings.IMPORT_FOLDER)
+            json_file: Path
+            for json_file in settings.IMPORT_FOLDER.glob("*.json"):
+                if not os.access(json_file, os.R_OK):
+                    self.log.error("Could not open/read %s", json_file)
+                  
+                    continue
+                with open(json_file, encoding="utf-8") as json_file_handle:
+                    json_data = json.load(json_file_handle)
+                    if self.valid_json(json_data):
+                        self.log.debug("Valid schema in %s", json_file.name)
+                    else:
+                        self.log.error("Invalid schema in %s", json_file.name)
+                        continue
+
+                shop = json_data["metadata"]
+
+                # TODO: optional logo_url
                 logo_path = (
-                    settings.BASE_DIR / f"logos/{branch_name.lower()}.png"
+                    settings.BASE_DIR / f"logos/{shop['branch_name'].lower()}.png"
                 )
                 logo_img = None
                 if os.access(logo_path, os.R_OK):
                     logo_img = File(open(logo_path, "rb"), logo_path.name)
 
                 (shop_object, created) = Shop.objects.update_or_create(
-                    name=shop[0],
-                    branch_name=branch_name,
+                    name=shop["name"],
+                    branch_name=shop["branch_name"],
                     defaults={
-                        "order_url_template": shop[2] if shop[2] else "",
-                        "item_url_template": shop[3] if shop[3] else "",
+                        "order_url_template": shop["order_url"], # required
+                        "item_url_template": shop["item_url"], # required
                     },
                 )
                 if logo_img:

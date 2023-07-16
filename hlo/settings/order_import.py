@@ -1,7 +1,14 @@
+from pathlib import Path
 import environ  # type: ignore
 
 env = environ.FileAwareEnv()
 
 env.prefix = "OI_"
 
-DATA_FOLDER = env.list("DATA_FOLDER", default=[])
+IMPORT_FOLDER: Path = Path(
+        env("IMPORT_FOLDER", default="./import")
+    ).resolve()
+
+JSON_SCHEMA: Path = Path(
+        env("JSON_SCHEMA", default=".schema.json")
+    ).resolve()
