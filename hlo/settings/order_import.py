@@ -10,5 +10,5 @@ IMPORT_FOLDER: Path = Path(
     ).resolve()
 
 JSON_SCHEMA: Path = Path(
-        env("JSON_SCHEMA", default=".schema.json")
+        env("JSON_SCHEMA", default="./import/schema.json")
     ).resolve()

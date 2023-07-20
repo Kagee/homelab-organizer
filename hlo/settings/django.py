@@ -27,7 +27,7 @@ env.prefix = "HLO_"
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
 
-MEDIA_ROOT: Path = (BASE_DIR / Path("storage")).resolve()
+MEDIA_ROOT: Path = (BASE_DIR / Path("media_root")).resolve()
 MEDIA_URL: str = "files/"
 # Take environment variables from .env file
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))

@@ -19,6 +19,9 @@ storage/
 logos/
 .vscode/
 scraper-cache/
+# folders
+media_root
 # symlinks
 .vscode
 scraper-cache
+input
