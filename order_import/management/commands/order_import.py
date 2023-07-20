@@ -3,15 +3,19 @@ import os
 from pathlib import Path
 import json
 from jsonschema import ValidationError, validate
-#from datetime import datetime
+
+# from datetime import datetime
 from django.conf import settings
 from django.core.files import File
-from django.core.management.base import (BaseCommand,# CommandError,
-                                         no_translations)
-#from djmoney.money import Money
-#from price_parser import Price
+from django.core.management.base import (
+    BaseCommand,  # CommandError,
+    no_translations,
+)
 
-#from ...models import Order, OrderItem, Shop  # , Attachement
+# from djmoney.money import Money
+# from price_parser import Price
+
+# from ...models import Order, OrderItem, Shop  # , Attachement
 from ...models import Shop
 
 
@@ -78,7 +82,7 @@ class Command(BaseCommand):
                 self.log.error(
                     "JSON failed validation: %s at %s",
                     vde.message,
-                    vde.json_path
+                    vde.json_path,
                 )
                 return False
         return True
@@ -88,16 +92,18 @@ class Command(BaseCommand):
         options["verbosity"] = 3  # Force debug output
 
         self.setup_logger(options)
-        
+
         if options["init_shops"]:
-            
             self.log.debug("Initializing database with shops")
-            self.log.debug(settings.IMPORT_FOLDER)
+            self.log.debug(settings.INPUT_FOLDER)
             json_file: Path
-            for json_file in settings.IMPORT_FOLDER.glob("*.json"):
+
+            for json_file in settings.INPUT_FOLDER.glob("*.json"):
+                if json_file.name == "schema.json":
+                    continue
                 if not os.access(json_file, os.R_OK):
                     self.log.error("Could not open/read %s", json_file)
-                  
+
                     continue
                 with open(json_file, encoding="utf-8") as json_file_handle:
                     json_data = json.load(json_file_handle)
@@ -111,7 +117,8 @@ class Command(BaseCommand):
 
                 # TODO: optional logo_url
                 logo_path = (
-                    settings.BASE_DIR / f"logos/{shop['branch_name'].lower()}.png"
+                    settings.BASE_DIR
+                    / f"logos/{shop['branch_name'].lower()}.png"
                 )
                 logo_img = None
                 if os.access(logo_path, os.R_OK):
@@ -121,8 +128,8 @@ class Command(BaseCommand):
                     name=shop["name"],
                     branch_name=shop["branch_name"],
                     defaults={
-                        "order_url_template": shop["order_url"], # required
-                        "item_url_template": shop["item_url"], # required
+                        "order_url_template": shop["order_url"],  # required
+                        "item_url_template": shop["item_url"],  # required
                     },
                 )
                 if logo_img:
@@ -132,11 +139,17 @@ class Command(BaseCommand):
                     shop_object.save()
                     logo_img.close()
                 if created:
-                    self.log.debug("Created new shop: %s", shop_object)
+                    self.log.debug(
+                        "Created new shop: %s", shop_object.branch_name
+                    )
                 else:
                     self.log.debug(
-                        "Found and possibly updated: %s", shop_object
+                        "Found and possibly updated: %s",
+                        shop_object.branch_name,
                     )
+                self.log.debug(dir(shop_object))
+                orders = json_data["orders"]
+                print(orders)
 
     # def command_load_to_db_adafruit(self, options):
     #     if settings.SCRAPER_ADA_DB_SHOP_ID != -1:
@@ -224,7 +237,6 @@ class Command(BaseCommand):
     #                 self.log.debug("Created order %s", order_id)
     #             else:
     #                 self.log.debug("Created or updated order %s", order_object)
-
 
     # def command_load_to_db_aliexpress(self):
     #     shop = self.get_shop()
@@ -346,7 +358,6 @@ class Command(BaseCommand):
     #         counter,
     #         max_title_length,
     #     )
-
 
     # def get_shop(self, options):
     #     if settings.SCRAPER_ALI_DB_SHOP_ID != -1:
