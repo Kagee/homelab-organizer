@@ -1,7 +1,7 @@
 # homelab-organizer
 Web app for organizing stuff in your homelab. Slow progress, primary focus is still [Webshop Scraper](https://gitlab.com/Kagee/webshop-order-scraper) for input data.
 
-This project used to contain [Webshop Scraper](https://gitlab.com/Kagee/webshop-scraper) before the code became to big.
+This project used to contain [Webshop Scraper](https://gitlab.com/Kagee/webshop-order-scraper) before the code became to big.
 
 ## Requirements
 
