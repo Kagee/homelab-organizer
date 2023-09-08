@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class InventoryConfig(AppConfig):
+class LoaderConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'inventory'
-    verbose_name = "Inventory"
+    name = 'loader'
+    verbose_name = "Loader"

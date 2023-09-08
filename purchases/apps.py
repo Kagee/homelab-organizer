@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 
 
-class OrderImportConfig(AppConfig):
+class PurchasesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'order_import'
+    name = 'purchases'
+    verbose_name = "Purchases"

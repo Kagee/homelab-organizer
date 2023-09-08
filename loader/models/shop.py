@@ -5,11 +5,11 @@ from django.contrib import admin
 
 class Shop(models.Model):
     name = models.CharField(
-        max_length=30,
-        help_text="The name primary shop, Amazon, Distrelec or Adafruit",
+        max_length=255,
+        help_text="The name primary shop, Amazon, Distrelec, Adafruit, Kjell.com ...",
     )
     branch_name = models.CharField(
-        max_length=30,
+        max_length=255,
         help_text=(
             "The branch of the primary shop, i.e. Amazon.de"
             " for Amazon, or elfadistrelec.no for Distrelec."
@@ -28,15 +28,14 @@ class Shop(models.Model):
 
     @admin.display(description="Shop")
     def list_icon(self):
-        return (
-            format_html(
+        if self.icon:
+            return format_html(
                 # pylint: disable=no-member
                 f'<img src="{self.icon.url}" width="25"'
                 f" />&nbsp;&nbsp;&nbsp; {self.longname()}"
             )
-            if self.icon
-            else f"{self.longname()}"
-        )
+        else:
+            return f"{self.longname()}"
 
     order_url_template = models.CharField(
         max_length=250,
@@ -51,7 +50,7 @@ class Shop(models.Model):
     )
 
     class Meta:
-        ordering = ["id"]
+        ordering = ["name"]
         constraints = [
             models.UniqueConstraint(
                 fields=["name", "branch_name"],

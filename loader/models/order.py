@@ -35,7 +35,7 @@ class Order(models.Model):
         default="",
         help_text=(
             "The original order id from the shop. Not to be "
-            "cofused with the internal database id."
+            "confused with the internal database id."
         ),
         blank=False,
         editable=False,

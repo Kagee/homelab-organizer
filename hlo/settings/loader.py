@@ -3,7 +3,7 @@ import environ  # type: ignore
 
 env = environ.FileAwareEnv()
 
-env.prefix = "OI_"
+env.prefix = "LO_"
 
 INPUT_FOLDER: Path = Path(
         env("INPUT_FOLDER", default="./input")

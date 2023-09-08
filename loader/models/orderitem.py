@@ -24,7 +24,7 @@ def thumnail_path(instance, filename):
 
 class OrderItem(models.Model):
     class Meta:
-        ordering = ["item_id"]
+        ordering = ["name"]
         constraints = [
             models.UniqueConstraint(
                 fields=["item_id", "item_sku", "order"],
@@ -32,7 +32,7 @@ class OrderItem(models.Model):
             )
         ]
 
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=255)
     item_id = models.CharField(
         "the original shop item id",
         max_length=100,
@@ -45,7 +45,7 @@ class OrderItem(models.Model):
     )
     item_sku = models.CharField(
         "the original shop item sku",
-        max_length=100,
+        max_length=255,
         default="",
         help_text="The original item sku.",
         blank=True,

@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import json
 from jsonschema import ValidationError, validate
+import zipfile
 
 # from datetime import datetime
 from django.conf import settings
@@ -16,43 +17,23 @@ from django.core.management.base import (
 # from price_parser import Price
 
 # from ...models import Order, OrderItem, Shop  # , Attachement
+
+# pylint: disable=relative-beyond-top-level
 from ...models import Shop
 
 
 class Command(BaseCommand):
-    help = "Scrapes a webshop for orders using Selenium"
+    help = "Loads order data from JSON and ZIP"
     requires_migrations_checks = True
 
     def add_arguments(self, parser):
         scraper = parser.add_argument_group()
-        # Apparently we do not support subparsers
         scraper.add_argument(
             "--init-shops",
             action="store_true",
             help=(
-                "Initialize database with some data. "
-                "Can be used to update data."
-            ),
-        )
-        scraper.add_argument(
-            "--load-to-db",
-            action="store_true",
-            help="Load all currently parsed data to DB.",
-        )
-        scraper.add_argument(
-            "--db-to-csv",
-            action="store_true",
-            help="Put db fields in CSV",
-        )
-        scraper.add_argument(
-            "--db-shop-id",
-            type=int,
-            default=-1,
-            choices=list(Shop.objects.values_list("id", flat=True)),
-            help="Load data into this database shop. "
-            + ", ".join(
-                f"{x[0]} - {x[1]}"
-                for x in Shop.objects.values_list("id", "branch_name")
+                "Initialize database with shop data from JSON files. Will"
+                " update existing data."
             ),
         )
 
@@ -95,16 +76,17 @@ class Command(BaseCommand):
 
         if options["init_shops"]:
             self.log.debug("Initializing database with shops")
-            self.log.debug(settings.INPUT_FOLDER)
+            self.log.debug("Input folder is %s", settings.INPUT_FOLDER)
             json_file: Path
 
             for json_file in settings.INPUT_FOLDER.glob("*.json"):
                 if json_file.name == "schema.json":
                     continue
+
                 if not os.access(json_file, os.R_OK):
                     self.log.error("Could not open/read %s", json_file)
-
                     continue
+
                 with open(json_file, encoding="utf-8") as json_file_handle:
                     json_data = json.load(json_file_handle)
                     if self.valid_json(json_data):
@@ -113,16 +95,25 @@ class Command(BaseCommand):
                         self.log.error("Invalid schema in %s", json_file.name)
                         continue
 
+                zip_file = json_file.with_suffix(".zip")
+                if not os.access(zip_file, os.R_OK):
+                    # For now, ZIP files are required, even if empty
+                    self.log.error("Could not open/read %s", zip_file)
+                    continue
+
                 shop = json_data["metadata"]
 
                 # TODO: optional logo_url
-                logo_path = (
-                    settings.BASE_DIR
-                    / f"logos/{shop['branch_name'].lower()}.png"
-                )
-                logo_img = None
-                if os.access(logo_path, os.R_OK):
-                    logo_img = File(open(logo_path, "rb"), logo_path.name)
+                with zipfile.ZipFile(zip_file) as zip_data:
+                    logo_file = zipfile.Path(zip_data, "logo.png")
+                    logo_img = None
+                    if logo_file.is_file():
+                        logo_img = File(
+                            logo_file.open("rb"), f'{shop["name"]}.png'
+                        )
+                    else:
+                        self.log.debug("No %s in %s", logo_file.name, zip_file.name)
+
 
                 (shop_object, created) = Shop.objects.update_or_create(
                     name=shop["name"],
@@ -139,17 +130,19 @@ class Command(BaseCommand):
                     shop_object.save()
                     logo_img.close()
                 if created:
-                    self.log.debug(
+                    self.log.info(
                         "Created new shop: %s", shop_object.branch_name
                     )
                 else:
-                    self.log.debug(
+                    self.log.info(
                         "Found and possibly updated: %s",
                         shop_object.branch_name,
                     )
-                self.log.debug(dir(shop_object))
-                orders = json_data["orders"]
-                print(orders)
+                #self.log.debug(dir(shop_object))
+                #orders = json_data["orders"]
+                #print(orders)
+            return
+        self.print_help("manage.py", 'loader')
 
     # def command_load_to_db_adafruit(self, options):
     #     if settings.SCRAPER_ADA_DB_SHOP_ID != -1:
