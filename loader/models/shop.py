@@ -1,12 +1,16 @@
 from django.db import models
 from django.utils.html import format_html
 from django.contrib import admin
+from django.utils.html import escape, format_html, format_html_join
+from django.urls import reverse
 
 
 class Shop(models.Model):
     name = models.CharField(
         max_length=255,
-        help_text="The name primary shop, Amazon, Distrelec, Adafruit, Kjell.com ...",
+        help_text=(
+            "The name primary shop, Amazon, Distrelec, Adafruit, Kjell.com ..."
+        ),
     )
     branch_name = models.CharField(
         max_length=255,
@@ -17,10 +21,12 @@ class Shop(models.Model):
         ),
         blank=True,
     )
-    icon: models.ImageField = models.ImageField(upload_to="shop/icons", blank=True)
+    icon: models.ImageField = models.ImageField(
+        upload_to="shop/icons", blank=True
+    )
 
     def longname(self):
-        return f"{self.branch_name}" + (
+        return f"{self.branch_name.capitalize()}" + (
             f", a branch of {self.name}"
             if self.name != self.branch_name
             else ""
@@ -49,6 +55,14 @@ class Shop(models.Model):
         blank=True,
     )
 
+    @admin.display(description="Orders")
+    def order_list(self):
+        num_orders = self.orders.count()
+        if not num_orders:
+            return "No orders in database."
+        else:
+            return num_orders
+
     class Meta:
         ordering = ["name"]
         constraints = [
@@ -64,4 +78,4 @@ class Shop(models.Model):
         super(Shop, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.branch_name}"
+        return f"{self.branch_name.capitalize()}"

@@ -112,8 +112,9 @@ class Command(BaseCommand):
                             logo_file.open("rb"), f'{shop["name"]}.png'
                         )
                     else:
-                        self.log.debug("No %s in %s", logo_file.name, zip_file.name)
-
+                        self.log.debug(
+                            "No %s in %s", logo_file.name, zip_file.name
+                        )
 
                 (shop_object, created) = Shop.objects.update_or_create(
                     name=shop["name"],
@@ -138,11 +139,11 @@ class Command(BaseCommand):
                         "Found and possibly updated: %s",
                         shop_object.branch_name,
                     )
-                #self.log.debug(dir(shop_object))
-                #orders = json_data["orders"]
-                #print(orders)
+                # self.log.debug(dir(shop_object))
+                # orders = json_data["orders"]
+                # print(orders)
             return
-        self.print_help("manage.py", 'loader')
+        self.print_help("manage.py", "loader")
 
     # def command_load_to_db_adafruit(self, options):
     #     if settings.SCRAPER_ADA_DB_SHOP_ID != -1:

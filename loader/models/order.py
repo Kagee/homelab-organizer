@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.html import escape, format_html, format_html_join
 from djmoney.models.fields import MoneyField
 
-from .attachement import Attachement
+from .attachementlink import AttachementLink
 from .shop import Shop
 
 
@@ -37,15 +37,15 @@ class Order(models.Model):
             "The original order id from the shop. Not to be "
             "confused with the internal database id."
         ),
-        blank=False,
-        editable=False,
+        #blank=False,
+        #editable=True,
     )
 
     date: datetime = models.DateField(
         "order date",
-        editable=False,
+        editable=True,
     )
-    attachements = GenericRelation(Attachement)
+    attachements = GenericRelation(AttachementLink)
 
     total = MoneyField(
         max_digits=19,
@@ -68,13 +68,17 @@ class Order(models.Model):
         default_currency=None,
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField("Created at", auto_now_add=True, editable=True)
     # Extra data that we do not import into model
     extra_data = models.JSONField(
         default=dict,
         blank=True,
         editable=False,
     )
+
+    @admin.display(description="created_at")
+    def created_at(self):
+        return "asdfadt"
 
     @admin.display(description="Items")
     def items_list(self):
@@ -85,10 +89,8 @@ class Order(models.Model):
                 '<ul style="margin: 0;">{}</ul>',
                 format_html_join(
                     "\n",
-                    (
-                        '<li><a href="{}">{}</a>&nbsp;&nbsp;(<a target="_blank"'
-                        ' href="{}">View on {}</a>)</li>'
-                    ),
+                    '<li><a href="{}">{}</a>&nbsp;&nbsp;(<a target="_blank"'
+                    ' href="{}">View on {}</a>)</li>',
                     [
                         (
                             reverse(
@@ -107,7 +109,7 @@ class Order(models.Model):
                 ),
             )
 
-    @admin.display(description="Order ID")
+    @admin.display(description="Order URL (generated)")
     def order_url(self):
         # pylint: disable=no-member
         return format_html(
@@ -127,7 +129,7 @@ class Order(models.Model):
     @admin.display(description="Order")
     def admin_list_render(self):
         return format_html(
-            (   # pylint: disable=no-member
+            (  # pylint: disable=no-member
                 f'<img src="{self.shop.icon.url}" width="25" />'
                 if self.shop.icon
                 else ""
@@ -137,7 +139,7 @@ class Order(models.Model):
         )
 
     def __str__(self):
-        return (# pylint: disable=no-member
+        return (  # pylint: disable=no-member
             f"{self.shop.branch_name} order #{self.order_id} with"
             # 2pylint: disable=no-member
             f" {self.items.count()} items"

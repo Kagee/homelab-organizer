@@ -1,19 +1,17 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models.attachement import Attachement
-from .models.order import Order
-from .models.orderitem import OrderItem
-from .models.shop import Shop
+from .models import Attachement, AttachementLink, Order, OrderItem, Shop
 
 admin.site.register(Attachement)
+admin.site.register(AttachementLink)
 admin.site.register(OrderItem)
 
 
 class OrderAdmin(admin.ModelAdmin):
     readonly_fields = [
         lambda obj: obj.shop.list_icon(),
-        "date",
+        #"date",
         "order_url",
         "items_list",
         "indent_extra_data",
@@ -25,8 +23,8 @@ admin.site.register(Order, OrderAdmin)
 
 
 class ShopAdmin(admin.ModelAdmin):
-    list_display = ["list_icon", "id"]
-    readonly_fields = ["id", "change_icon"]
+    list_display = ["list_icon", "id", "order_list"]
+    readonly_fields = ["id", "change_icon", "order_list"]
     fields = [
         "id",
         "name",
@@ -35,6 +33,7 @@ class ShopAdmin(admin.ModelAdmin):
         "change_icon",
         "order_url_template",
         "item_url_template",
+        "order_list"
     ]
 
     @admin.display(description="Icon preview")

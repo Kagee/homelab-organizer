@@ -7,7 +7,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.html import escape, format_html
 
-from .attachement import Attachement
+from .attachementlink import AttachementLink
 from .order import Order
 
 
@@ -56,7 +56,7 @@ class OrderItem(models.Model):
         on_delete=models.CASCADE,
         related_name="items",
     )
-    attachements = GenericRelation(Attachement)
+    attachements = GenericRelation(AttachementLink)
     thumbnail = models.ImageField(upload_to=thumnail_path, blank=True)
     # Extra data that we do not import into model
     extra_data = models.JSONField(default=dict, blank=True)
