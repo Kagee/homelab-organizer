@@ -11,7 +11,7 @@ admin.site.register(OrderItem)
 class OrderAdmin(admin.ModelAdmin):
     readonly_fields = [
         lambda obj: obj.shop.list_icon(),
-        #"date",
+        "date",
         "order_url",
         "items_list",
         "indent_extra_data",

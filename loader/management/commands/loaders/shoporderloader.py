@@ -10,19 +10,56 @@ from typing import Any, Dict, List, Union
 import pprint
 from logging import Logger
 from pathlib import Path
-
+from djmoney.money import Money
+from decimal import Decimal
 
 # pylint: disable=relative-beyond-top-level
 from ....models import Shop, Order
+
 
 class ShopOrderLoader(object):
     def __init__(self, shop, options):
         self.log = logging.getLogger(__name__)
         self.options = options
-        shop_dict = self.read(settings.INPUT_FOLDER / f"{shop}.json", from_json=True)
-        self.shop = Shop.objects.get(name=shop_dict["metadata"]["name"],
-                branch_name=shop_dict["metadata"]["branch_name"])
-        self.log.debug(shop_dict["orders"][0])
+        shop_dict = self.read(
+            settings.INPUT_FOLDER / f"{shop}.json", from_json=True
+        )
+        self.shop = Shop.objects.get(
+            name=shop_dict["metadata"]["name"],
+            branch_name=shop_dict["metadata"]["branch_name"],
+        )
+        #self.pprint(shop_dict["orders"][0])
+        order = shop_dict["orders"][0]
+        for order in shop_dict["orders"]:
+            defaults = {
+                        "date": order["date"],
+                        "extra_data": order["extra_data"]
+                    }
+            
+            for money in ["total", "subtotal", "tax", "shipping"]:
+                if money in order:
+                    defaults[money] = Money(amount=order[money]["value"], currency=order[money]["currency"])
+                    del order[money]
+            
+            self.log.debug("Defaults are: %s", defaults)
+            (order_object, created) = Order.objects.update_or_create(
+                shop=self.shop,
+                order_id=order["id"],
+                defaults=defaults)
+
+            del order["id"]
+            del order["date"]
+            del order["extra_data"]
+
+            # TODO: Import items
+            del order["items"]
+
+            self.log.debug(order)
+
+            if created:
+                self.log.debug("Order was just created")
+        
+            self.log.debug(order_object)
 
     def read(
         self,
@@ -45,7 +82,6 @@ class ShopOrderLoader(object):
     @classmethod
     def pprint(cls, value: Any) -> None:
         pprint.PrettyPrinter(indent=2).pprint(value)
-
 
     #         order_dict = self.read(json_file, from_json=True)
 

@@ -43,7 +43,7 @@ class Order(models.Model):
 
     date: datetime = models.DateField(
         "order date",
-        editable=True,
+        #editable=True,
     )
     attachements = GenericRelation(AttachementLink)
 
@@ -56,16 +56,22 @@ class Order(models.Model):
         max_digits=19,
         decimal_places=4,
         default_currency=None,
+        blank=True,
+        null=True
     )
     tax = MoneyField(
         max_digits=19,
         decimal_places=4,
         default_currency=None,
+        blank=True,
+        null=True
     )
     shipping = MoneyField(
         max_digits=19,
         decimal_places=4,
         default_currency=None,
+        blank=True,
+        null=True
     )
 
     created_at = models.DateTimeField("Created at", auto_now_add=True, editable=True)

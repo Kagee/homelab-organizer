@@ -8,6 +8,7 @@ from django.core.management.base import (
 # pylint: disable=wildcard-import
 from .loaders import *
 
+
 class Command(BaseCommand):
     help = "Loads order data from JSON and ZIP"
     requires_migrations_checks = True
@@ -26,7 +27,8 @@ class Command(BaseCommand):
         scraper.add_argument(
             "--import-shop",
             default="all",
-            choices=[x.stem for x in settings.INPUT_FOLDER.glob("*.json")] + ["all"],
+            choices=[x.stem for x in settings.INPUT_FOLDER.glob("*.json")]
+            + ["all"],
             help="Import order data from shop(s) (default: all)",
         )
 
@@ -55,10 +57,12 @@ class Command(BaseCommand):
         self.log.debug(options)
         if "import_shop" in options:
             if options["import_shop"] == "all":
-                for shop in [x.stem for x in settings.INPUT_FOLDER.glob("*.json")]:
-                    ShopOrderLoader(options["import_shop"], options)    
+                for shop in [
+                    x.stem for x in settings.INPUT_FOLDER.glob("*.json")
+                ]:
+                    ShopOrderLoader(shop, options)
             else:
-                ShopOrderLoader(options["import_shop"], options)    
+                ShopOrderLoader(options["import_shop"], options)
         elif "init_shops" in options and options["init_shops"]:
             ShopMetaLoader.load()
         else:

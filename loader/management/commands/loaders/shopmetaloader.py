@@ -10,6 +10,7 @@ from django.core.files import File
 # pylint: disable=relative-beyond-top-level
 from ....models import Shop
 
+
 class ShopMetaLoader(object):
     @classmethod
     def load(cls):

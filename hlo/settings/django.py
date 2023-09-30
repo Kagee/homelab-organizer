@@ -12,7 +12,7 @@ env = environ.FileAwareEnv(
     HLO_DEBUG=(bool, False),
     HLO_ALLOWED_HOSTS=(list, []),
     # https://docs.djangoproject.com/en/3.2/topics/i18n/
-    HLO_LANGUAGE_CODE=(str, "en-us"),
+    HLO_LANGUAGE_CODE=(str, "nb"),
     HLO_TIME_ZONE=(str, "UTC"),
     HLO_USE_I18N=(bool, False),
     HLO_USE_L10N=(bool, False),
@@ -39,6 +39,8 @@ TIME_ZONE: str = env("TIME_ZONE")
 USE_I18N: bool = env("USE_I18N")
 USE_L10N: bool = env("USE_L10N")
 USE_TZ: bool = env("USE_TZ")
+
+DATE_FORMAT = 'Y-m-d'
 
 # Raises Django's ImproperlyConfigured
 # exception if SECRET_KEY not in os.environ
