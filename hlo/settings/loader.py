@@ -10,5 +10,5 @@ INPUT_FOLDER: Path = Path(
     ).resolve()
 
 JSON_SCHEMA: Path = Path(
-        env("JSON_SCHEMA", default="./input/schema.json")
+        env("JSON_SCHEMA", default="./schema/webshop-orders.json")
     ).resolve()
