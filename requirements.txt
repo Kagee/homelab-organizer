@@ -5,3 +5,4 @@ django-money>=3.0.0
 price-parser>=0.3.4
 jsonschema>=4.17
 money>=1.3.0
+django-taggit>=4.0.0
