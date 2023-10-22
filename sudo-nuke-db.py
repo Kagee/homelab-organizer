@@ -70,24 +70,16 @@ while True:
     except PermissionError as pe:
         input(f"Failed to delete DB, please fix and press enter: {pe}")
 
-for migration in (here / Path("hlo/migrations/")).glob("0*.py"):
-    print("Deleting migration ", migration)
-    remove(migration)
-
-for migration in (here / Path("order_import/migrations/")).glob("0*.py"):
-    print("Deleting migration ", migration)
-    remove(migration)
+for app in [ "hlo", "purchases", "loader", "inventory" ]:
+    for migration in (here / Path(f"{app}/migrations/")).glob("0*.py"):
+        print("Deleting migration ", migration)
+        remove(migration)
 
 print("Recreating migrations")
 subprocess.run([sys.executable, "manage.py", "makemigrations"], check=False)
 
 print("Migrating migrations (creating DB)")
 subprocess.run([sys.executable, "manage.py", "migrate"], check=False)
-
-#print("Initializing shops")
-#subprocess.run(
-#    [sys.executable, "manage.py", "scrape", "--init-shops"], check=False
-#)
 
 print("Restoring superusers")
 conn = sqlite3.connect("db-dev.sqlite3")
