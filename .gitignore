@@ -2,27 +2,19 @@ venv
 __pycache__
 *.swp
 chromedriver
-.env
-*.env
-!dev.env
 *.sqlite3
-tls/*
-*cache*/
-geckodriver.log
 hlo/settings/logging.py
 *.log
 *~
 .idea
 *.code-workspace
-storage/
 */migrations/*
-logos/
 .vscode/
-scraper-cache/
 # folders
 media_root
 # symlinks
 .vscode
+.env
 scraper-cache
 input
 schema
