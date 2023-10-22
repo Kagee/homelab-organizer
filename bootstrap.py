@@ -54,7 +54,7 @@ def python_checks():
         )
         newest_python = find_pythons()
         print("Found %s, reloading..." % (newest_python,))
-        subprocess.run([newest_python, __file__, "no-git"], check=False)
+        subprocess.run([newest_python, os.path.abspath(sys.argv[0]), "no-git"], check=False)
         sys.exit(0)
 
     if (
