@@ -42,7 +42,7 @@ class Order(models.Model):
     )
 
     date: datetime = models.DateField(
-        "order date",
+        "Order date",
         #editable=True,
     )
     attachements = GenericRelation(AttachementLink)
@@ -82,9 +82,18 @@ class Order(models.Model):
         editable=False,
     )
 
-    @admin.display(description="created_at")
-    def created_at(self):
-        return "asdfadt"
+    #@admin.display(description="created_at")
+    #def created_at(self):
+    #    return "asdfadt"
+
+    @admin.display(description="Items")
+    def items_count(self):
+        return self.items.count()
+
+    @admin.display(description="Shop")
+    def shop_name(self):
+        return self.shop.list_icon()
+
 
     @admin.display(description="Items")
     def items_list(self):
@@ -100,7 +109,7 @@ class Order(models.Model):
                     [
                         (
                             reverse(
-                                "admin:order_scraper_orderitem_change",
+                                "admin:loader_orderitem_change",
                                 args=(i[1],),
                             ),
                             i[0],

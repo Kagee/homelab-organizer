@@ -40,3 +40,7 @@ subprocess.run(
 
 print("Nuke database")
 subprocess.run([sys.executable, "sudo-nuke-db.py"], check=False)
+
+subprocess.run([sys.executable, "manage.py", "loader", "--init-shops"], check=False)
+
+#subprocess.run([sys.executable, "manage.py", "loader", "--import-shop", "all"], check=False)

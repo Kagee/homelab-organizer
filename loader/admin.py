@@ -1,12 +1,26 @@
 from django.contrib import admin
+from django.contrib.admin import DateFieldListFilter
 from django.utils.html import format_html
 
 from .models import Attachement, AttachementLink, Order, OrderItem, Shop
 
+from rangefilter.filters import (
+    DateRangeFilterBuilder,
+    DateTimeRangeFilterBuilder,
+    NumericRangeFilterBuilder,
+    DateRangeQuickSelectListFilterBuilder,
+)
+
 admin.site.register(Attachement)
 admin.site.register(AttachementLink)
-admin.site.register(OrderItem)
 
+
+class OrderItemAdmin(admin.ModelAdmin):
+    readonly_fields = [
+       "order",
+    ]
+
+admin.site.register(OrderItem, OrderItemAdmin)
 
 class OrderAdmin(admin.ModelAdmin):
     readonly_fields = [
@@ -16,8 +30,8 @@ class OrderAdmin(admin.ModelAdmin):
         "items_list",
         "indent_extra_data",
     ]
-    list_display = ["admin_list_render"]
-
+    list_display = ["date", "items_count", "shop_name"]
+    list_filter = ["shop__name", ("date", DateRangeQuickSelectListFilterBuilder())]
 
 admin.site.register(Order, OrderAdmin)
 

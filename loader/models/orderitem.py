@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.html import escape, format_html
+from djmoney.models.fields import MoneyField
 
 from .attachementlink import AttachementLink
 from .order import Order
@@ -14,7 +15,7 @@ from .order import Order
 def thumnail_path(instance, filename):
     ext = Path(filename).suffix[1:]
     filename_str = (
-        f"{instance.order.id}-{instance.item_id}-{ instance.item_sku if instance.item_sku else '' }"
+        f"{instance.order.id}-{instance.item_id}-{ instance.item_variation if instance.item_variation else '' }"
     )
     filename_b64 = base64.urlsafe_b64encode(
         filename_str.encode("utf-8")
@@ -27,7 +28,7 @@ class OrderItem(models.Model):
         ordering = ["name"]
         constraints = [
             models.UniqueConstraint(
-                fields=["item_id", "item_sku", "order"],
+                fields=["item_id", "item_variation", "order"],
                 name="unique_id_sku_order",
             )
         ]
@@ -43,18 +44,37 @@ class OrderItem(models.Model):
         ),
         blank=False,
     )
-    item_sku = models.CharField(
-        "the original shop item sku",
+    item_variation = models.CharField(
+        "the original shop item sku/variation",
         max_length=255,
         default="",
         help_text="The original item sku.",
         blank=True,
     )
     count = models.PositiveIntegerField("number of items", default=1)
-    order: Order = models.ForeignKey(
+    order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
         related_name="items",
+    )
+    total = MoneyField(
+        max_digits=19,
+        decimal_places=4,
+        default_currency=None,
+    )
+    subtotal = MoneyField(
+        max_digits=19,
+        decimal_places=4,
+        default_currency=None,
+        blank=True,
+        null=True
+    )
+    tax = MoneyField(
+        max_digits=19,
+        decimal_places=4,
+        default_currency=None,
+        blank=True,
+        null=True
     )
     attachements = GenericRelation(AttachementLink)
     thumbnail = models.ImageField(upload_to=thumnail_path, blank=True)
@@ -81,5 +101,6 @@ class OrderItem(models.Model):
     def __str__(self):
         return (
             # pylint: disable=no-member
-            f"{self.order.shop.branch_name} item #{self.item_id}: {self.name}"
+            #f"{self.order.shop.branch_name} item #{self.item_id}: {self.name}"
+            f"Item #{self.item_id}: {self.name}"
         )

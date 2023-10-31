@@ -15,7 +15,7 @@ from djmoney.money import Money
 from decimal import Decimal
 
 # pylint: disable=relative-beyond-top-level
-from ....models import Shop, Order
+from ....models import Shop, Order, OrderItem
 
 
 class ShopOrderLoader(object):
@@ -38,15 +38,19 @@ class ShopOrderLoader(object):
         for order in shop_dict["orders"]:
             defaults = {
                         "date": order["date"],
-                        "extra_data": order["extra_data"]
+                        
                     }
-            
+            if "extra_data" in order:
+                defaults["extra_data"] = order["extra_data"]
+                del order["extra_data"]
             for money in ["total", "subtotal", "tax", "shipping"]:
                 if money in order:
+                    if "currency" not in order[money]:
+                        order[money]["currency"] = "NOK"
                     defaults[money] = Money(amount=order[money]["value"], currency=order[money]["currency"])
                     del order[money]
             
-            self.log.debug("Defaults are: %s", defaults)
+            #self.log.debug("Defaults are: %s", defaults)
             (order_object, created) = Order.objects.update_or_create(
                 shop=self.shop,
                 order_id=order["id"],
@@ -54,12 +58,54 @@ class ShopOrderLoader(object):
 
             del order["id"]
             del order["date"]
-            del order["extra_data"]
-
+            
             # TODO: Import items
-            del order["items"]
+            #del order["items"]
+            for item in order["items"]:
+                self.log.debug("Order ID: %s", item["id"])
+                if "attachements" in item:
+                    # TODO
+                    del item["attachements"]
+                if "thumbnail" in item:
+                    # TODO
+                    del item["thumbnail"]
+                #self.pprint(item)
+                item_variation = ""
+                if "variation" in item:
+                    item_variation = item["variation"]
+                    del item["variation"]
+                item_id = item["id"]
+                del item["id"]
 
-            self.log.debug(order)
+                defaults = {
+                    "name": item["name"],
+                    "count": item["quantity"],
+                }
+                del item["name"]
+                del item["quantity"]
+
+                if "extra_data" in item:
+                    defaults["extra_data"] = item["extra_data"]
+                    del item["extra_data"]
+                for money in ["total", "subtotal", "tax", "vat"]:
+                    if money in item:
+                        if "currency" not in item[money]:
+                            item[money]["currency"] = "NOK"
+                        if money == "vat":
+                            item["tax"] = item["vat"]
+                            del item["vat"]
+                            money = "tax"
+                        data = item[money]
+                        defaults[money] = Money(amount=data["value"], currency=data["currency"])
+                        del item[money]
+
+                assert item == {}, item
+                (item_object, created) = OrderItem.objects.update_or_create(
+                    item_id=item_id,
+                    item_variation=item_variation,
+                    order=order_object,
+                    defaults=defaults)
+                self.log.debug("Item %s %s", item_object, "created" if created else "found")
 
             if created:
                 self.log.debug("Order was just created")
