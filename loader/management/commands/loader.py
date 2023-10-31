@@ -26,7 +26,6 @@ class Command(BaseCommand):
 
         scraper.add_argument(
             "--import-shop",
-            default="all",
             choices=[x.stem for x in settings.INPUT_FOLDER.glob("*.json")]
             + ["all"],
             help="Import order data from shop(s) (default: all)",
@@ -55,7 +54,7 @@ class Command(BaseCommand):
 
         self.setup_logger(options)
         self.log.debug(options)
-        if "import_shop" in options:
+        if "import_shop" in options and options["import_shop"]:
             if options["import_shop"] == "all":
                 for shop in [
                     x.stem for x in settings.INPUT_FOLDER.glob("*.json")

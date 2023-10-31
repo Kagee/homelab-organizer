@@ -32,21 +32,7 @@ class ShopMetaLoader(object):
                     log.error("Invalid schema in %s", json_file.name)
                     continue
 
-            zip_file = json_file.with_suffix(".zip")
-            if not os.access(zip_file, os.R_OK):
-                # For now, ZIP files are required, even if empty
-                log.error("Could not open/read %s", zip_file)
-                continue
-
             shop = json_data["metadata"]
-
-            with zipfile.ZipFile(zip_file) as zip_data:
-                logo_file = zipfile.Path(zip_data, "logo.png")
-                logo_img = None
-                if logo_file.is_file():
-                    logo_img = File(logo_file.open("rb"), f'{shop["name"]}.png')
-                else:
-                    log.debug("No %s in %s", logo_file.name, zip_file.name)
 
             (shop_object, created) = Shop.objects.update_or_create(
                 name=shop["name"],
@@ -56,12 +42,25 @@ class ShopMetaLoader(object):
                     "item_url_template": shop["item_url"],  # required
                 },
             )
-            if logo_img:
-                if shop_object.icon:
-                    shop_object.icon.delete()
-                shop_object.icon = logo_img
-                shop_object.save()
-                logo_img.close()
+            zip_file = json_file.with_suffix(".zip")
+            if not os.access(zip_file, os.R_OK):
+                # For now, ZIP files are required, even if empty
+                log.warning("Could not open/read %s", zip_file)
+            else:
+                with zipfile.ZipFile(zip_file) as zip_data:
+                    logo_file = zipfile.Path(zip_data, "logo.png")
+                    logo_img = None
+                    if logo_file.is_file():
+                        logo_img = File(logo_file.open("rb"), f'{shop["name"]}.png')
+                    else:
+                        log.debug("No %s in %s", logo_file.name, zip_file.name)
+    
+                    if logo_img:
+                        if shop_object.icon:
+                            shop_object.icon.delete()
+                        shop_object.icon = logo_img
+                        shop_object.save()
+                        logo_img.close()
             if created:
                 log.info("Created new shop: %s", shop_object.branch_name)
             else:

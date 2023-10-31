@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from pathlib import Path
 import json
 import zipfile
@@ -24,10 +25,14 @@ class ShopOrderLoader(object):
         shop_dict = self.read(
             settings.INPUT_FOLDER / f"{shop}.json", from_json=True
         )
-        self.shop = Shop.objects.get(
-            name=shop_dict["metadata"]["name"],
-            branch_name=shop_dict["metadata"]["branch_name"],
-        )
+        try:
+            self.shop = Shop.objects.get(
+                name=shop_dict["metadata"]["name"],
+                branch_name=shop_dict["metadata"]["branch_name"],
+            )
+        except Shop.DoesNotExist:
+            self.log.critical("Shop '%s' is not in database, did you run --init-shops?", shop)
+            sys.exit(1)
         #self.pprint(shop_dict["orders"][0])
         order = shop_dict["orders"][0]
         for order in shop_dict["orders"]:
