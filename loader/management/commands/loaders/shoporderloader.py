@@ -13,6 +13,7 @@ from logging import Logger
 from pathlib import Path
 from djmoney.money import Money
 from decimal import Decimal
+import hashlib
 
 # pylint: disable=relative-beyond-top-level
 from ....models import Shop, Order, OrderItem
@@ -31,15 +32,16 @@ class ShopOrderLoader(object):
                 branch_name=shop_dict["metadata"]["branch_name"],
             )
         except Shop.DoesNotExist:
-            self.log.critical("Shop '%s' is not in database, did you run --init-shops?", shop)
+            self.log.critical(
+                "Shop '%s' is not in database, did you run --init-shops?", shop
+            )
             sys.exit(1)
-        #self.pprint(shop_dict["orders"][0])
+        # self.pprint(shop_dict["orders"][0])
         order = shop_dict["orders"][0]
         for order in shop_dict["orders"]:
             defaults = {
-                        "date": order["date"],
-                        
-                    }
+                "date": order["date"],
+            }
             if "extra_data" in order:
                 defaults["extra_data"] = order["extra_data"]
                 del order["extra_data"]
@@ -47,20 +49,20 @@ class ShopOrderLoader(object):
                 if money in order:
                     if "currency" not in order[money]:
                         order[money]["currency"] = "NOK"
-                    defaults[money] = Money(amount=order[money]["value"], currency=order[money]["currency"])
+                    defaults[money] = Money(
+                        amount=order[money]["value"],
+                        currency=order[money]["currency"],
+                    )
                     del order[money]
-            
-            #self.log.debug("Defaults are: %s", defaults)
+
+            # self.log.debug("Defaults are: %s", defaults)
             (order_object, created) = Order.objects.update_or_create(
-                shop=self.shop,
-                order_id=order["id"],
-                defaults=defaults)
+                shop=self.shop, order_id=order["id"], defaults=defaults
+            )
 
             del order["id"]
             del order["date"]
-            
-            # TODO: Import items
-            #del order["items"]
+
             for item in order["items"]:
                 self.log.debug("Order ID: %s", item["id"])
                 if "attachements" in item:
@@ -69,7 +71,7 @@ class ShopOrderLoader(object):
                 if "thumbnail" in item:
                     # TODO
                     del item["thumbnail"]
-                #self.pprint(item)
+                # self.pprint(item)
                 item_variation = ""
                 if "variation" in item:
                     item_variation = item["variation"]
@@ -96,7 +98,9 @@ class ShopOrderLoader(object):
                             del item["vat"]
                             money = "tax"
                         data = item[money]
-                        defaults[money] = Money(amount=data["value"], currency=data["currency"])
+                        defaults[money] = Money(
+                            amount=data["value"], currency=data["currency"]
+                        )
                         del item[money]
 
                 assert item == {}, item
@@ -104,12 +108,18 @@ class ShopOrderLoader(object):
                     item_id=item_id,
                     item_variation=item_variation,
                     order=order_object,
-                    defaults=defaults)
-                self.log.debug("Item %s %s", item_object, "created" if created else "found")
+                    defaults=defaults,
+                )
+                self.log.debug(
+                    "Item %s %s", item_object, "created" if created else "found"
+                )
 
+            del order["items"]
+
+            assert order == {}, order
             if created:
                 self.log.debug("Order was just created")
-        
+
             self.log.debug(order_object)
 
     def read(

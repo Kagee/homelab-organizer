@@ -1,8 +1,6 @@
 from django.db import models
-from django.utils.html import format_html
 from django.contrib import admin
-from django.utils.html import escape, format_html, format_html_join
-from django.urls import reverse
+from django.utils.html import format_html
 
 
 class Shop(models.Model):
@@ -26,6 +24,7 @@ class Shop(models.Model):
     )
 
     def longname(self):
+        # pylint: disable=no-member
         return f"{self.branch_name.capitalize()}" + (
             f", a branch of {self.name}"
             if self.name != self.branch_name
@@ -78,4 +77,5 @@ class Shop(models.Model):
         super(Shop, self).save(*args, **kwargs)
 
     def __str__(self):
+        # pylint: disable=no-member
         return f"{self.branch_name.capitalize()}"

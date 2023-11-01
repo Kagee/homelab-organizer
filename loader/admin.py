@@ -1,26 +1,81 @@
 from django.contrib import admin
-from django.contrib.admin import DateFieldListFilter
-from django.utils.html import format_html
+from django.db import models
 
+from django.utils.html import format_html
+from django.forms import TextInput, Textarea
 from .models import Attachement, AttachementLink, Order, OrderItem, Shop
 
-from rangefilter.filters import (
-    DateRangeFilterBuilder,
-    DateTimeRangeFilterBuilder,
-    NumericRangeFilterBuilder,
-    DateRangeQuickSelectListFilterBuilder,
-)
+from rangefilter.filters import DateRangeQuickSelectListFilterBuilder
 
 admin.site.register(Attachement)
 admin.site.register(AttachementLink)
 
 
+@admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
-    readonly_fields = [
-       "order",
-    ]
+    def get_readonly_fields(self, request, obj=None):
+        if (
+            obj
+        ):  # This is the case when obj is already created i.e. it's an edit
+            return [
+                "image_tag",
+                "order",
+                "computed",
+                "sha1",
+                "extra_data",
+                "total",
+                "subtotal",
+                "tax",
+                "item_id",
+                "count",
+                "item_variation",
+                "item_ref",
+            ]
+        else:
+            return []
 
-admin.site.register(OrderItem, OrderItemAdmin)
+    formfield_overrides = {
+        models.CharField: {"widget": TextInput(attrs={"size": "80"})},
+        models.JSONField: {
+            "widget": Textarea(attrs={"rows": "10", "cols": "60"})
+        },
+    }
+
+    def get_fields(self, request, obj=None):
+        if (
+            obj
+        ):  # This is the case when obj is already created i.e. it's an edit
+            return [
+                "item_ref",
+                "name",
+                "image_tag",
+                "thumbnail",
+                "order",
+                "count",
+                "total",
+                "subtotal",
+                "tax",
+                "extra_data",
+            ]
+        else:
+            return [
+                "name",
+                "count",
+                "thumbnail",
+                "order",
+                "item_id",
+                "item_variation",
+                "extra_data",
+                "total",
+                "subtotal",
+                "tax",
+            ]
+
+    # fields = ('item_ref', 'name', 'count', 'image_tag', 'thumbnail', 'order', 'total', 'extra_data')
+
+
+# admin.site.register(OrderItem, OrderItemAdmin)
+
 
 class OrderAdmin(admin.ModelAdmin):
     readonly_fields = [
@@ -31,7 +86,11 @@ class OrderAdmin(admin.ModelAdmin):
         "indent_extra_data",
     ]
     list_display = ["date", "items_count", "shop_name"]
-    list_filter = ["shop__name", ("date", DateRangeQuickSelectListFilterBuilder())]
+    list_filter = [
+        "shop__name",
+        ("date", DateRangeQuickSelectListFilterBuilder()),
+    ]
+
 
 admin.site.register(Order, OrderAdmin)
 
@@ -47,7 +106,7 @@ class ShopAdmin(admin.ModelAdmin):
         "change_icon",
         "order_url_template",
         "item_url_template",
-        "order_list"
+        "order_list",
     ]
 
     @admin.display(description="Icon preview")

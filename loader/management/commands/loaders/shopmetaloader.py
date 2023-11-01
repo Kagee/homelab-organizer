@@ -51,10 +51,12 @@ class ShopMetaLoader(object):
                     logo_file = zipfile.Path(zip_data, "logo.png")
                     logo_img = None
                     if logo_file.is_file():
-                        logo_img = File(logo_file.open("rb"), f'{shop["name"]}.png')
+                        logo_img = File(
+                            logo_file.open("rb"), f'{shop["name"]}.png'
+                        )
                     else:
                         log.debug("No %s in %s", logo_file.name, zip_file.name)
-    
+
                     if logo_img:
                         if shop_object.icon:
                             shop_object.icon.delete()

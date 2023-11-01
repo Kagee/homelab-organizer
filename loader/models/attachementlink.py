@@ -9,8 +9,12 @@ class AttachementLink(models.Model):
     attachement = models.ForeignKey(Attachement, on_delete=models.CASCADE)
 
     # Link to item/order/other that this attachement belongs to
-    limit = models.Q(app_label = 'loader', model = 'order') | models.Q(app_label = 'loader', model = 'orderitem')
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, limit_choices_to = limit)
+    limit = models.Q(app_label="loader", model="order") | models.Q(
+        app_label="loader", model="orderitem"
+    )
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, limit_choices_to=limit
+    )
     object_id = models.PositiveIntegerField()
     attachement_owner = GenericForeignKey()
 

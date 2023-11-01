@@ -37,13 +37,13 @@ class Order(models.Model):
             "The original order id from the shop. Not to be "
             "confused with the internal database id."
         ),
-        #blank=False,
-        #editable=True,
+        # blank=False,
+        # editable=True,
     )
 
     date: datetime = models.DateField(
         "Order date",
-        #editable=True,
+        # editable=True,
     )
     attachements = GenericRelation(AttachementLink)
 
@@ -57,24 +57,26 @@ class Order(models.Model):
         decimal_places=4,
         default_currency=None,
         blank=True,
-        null=True
+        null=True,
     )
     tax = MoneyField(
         max_digits=19,
         decimal_places=4,
         default_currency=None,
         blank=True,
-        null=True
+        null=True,
     )
     shipping = MoneyField(
         max_digits=19,
         decimal_places=4,
         default_currency=None,
         blank=True,
-        null=True
+        null=True,
     )
 
-    created_at = models.DateTimeField("Created at", auto_now_add=True, editable=True)
+    created_at = models.DateTimeField(
+        "Created at", auto_now_add=True, editable=True
+    )
     # Extra data that we do not import into model
     extra_data = models.JSONField(
         default=dict,
@@ -82,18 +84,14 @@ class Order(models.Model):
         editable=False,
     )
 
-    #@admin.display(description="created_at")
-    #def created_at(self):
-    #    return "asdfadt"
-
     @admin.display(description="Items")
     def items_count(self):
         return self.items.count()
 
     @admin.display(description="Shop")
     def shop_name(self):
+        # pylint: disable=no-member
         return self.shop.list_icon()
-
 
     @admin.display(description="Items")
     def items_list(self):
