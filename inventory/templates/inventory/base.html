@@ -1,0 +1,28 @@
+{% load django_bootstrap5 %}{% load static %}<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Untitled page{% endblock title %}</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+
+  </head>
+  <head>
+  <body>
+    {% include "inventory/navbar.html" %}
+    <div class="container">
+      <div class="row">
+        <div class="col">
+            {% block content %}
+            <p>No content.</p>
+            {% endblock content %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
