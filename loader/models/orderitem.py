@@ -3,28 +3,30 @@ import pprint
 from pathlib import Path
 import hashlib
 from django.contrib import admin
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.html import escape, format_html, mark_safe
 from djmoney.models.fields import MoneyField
 
-from .attachementlink import AttachementLink
 from .order import Order
+from .attachement import Attachement
 
 
 def thumnail_path(instance, filename):
     ext = Path(filename).suffix[1:]
     filename_str = (
-        f"{instance.order.order_id}-{instance.item_id}-"
+        f"{instance.item_id}-"
         f"{ instance.item_variation if instance.item_variation else '' }"
     )
     shopname_b64 = base64.urlsafe_b64encode(
         instance.order.shop.branch_name.encode("utf-8")
     ).decode("utf-8")
+    order_b64 = base64.urlsafe_b64encode(
+        instance.order.order_id.encode("utf-8")
+    ).decode("utf-8")
     filename_b64 = base64.urlsafe_b64encode(
         filename_str.encode("utf-8")
     ).decode("utf-8")
-    return f"items/thumbnails/{shopname_b64}/{filename_b64}.{ext}"
+    return f"loader/thumbnails/{shopname_b64}/{order_b64}/{filename_b64}.{ext}"
 
 
 class OrderItem(models.Model):
@@ -83,22 +85,49 @@ class OrderItem(models.Model):
         blank=True,
         null=True,
     )
-    attachements = GenericRelation(AttachementLink)
+    attachements = models.ManyToManyField(
+        Attachement,
+        related_name="orderitem",
+    )
     thumbnail = models.ImageField(upload_to=thumnail_path, blank=True)
     # Extra data that we do not import into model
     extra_data = models.JSONField(default=dict, blank=True)
 
-    sha1 = models.CharField(max_length=40, editable=False, default=None, null=True)
+    hide = models.BooleanField(
+        default=False,
+        verbose_name="Hide item in inventory",
+        help_text="Set to true when i.e. item was for another person.",
+    )
+
+    sha1 = models.CharField(
+        max_length=40, editable=False, default=None, null=True
+    )
     # Weak FK for StockItem
-    computed = models.CharField(max_length=1024, editable=False)
+    gen_id = models.CharField(max_length=1024, editable=False, unique=True)
 
     def image_tag(self):
         # pylint: disable=no-member
         return mark_safe(
-            f'<a href="{self.thumbnail.url}" target="_blank"><img src="{self.thumbnail.url}" width="150" height="150" /></a>'
+            f'<a href="{self.thumbnail.url}" target="_blank"><div'
+            ' style="height: 150px;"><img style="height: 100%; width: auto;"'
+            f' src="{self.thumbnail.url}" width="{self.thumbnail.width}"'
+            f' height="{self.thumbnail.height}" /></div></a>'
         )
 
     image_tag.short_description = "Thumbnail"
+
+    def attachements_tag(self):
+        # pylint: disable=no-member
+        if self.attachements.count() == 0:
+            return "No attachements"
+        else:
+            html = '<ul>'
+            for attachement in self.attachements.all():
+                html += f'<li><a href="{attachement.file.url}" target="_blank">{attachement}</a></li>'
+            html += '</ul>'
+            return mark_safe(html)
+
+    attachements_tag.short_description = "Attachements"
 
     def item_ref(self):
         return (
@@ -122,7 +151,7 @@ class OrderItem(models.Model):
                 super(OrderItem, self).save(*args, **kwargs)
         else:
             self.sha1 = None
-        self.computed = (
+        self.gen_id = (
             f"{self.order.shop.branch_name}-{self.order.order_id}-"
             f"{self.item_id}-{self.item_variation if len(self.item_variation) else 'novariation'}"
         )
@@ -148,5 +177,7 @@ class OrderItem(models.Model):
     def __str__(self):
         return (
             # pylint: disable=no-member
-            f"{self.order.shop.branch_name} item #{self.item_id}: {self.name}"
+            f"{self.order.shop.branch_name} item"
+            f" #{self.item_id}{f'/{self.item_variation}' if len(self.item_variation) else ''}:"
+            f" {self.name}"
         )

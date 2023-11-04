@@ -3,16 +3,15 @@ from django.db import models
 
 from django.utils.html import format_html
 from django.forms import TextInput, Textarea
-from .models import Attachement, AttachementLink, Order, OrderItem, Shop
-
 from rangefilter.filters import DateRangeQuickSelectListFilterBuilder
 
-admin.site.register(Attachement)
-admin.site.register(AttachementLink)
+from .models import Attachement, Order, OrderItem, Shop
 
+admin.site.register(Attachement)
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
+    search_fields = ["name", "item_id", "item_variation"]
     def get_readonly_fields(self, request, obj=None):
         if (
             obj
@@ -30,6 +29,8 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "count",
                 "item_variation",
                 "item_ref",
+                "attachements",
+                "attachements_tag"
             ]
         else:
             return []
@@ -50,12 +51,14 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "name",
                 "image_tag",
                 "thumbnail",
+                "attachements_tag",
                 "order",
                 "count",
                 "total",
                 "subtotal",
                 "tax",
                 "extra_data",
+                
             ]
         else:
             return [
@@ -71,11 +74,6 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "tax",
             ]
 
-    # fields = ('item_ref', 'name', 'count', 'image_tag', 'thumbnail', 'order', 'total', 'extra_data')
-
-
-# admin.site.register(OrderItem, OrderItemAdmin)
-
 
 class OrderAdmin(admin.ModelAdmin):
     readonly_fields = [
@@ -84,6 +82,7 @@ class OrderAdmin(admin.ModelAdmin):
         "order_url",
         "items_list",
         "indent_extra_data",
+        "attachements"
     ]
     list_display = ["date", "items_count", "shop_name"]
     list_filter = [

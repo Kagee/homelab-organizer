@@ -2,13 +2,12 @@ import pprint
 from datetime import datetime
 
 from django.contrib import admin
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.urls import reverse
 from django.utils.html import escape, format_html, format_html_join
 from djmoney.models.fields import MoneyField
 
-from .attachementlink import AttachementLink
+from .attachement import Attachement
 from .shop import Shop
 
 
@@ -37,16 +36,18 @@ class Order(models.Model):
             "The original order id from the shop. Not to be "
             "confused with the internal database id."
         ),
-        # blank=False,
-        # editable=True,
+        blank=False,
+        editable=False,
     )
 
     date: datetime = models.DateField(
         "Order date",
-        # editable=True,
+        editable=True,
     )
-    attachements = GenericRelation(AttachementLink)
-
+    attachements = models.ManyToManyField(
+        Attachement,
+        related_name="order",
+    )
     total = MoneyField(
         max_digits=19,
         decimal_places=4,

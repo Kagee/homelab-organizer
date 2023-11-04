@@ -1,31 +1,38 @@
 import logging
-import os
 import sys
 from pathlib import Path
 import json
 import zipfile
+import pprint
+import hashlib
+from typing import Any, Union
+
 from jsonschema import ValidationError, validate
+
 from django.conf import settings
 from django.core.files import File
-from typing import Any, Dict, List, Union
-import pprint
-from logging import Logger
-from pathlib import Path
+
 from djmoney.money import Money
-from decimal import Decimal
-import hashlib
 
 # pylint: disable=relative-beyond-top-level
-from ....models import Shop, Order, OrderItem
+from ....models import Shop, Order, OrderItem, Attachement
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 class ShopOrderLoader(object):
     def __init__(self, shop, options):
         self.log = logging.getLogger(__name__)
         self.options = options
+        json_file: Path = settings.INPUT_FOLDER / f"{shop}.json"
         shop_dict = self.read(
-            settings.INPUT_FOLDER / f"{shop}.json", from_json=True
+            json_file, from_json=True
         )
+        
+        zip_file = json_file.with_suffix(".zip")
+
         try:
             self.shop = Shop.objects.get(
                 name=shop_dict["metadata"]["name"],
@@ -36,91 +43,211 @@ class ShopOrderLoader(object):
                 "Shop '%s' is not in database, did you run --init-shops?", shop
             )
             sys.exit(1)
-        # self.pprint(shop_dict["orders"][0])
-        order = shop_dict["orders"][0]
-        for order in shop_dict["orders"]:
-            defaults = {
-                "date": order["date"],
-            }
-            if "extra_data" in order:
-                defaults["extra_data"] = order["extra_data"]
-                del order["extra_data"]
-            for money in ["total", "subtotal", "tax", "shipping"]:
-                if money in order:
-                    if "currency" not in order[money]:
-                        order[money]["currency"] = "NOK"
-                    defaults[money] = Money(
-                        amount=order[money]["value"],
-                        currency=order[money]["currency"],
-                    )
-                    del order[money]
-
-            # self.log.debug("Defaults are: %s", defaults)
-            (order_object, created) = Order.objects.update_or_create(
-                shop=self.shop, order_id=order["id"], defaults=defaults
-            )
-
-            del order["id"]
-            del order["date"]
-
-            for item in order["items"]:
-                self.log.debug("Order ID: %s", item["id"])
-                if "attachements" in item:
-                    # TODO
-                    del item["attachements"]
-                if "thumbnail" in item:
-                    # TODO
-                    del item["thumbnail"]
-                # self.pprint(item)
-                item_variation = ""
-                if "variation" in item:
-                    item_variation = item["variation"]
-                    del item["variation"]
-                item_id = item["id"]
-                del item["id"]
-
+        with zipfile.ZipFile(zip_file) as zip_data:
+            order = shop_dict["orders"][0]
+            for order in shop_dict["orders"]:
                 defaults = {
-                    "name": item["name"],
-                    "count": item["quantity"],
+                    "date": order["date"],
                 }
-                del item["name"]
-                del item["quantity"]
-
-                if "extra_data" in item:
-                    defaults["extra_data"] = item["extra_data"]
-                    del item["extra_data"]
-                for money in ["total", "subtotal", "tax", "vat"]:
-                    if money in item:
-                        if "currency" not in item[money]:
-                            item[money]["currency"] = "NOK"
-                        if money == "vat":
-                            item["tax"] = item["vat"]
-                            del item["vat"]
-                            money = "tax"
-                        data = item[money]
+                if "extra_data" in order:
+                    defaults["extra_data"] = order["extra_data"]
+                    del order["extra_data"]
+                for money in ["total", "subtotal", "tax", "shipping"]:
+                    if money in order:
+                        if "currency" not in order[money]:
+                            order[money]["currency"] = "NOK"
                         defaults[money] = Money(
-                            amount=data["value"], currency=data["currency"]
+                            amount=order[money]["value"],
+                            currency=order[money]["currency"],
                         )
-                        del item[money]
+                        del order[money]
 
-                assert item == {}, item
-                (item_object, created) = OrderItem.objects.update_or_create(
-                    item_id=item_id,
-                    item_variation=item_variation,
-                    order=order_object,
-                    defaults=defaults,
-                )
-                self.log.debug(
-                    "Item %s %s", item_object, "created" if created else "found"
+                # self.log.debug("Defaults are: %s", defaults)
+                (order_object, created) = Order.objects.update_or_create(
+                    shop=self.shop, order_id=order["id"], defaults=defaults
                 )
 
-            del order["items"]
+                if "attachements" in order:
+                    order_attachements = order["attachements"]
+                    existing_sha1s = [x.sha1 for x in order_object.attachements.all()]
+                    for attachement in order_attachements:
+                        attachement_path = attachement['path']
+                        attachement_file = None
+                        attachement_zip_file = zipfile.Path(zip_data, attachement_path)
+                        if attachement_zip_file.is_file():
+                            attachement_file = File(
+                                attachement_zip_file.open("rb"), attachement_path
+                            )
+                        else:
+                            raise AttributeError(f"Thumbnail {attachement_zip_file.name} not in {zip_file.name}")
+                        sha1hash = hashlib.sha1()
+                        if attachement_file.multiple_chunks():
+                            for chunk in attachement_file.chunks():
+                                sha1hash.update(chunk)
+                        else:
+                            sha1hash.update(attachement_file.read())
+                        sha1 = sha1hash.hexdigest()
+                        if len(existing_sha1s) == 0 or sha1 not in existing_sha1s:
+                            defaults = {
+                                'sha1': sha1,
+                            }
+                            if 'name' in attachement:
+                                defaults['name'] = attachement['name']
+                            if 'comment' in attachement:
+                                defaults['comment'] = attachement['comment']
+                            
+                            self.log.debug("Creating Attachement.object for %s (%s)", attachement_file, defaults)
 
-            assert order == {}, order
-            if created:
-                self.log.debug("Order was just created")
+                            (attachement_object, created) = Attachement.objects.update_or_create(
+                                sha1=sha1,
+                                defaults=defaults,
+                            )
+                            order_object.attachements.add(attachement_object)
+                            order_object.save()
+                            attachement_object.file = attachement_file
+                            attachement_object.save()
+                            attachement_file.close()
+                        else:
+                            self.log.debug("Found hash %s for %s", sha1, attachement_path)
+                    del order["attachements"]
 
-            self.log.debug(order_object)
+                del order["id"]
+                del order["date"]
+
+                for item in order["items"]:
+                    self.log.debug("Order ID: %s", item["id"])
+                
+                    item_variation = ""
+                    if "variation" in item:
+                        item_variation = item["variation"]
+                        del item["variation"]
+                    item_id = item["id"]
+                    del item["id"]
+
+                    defaults = {
+                        "name": item["name"],
+                        "count": item["quantity"],
+                        'item_id': item_id,
+                        'item_variation': item_variation,
+                        'order': order_object,
+                    }
+                    del item["name"]
+                    del item["quantity"]
+
+                    if "extra_data" in item:
+                        defaults["extra_data"] = item["extra_data"]
+                        del item["extra_data"]
+                    for money in ["total", "subtotal", "tax", "vat"]:
+                        if money in item:
+                            if "currency" not in item[money]:
+                                item[money]["currency"] = "NOK"
+                            if money == "vat":
+                                item["tax"] = item["vat"]
+                                del item["vat"]
+                                money = "tax"
+                            data = item[money]
+                            defaults[money] = Money(
+                                amount=data["value"], currency=data["currency"]
+                            )
+                            del item[money]
+                    item_thumbnail = None  
+                    if "thumbnail" in item:
+                        item_thumbnail = item["thumbnail"]
+                        del item["thumbnail"]
+                    item_attachements = None
+                    if "attachements" in item:
+                        item_attachements = item["attachements"]
+                        del item["attachements"]
+
+                    assert item == {}, item
+                    (item_object, created) = OrderItem.objects.update_or_create(
+                        item_id=item_id,
+                        item_variation=item_variation,
+                        order=order_object,
+                        defaults=defaults,
+                    )
+
+                    if item_thumbnail:
+                        thumbnail_file = None
+                        thumbnail_zip_file = zipfile.Path(zip_data, item_thumbnail)
+                        if thumbnail_zip_file.is_file():
+                            thumbnail_file = File(
+                                thumbnail_zip_file.open("rb"), item_thumbnail
+                            )
+                        else:
+                            raise AttributeError(f"Thumbnail {thumbnail_zip_file.name} not in {zip_file.name}")
+                        sha1 = None
+                        if item_object.sha1:
+                            sha1hash = hashlib.sha1()
+                            if thumbnail_file.multiple_chunks():
+                                for chunk in thumbnail_file.chunks():
+                                    sha1hash.update(chunk)
+                            else:
+                                sha1hash.update(thumbnail_file.read())
+                            sha1 = sha1hash.hexdigest()
+                        if not item_object.sha1 or item_object.sha1 != sha1:
+                            self.log.debug("No sha1 or not matching: %s %s", item_object.sha1, sha1)
+                            if item_object.thumbnail:
+                                item_object.thumbnail.delete()
+                            item_object.thumbnail = thumbnail_file
+                            item_object.save()
+                            thumbnail_file.close()
+
+                    self.log.debug("Getting existing sha1s")
+                    existing_sha1s = [x.sha1 for x in item_object.attachements.all()]
+                    self.log.debug("Got existing sha1s: %s ", existing_sha1s)
+
+                    for attachement in item_attachements:
+                        attachement_path = attachement['path']
+                        attachement_file = None
+                        self.log.debug(
+                            "Looking for %s",attachement_path 
+                        )
+                        attachement_zip_file = zipfile.Path(zip_data, attachement_path)
+                        if attachement_zip_file.is_file():
+                            attachement_file = File(
+                                attachement_zip_file.open("rb"), attachement_path
+                            )
+                        else:
+                            raise AttributeError(f"Thumbnail {attachement_zip_file.name} not in {zip_file.name}")
+                        sha1hash = hashlib.sha1()
+                        if attachement_file.multiple_chunks():
+                            for chunk in attachement_file.chunks():
+                                sha1hash.update(chunk)
+                        else:
+                            sha1hash.update(attachement_file.read())
+                        sha1 = sha1hash.hexdigest()
+                        if len(existing_sha1s) == 0 or sha1 not in existing_sha1s:
+                            defaults = {
+                                'sha1': sha1,
+                            }
+                            if 'name' in attachement:
+                                defaults['name'] = attachement['name']
+                            if 'comment' in attachement:
+                                defaults['comment'] = attachement['comment']
+                            
+                            self.log.debug("Creating Attachement.object for %s (%s)", attachement_file, defaults)
+
+                            (attachement_object, created) = Attachement.objects.update_or_create(
+                                sha1=sha1,
+                                defaults=defaults,
+                            )
+                            item_object.attachements.add(attachement_object)
+                            item_object.save()
+                            attachement_object.file = attachement_file
+                            attachement_object.save()
+                            attachement_file.close()
+                        else:
+                            self.log.debug("Found hash %s for %s", sha1, attachement_path)
+                    self.log.debug(
+                        "Item %s %s", item_object, "created" if created else "found"
+                    )
+
+                del order["items"]
+
+                assert order == {}, order
+                if created:
+                    self.log.debug("Order was just created")
 
     def read(
         self,
@@ -143,205 +270,3 @@ class ShopOrderLoader(object):
     @classmethod
     def pprint(cls, value: Any) -> None:
         pprint.PrettyPrinter(indent=2).pprint(value)
-
-    #         order_dict = self.read(json_file, from_json=True)
-
-    #         for order_id, order in order_dict.items():
-    #             items = order["items"].copy()
-    #             del order["items"]
-    #             date = order["date_purchased"]
-    #             del order["date_purchased"]
-    #             # self.pprint(items)
-    #             prices = {
-    #                 "total": Money(0, "USD"),
-    #                 "subtotal": Money(0, "USD"),
-    #                 "tax": Money(0, "USD"),
-    #                 "shipping": Money(0, "USD"),
-    #             }
-    #             defaults = {
-    #                 "date": datetime.fromisoformat(date),
-    #                 "extra_data": order,
-    #             }
-    #             defaults.update(prices)
-    #             order_object, created = Order.objects.update_or_create(
-    #                 shop=shop,
-    #                 order_id=order_id,
-    #                 defaults=defaults,
-    #             )
-
-    #             for item_id, item in items.items():
-    #                 # print(item_id, item)
-    #                 name = item["product name"]
-    #                 del item["product name"]
-
-    #                 quantity = item["quantity"]
-    #                 del item["quantity"]
-
-    #                 thumb_path = self.cache["BASE"] / item["png"]
-    #                 thumb_img = File(open(thumb_path, "rb"), thumb_path.name)
-    #                 del item["png"]
-
-    #                 # Save html and pdf as attachements
-    #                 # del item["html"]
-    #                 # del item["pdf"]
-
-    #                 item_object, created = OrderItem.objects.update_or_create(
-    #                     order=order_object,
-    #                     item_id=item_id,
-    #                     item_sku="",  # Adafruit has no SKUs?
-    #                     defaults={
-    #                         "name": name,
-    #                         "count": quantity,
-    #                         "extra_data": item,
-    #                     },
-    #                 )
-
-    #                 if item_object.thumbnail:
-    #                     item_object.thumbnail.delete()
-    #                 item_object.thumbnail = thumb_img
-    #                 item_object.save()
-
-    #                 if thumb_img:
-    #                     thumb_img.close()
-    #             if created:
-    #                 self.log.debug("Created order %s", order_id)
-    #             else:
-    #                 self.log.debug("Created or updated order %s", order_object)
-
-    # def command_load_to_db_aliexpress(self):
-    #     shop = self.get_shop()
-    #     self.log.debug("Loaded shop from model: %s", shop)
-
-    #     self.log.debug("Loading on-disk data")
-    #     counter = 0
-    #     max_title_length = 0
-
-    #     for json_file in self.cache["ORDERS"].glob("*/*.json"):
-    #         counter += 1
-    #         # self.log.debug(
-    #         #    "Processing file %s/%s", json_file.parent.name, json_file.name
-    #         # )
-    #         order_dict = self.read(json_file, from_json=True)
-    #         items = order_dict["items"].copy()
-    #         del order_dict["items"]
-    #         date = order_dict["date"]
-    #         del order_dict["date"]
-    #         order_id = order_dict["id"]
-    #         del order_dict["id"]
-
-    #         prices = {
-    #             "total": Money(0, "USD"),
-    #             "subtotal": Money(0, "USD"),
-    #             "tax": Money(0, "USD"),
-    #             "shipping": Money(0, "USD"),
-    #         }
-    #         price_items = order_dict["price_items"].copy()
-    #         for key in price_items:
-    #             value = Price.fromstring(order_dict["price_items"][key])
-    #             if value.amount == 0 and not value.currency:
-    #                 self.log.debug(
-    #                     "Value is 0 and currency in None, forcing to $: %s",
-    #                     order_dict["price_items"][key],
-    #                 )
-    #                 value.currency = "$"
-    #             try:
-    #                 assert value.currency in ["$", "€"]
-    #             except AssertionError as err:
-    #                 self.log.debug(
-    #                     "Ops, value was %s => %s %s",
-    #                     order_dict["price_items"][key],
-    #                     value.amount,
-    #                     value.currency,
-    #                 )
-    #                 raise err
-
-    #             if key.lower() in prices.keys():
-    #                 prices[key.lower()] = Money(
-    #                     value.amount, "USD" if value.currency == "$" else "EUR"
-    #                 )
-    #                 del order_dict["price_items"][key]
-
-    #         if order_dict["status"] not in ["finished", "closed"]:
-    #             self.log.info(
-    #                 self.command.style.WARNING(
-    #                     "Not loading order %s to DB because status is %s"
-    #                 ),
-    #                 order_id,
-    #                 order_dict["status"],
-    #             )
-    #             continue
-
-    #         for key, value in items.items():
-    #             max_title_length = max(max_title_length, len(value["title"]))
-    #             #
-    #             if not (
-    #                 all(
-    #                     [
-    #                         (
-    #                             self.can_read(
-    #                                 self.cache["BASE"] / value["thumbnail"]
-    #                             )
-    #                         ),
-    #                         (
-    #                             self.can_read(
-    #                                 self.cache["BASE"]
-    #                                 / value["snapshot"]["pdf"]
-    #                             )
-    #                         ),
-    #                         (
-    #                             self.can_read(
-    #                                 self.cache["BASE"]
-    #                                 / value["snapshot"]["html"]
-    #                             )
-    #                         ),
-    #                     ]
-    #                 )
-    #             ):
-    #                 self.log.error(
-    #                     self.command.style.ERROR(
-    #                         "Not importing item %s in order %s because some"
-    #                         " files were missing"
-    #                     ),
-    #                     key,
-    #                     order_id,
-    #                 )
-    #         defaults = {
-    #             "date": datetime.fromisoformat(date),
-    #             "extra_data": order_dict,
-    #         }
-    #         defaults.update(prices)
-
-    #         order_object, created = Order.objects.update_or_create(
-    #             shop=shop,
-    #             order_id=order_id,
-    #             defaults=defaults,
-    #         )
-    #         if created:
-    #             self.log.debug(
-    #                 self.command.style.SUCCESS("Created order %s"), order_object
-    #             )
-    #         # else:
-    #         #    self.log.debug("Created or updated order %s", order_object)
-
-    #     self.log.info(
-    #         "Loaded %s orders. The longest item title was %s characters.",
-    #         counter,
-    #         max_title_length,
-    #     )
-
-    # def get_shop(self, options):
-    #     if settings.SCRAPER_ALI_DB_SHOP_ID != -1:
-    #         self.log.debug("Using db shop ID from SCRAPER_ALI_DB_SHOP_ID")
-    #         shop_id = int(settings.SCRAPER_ALI_DB_SHOP_ID)
-    #     elif self.options["db_shop_id"] != -1:
-    #         self.log.debug("Using db shop ID from --db-shop-id")
-    #         shop_id = int(options["db_shop_id"])
-    #     else:
-    #         self.log.debug(
-    #             "No value for db shop ID found, unable to load to db. Need"
-    #             " either SCRAPER_ALI_DB_SHOP_ID or --db-shop-id"
-    #         )
-    #         raise CommandError(
-    #             "No value for db shop ID found, unable to load to db."
-    #         )
-    #     return Shop.objects.get(id=shop_id)
