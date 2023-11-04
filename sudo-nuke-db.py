@@ -70,7 +70,7 @@ while True:
     except PermissionError as pe:
         input(f"Failed to delete DB, please fix and press enter: {pe}")
 
-for app in [ "hlo", "purchases", "loader", "inventory" ]:
+for app in [ "hlo", "loader", "inventory" ]:
     for migration in (here / Path(f"{app}/migrations/")).glob("0*.py"):
         print("Deleting migration ", migration)
         remove(migration)
@@ -87,33 +87,3 @@ cu = conn.cursor()
 for sql in sql_commands:
     conn.execute(sql)
 conn.close()
-
-# nuke = input("Load AliExpress to DB? (y/N): ")
-# if nuke.lower() == "y":
-#     subprocess.run(
-#         [
-#             sys.executable,
-#             "manage.py",
-#             "scrape",
-#             "aliexpress",
-#             "--load-to-db",
-#             "--db-shop-id",
-#             "3",
-#         ],
-#         check=False,
-#     )
-# 
-# nuke = input("Load Adafruit to DB? (y/N): ")
-# if nuke.lower() == "y":
-#     subprocess.run(
-#         [
-#             sys.executable,
-#             "manage.py",
-#             "scrape",
-#             "adafruit",
-#             "--load-to-db",
-#             "--db-shop-id",
-#             "1",
-#         ],
-#         check=False,
-#     )
