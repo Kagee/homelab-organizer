@@ -41,6 +41,7 @@ class Shop(models.Model):
             )
         else:
             return f"{self.longname()}"
+    list_icon.short_description = "Shop"
 
     order_url_template = models.CharField(
         max_length=250,

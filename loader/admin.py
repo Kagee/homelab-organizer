@@ -7,11 +7,22 @@ from rangefilter.filters import DateRangeQuickSelectListFilterBuilder
 
 from .models import Attachement, Order, OrderItem, Shop
 
-admin.site.register(Attachement)
+
+@admin.register(Attachement)
+class AttachementAdmin(admin.ModelAdmin):
+    search_fields = ["name", "comment", "file"]
+    readonly_fields = ["used_by"]
+
+class AttachementInlineAdmin(admin.TabularInline):
+    model = Attachement
+    verbose_name_plural = 'Attachements'
+    extra = 1
+    fields = ['attachements',]
+    #autocomplete_fields = ['orderitem',]
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
-    search_fields = ["name", "item_id", "item_variation"]
+    search_fields = ["name", "item_id", "item_variation", "order__shop__branch_name"]
     def get_readonly_fields(self, request, obj=None):
         if (
             obj
@@ -35,6 +46,7 @@ class OrderItemAdmin(admin.ModelAdmin):
         else:
             return []
 
+    filter_horizontal = ['attachements',]
     formfield_overrides = {
         models.CharField: {"widget": TextInput(attrs={"size": "80"})},
         models.JSONField: {
@@ -57,7 +69,7 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "total",
                 "subtotal",
                 "tax",
-                "extra_data",
+                "indent_extra_data",
                 
             ]
         else:
@@ -65,6 +77,7 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "name",
                 "count",
                 "thumbnail",
+                "attachements",
                 "order",
                 "item_id",
                 "item_variation",
@@ -76,20 +89,50 @@ class OrderItemAdmin(admin.ModelAdmin):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    readonly_fields = [
-        lambda obj: obj.shop.list_icon(),
-        "date",
-        "order_url",
-        "items_list",
-        "indent_extra_data",
-        "attachements"
-    ]
+
     list_display = ["date", "items_count", "shop_name"]
     list_filter = [
         "shop__name",
         ("date", DateRangeQuickSelectListFilterBuilder()),
     ]
+    filter_horizontal = ['attachements',]
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return [
+                "date",
+                "order_url",
+                "order_id",
+                "items_list",
+                "indent_extra_data",
+                "attachements",
+                "attachements_tag",
+                "shop_name",
+                "extra_data"
+            ]
+        else:
+            return super(OrderAdmin, self).get_readonly_fields(request, obj)
 
+    def get_fields(self, request, obj=None):
+        if obj:
+            fields = [
+                "shop_name",
+                "order_id",
+                "date",
+                "order_url",
+                "attachements_tag",   
+                "items_list",
+                "total",
+                "shipping",
+                "subtotal",
+                "indent_extra_data"
+            ]
+            if obj.tax:
+                fields.append("tax")
+            if obj.shipping:
+                fields.insert(len(fields)-1, "shipping")
+            return fields
+        else:
+            return super(OrderAdmin, self).get_fields(request, obj)
 
 admin.site.register(Order, OrderAdmin)
 

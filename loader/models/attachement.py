@@ -4,6 +4,8 @@ from pathlib import Path
 import logging
 
 from django.db import models
+from django.urls import reverse
+from django.utils.html import escape, format_html, format_html_join, mark_safe
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +63,31 @@ class Attachement(models.Model):
         max_length=40, editable=True
     )
 
+    def file_name(self):
+        if not self.file:
+            return ''
+        return Path(self.file.name).name
+
+    def used_by(self):
+        # pylint: disable=no-member
+        if self.order.count():
+            order = self.order.first()
+            return format_html(
+                '<a href="{}">{} ({})</a>', 
+                reverse(
+                        "admin:loader_order_change",
+                        args=(order.id,),
+                        ),
+                        order.order_id, order.shop.branch_name)
+        else:
+            orderitem = self.orderitem.first()
+            return format_html(
+                '<a href="{}">{}</a>', 
+                reverse(
+                        "admin:loader_orderitem_change",
+                        args=(orderitem.id,),
+                        ),
+                        orderitem.name)
     def save(self, *args, **kwargs):
         # pylint: disable=no-member
         if self.file:

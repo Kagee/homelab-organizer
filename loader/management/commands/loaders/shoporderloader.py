@@ -154,7 +154,7 @@ class ShopOrderLoader(object):
                     if "thumbnail" in item:
                         item_thumbnail = item["thumbnail"]
                         del item["thumbnail"]
-                    item_attachements = None
+                    item_attachements = []
                     if "attachements" in item:
                         item_attachements = item["attachements"]
                         del item["attachements"]

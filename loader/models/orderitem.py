@@ -121,7 +121,7 @@ class OrderItem(models.Model):
         if self.attachements.count() == 0:
             return "No attachements"
         else:
-            html = '<ul>'
+            html = '<ul style="margin: 0;">'
             for attachement in self.attachements.all():
                 html += f'<li><a href="{attachement.file.url}" target="_blank">{attachement}</a></li>'
             html += '</ul>'

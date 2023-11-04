@@ -4,7 +4,8 @@ from datetime import datetime
 from django.contrib import admin
 from django.db import models
 from django.urls import reverse
-from django.utils.html import escape, format_html, format_html_join
+from django.utils.html import escape, format_html, format_html_join, mark_safe
+
 from djmoney.models.fields import MoneyField
 
 from .attachement import Attachement
@@ -25,7 +26,6 @@ class Order(models.Model):
         Shop,
         on_delete=models.CASCADE,
         related_name="orders",
-        editable=False,
     )
 
     order_id = models.CharField(
@@ -37,12 +37,10 @@ class Order(models.Model):
             "confused with the internal database id."
         ),
         blank=False,
-        editable=False,
     )
 
     date: datetime = models.DateField(
         "Order date",
-        editable=True,
     )
     attachements = models.ManyToManyField(
         Attachement,
@@ -82,8 +80,21 @@ class Order(models.Model):
     extra_data = models.JSONField(
         default=dict,
         blank=True,
-        editable=False,
     )
+
+    @admin.display(description="Items")
+    def attachements_tag(self):
+        # pylint: disable=no-member
+        if self.attachements.count() == 0:
+            return "No attachements"
+        else:
+            html = '<ul style="margin: 0;">'
+            for attachement in self.attachements.all():
+                html += f'<li><a href="{attachement.file.url}" target="_blank">{attachement}</a></li>'
+            html += '</ul>'
+            return mark_safe(html)
+
+    attachements_tag.short_description = "Attachements"
 
     @admin.display(description="Items")
     def items_count(self):
@@ -123,13 +134,13 @@ class Order(models.Model):
                 ),
             )
 
-    @admin.display(description="Order URL (generated)")
+    @admin.display(description="Order URL")
     def order_url(self):
         # pylint: disable=no-member
         return format_html(
-            '{} (<a href="{}" target="_blank">View on {}</a>)',
-            self.order_id,
+            '<a href="{}" target="_blank">{} ({})</a>',
             self.shop.order_url_template.format(order_id=self.order_id),
+            self.order_id,
             self.shop.branch_name,
         )
 
