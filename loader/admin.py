@@ -11,7 +11,30 @@ from .models import Attachement, Order, OrderItem, Shop
 @admin.register(Attachement)
 class AttachementAdmin(admin.ModelAdmin):
     search_fields = ["name", "comment", "file"]
-    readonly_fields = ["used_by"]
+    readonly_fields = ["used_by", "text_ornot"]
+    def get_fields(self, request, obj=None):
+        if (
+            obj
+        ):  # This is the case when obj is already created i.e. it's an edit
+            return [
+                "name",
+                "comment",
+                "type",
+                "file",
+                "sha1",
+                "used_by",
+                "text_ornot",
+                "text"
+            ]
+        else:
+            return [
+                "name",
+                "comment",
+                "type",
+                "file",
+                "used_by",
+                "text" 
+            ]
 
 class AttachementInlineAdmin(admin.TabularInline):
     model = Attachement
@@ -41,7 +64,8 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "item_variation",
                 "item_ref",
                 "attachements",
-                "attachements_tag"
+                "attachements_tag",
+                "indent_extra_data"
             ]
         else:
             return []
@@ -107,7 +131,8 @@ class OrderAdmin(admin.ModelAdmin):
                 "attachements",
                 "attachements_tag",
                 "shop_name",
-                "extra_data"
+                "extra_data",
+                "indent_extra_data"
             ]
         else:
             return super(OrderAdmin, self).get_readonly_fields(request, obj)

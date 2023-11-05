@@ -12,3 +12,11 @@ INPUT_FOLDER: Path = Path(
 JSON_SCHEMA: Path = Path(
         env("JSON_SCHEMA", default="./schema/webshop-orders.json")
     ).resolve()
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': './whoosh_index' 
+    },
+}
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'

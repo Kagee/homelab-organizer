@@ -1,0 +1,2 @@
+{{ object.text }}
+{{ object.get_parent.name }}

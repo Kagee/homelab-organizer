@@ -55,6 +55,7 @@ class Attachement(models.Model):
         choices=ATTACHEMENT_TYPE_CHOICES,
         default=DEFAULT_ATTACHEMENT_TYPE,
     )
+    text = models.TextField(blank="", default="")
 
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#filefield
     file = models.FileField(upload_to=attachement_file_path, max_length=255, blank=True)
@@ -63,10 +64,22 @@ class Attachement(models.Model):
         max_length=40, editable=True
     )
 
+    def text_ornot(self):
+        if len(self.text):
+            return 'There is text'
+        return 'There is no text'
+
     def file_name(self):
         if not self.file:
             return ''
         return Path(self.file.name).name
+
+    def get_parent(self):
+        # pylint: disable=no-member
+        if self.order.count():
+            return self.order.first()
+        else:
+            return self.orderitem.first()
 
     def used_by(self):
         # pylint: disable=no-member
