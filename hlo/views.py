@@ -9,3 +9,4 @@ class JohnSearchView(SearchView):
     template_name = 'search/search.html'
     queryset = SearchQuerySet().all()
     form_class = SearchForm
+
