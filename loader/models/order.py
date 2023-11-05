@@ -90,8 +90,11 @@ class Order(models.Model):
         else:
             html = '<ul style="margin: 0;">'
             for attachement in self.attachements.all():
-                html += f'<li><a href="{attachement.file.url}" target="_blank">{attachement}</a></li>'
-            html += '</ul>'
+                html += (
+                    f'<li><a href="{attachement.file.url}"'
+                    f' target="_blank">{attachement}</a></li>'
+                )
+            html += "</ul>"
             return mark_safe(html)
 
     attachements_tag.short_description = "Attachements"

@@ -9,9 +9,14 @@ from django.utils.html import escape, format_html, format_html_join, mark_safe
 
 logger = logging.getLogger(__name__)
 
+
 def attachement_file_path(instance, filename):
-    assert instance.order.count() < 2, f"Attachement {instance.id} has more than one order"
-    assert instance.orderitem.count() < 2,  f"Attachement {instance.id} has more than one orderitem"
+    assert (
+        instance.order.count() < 2
+    ), f"Attachement {instance.id} has more than one order"
+    assert (
+        instance.orderitem.count() < 2
+    ), f"Attachement {instance.id} has more than one orderitem"
     if instance.order.count():
         order = instance.order.first()
         shopname_b64 = base64.urlsafe_b64encode(
@@ -58,20 +63,20 @@ class Attachement(models.Model):
     text = models.TextField(blank="", default="")
 
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#filefield
-    file = models.FileField(upload_to=attachement_file_path, max_length=255, blank=True)
-
-    sha1 = models.CharField(
-        max_length=40, editable=True
+    file = models.FileField(
+        upload_to=attachement_file_path, max_length=255, blank=True
     )
+
+    sha1 = models.CharField(max_length=40, editable=True)
 
     def text_ornot(self):
         if len(self.text):
-            return 'There is text'
-        return 'There is no text'
+            return "There is text"
+        return "There is no text"
 
     def file_name(self):
         if not self.file:
-            return ''
+            return ""
         return Path(self.file.name).name
 
     def get_parent(self):
@@ -86,21 +91,25 @@ class Attachement(models.Model):
         if self.order.count():
             order = self.order.first()
             return format_html(
-                '<a href="{}">{} ({})</a>', 
+                '<a href="{}">{} ({})</a>',
                 reverse(
-                        "admin:loader_order_change",
-                        args=(order.id,),
-                        ),
-                        order.order_id, order.shop.branch_name)
+                    "admin:loader_order_change",
+                    args=(order.id,),
+                ),
+                order.order_id,
+                order.shop.branch_name,
+            )
         else:
             orderitem = self.orderitem.first()
             return format_html(
-                '<a href="{}">{}</a>', 
+                '<a href="{}">{}</a>',
                 reverse(
-                        "admin:loader_orderitem_change",
-                        args=(orderitem.id,),
-                        ),
-                        orderitem.name)
+                    "admin:loader_orderitem_change",
+                    args=(orderitem.id,),
+                ),
+                orderitem.name,
+            )
+
     def save(self, *args, **kwargs):
         # pylint: disable=no-member
         if self.file:

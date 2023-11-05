@@ -105,13 +105,13 @@ class OrderItem(models.Model):
     # Weak FK for StockItem
     gen_id = models.CharField(max_length=1024, editable=False, unique=True)
 
-    def image_tag(self):
+    def image_tag(self, px=150):
         # pylint: disable=no-member
         return mark_safe(
-            f'<a href="{self.thumbnail.url}" target="_blank"><div'
-            ' style="height: 150px;"><img style="height: 100%; width: auto;"'
+            f'<div style="height: {px}px;"><a href="{self.thumbnail.url}"'
+            ' target="_blank"><img style="height: 100%; width: auto;"'
             f' src="{self.thumbnail.url}" width="{self.thumbnail.width}"'
-            f' height="{self.thumbnail.height}" /></div></a>'
+            f' height="{self.thumbnail.height}" /></a></div>'
         )
 
     image_tag.short_description = "Thumbnail"
@@ -123,8 +123,11 @@ class OrderItem(models.Model):
         else:
             html = '<ul style="margin: 0;">'
             for attachement in self.attachements.all():
-                html += f'<li><a href="{attachement.file.url}" target="_blank">{attachement}</a></li>'
-            html += '</ul>'
+                html += (
+                    f'<li><a href="{attachement.file.url}"'
+                    f' target="_blank">{attachement}</a></li>'
+                )
+            html += "</ul>"
             return mark_safe(html)
 
     attachements_tag.short_description = "Attachements"
