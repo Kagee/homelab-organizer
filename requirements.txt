@@ -12,3 +12,4 @@ pymupdf>=1.23.5
 Whoosh>=2.7.4
 Django-haystack>=3.2.1
 djangorestframework>=3.14.0
+django-filter>=23.3

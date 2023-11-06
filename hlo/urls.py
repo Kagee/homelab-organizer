@@ -10,7 +10,7 @@ from .views import JohnSearchView
 urlpatterns = [
     #path("", include("order_scraper.urls")),
     #path("orders/", OrderListView.as_view(), name="order-list"),
-    path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls, name="admin"),
     path('search/', JohnSearchView.as_view(), name="search"),
     path('inventory/', include('inventory.urls')),
     path('loader/', include('loader.urls')),

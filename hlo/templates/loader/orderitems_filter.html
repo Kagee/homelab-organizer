@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form method="get">
+        {{ filter.form.as_table }}
+        <input type="submit" />
+    </form>
+    <ul>
+    {% for obj in filter.qs %}
+    <li>{{ obj.name }} ({{ obj.id }})</li>
+    {% endfor %}
+</ul>
+{% endblock %}
