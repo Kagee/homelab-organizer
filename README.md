@@ -65,8 +65,10 @@ python update.py
 
 * <https://www.partkeepr.org/>
 * <https://github.com/replaysMike/Binner>
+* <https://partsbin.page/screenshots>
 * <https://partsbox.com/>
 * <https://demo.part-db.de/en/>
+* <https://bomist.com/>
 
 ## Acknowledgements
 
