@@ -1,2 +1,2 @@
 from .stockitem import StockItem
-from .taggit import TaggedStock, InventoryTag
+from .tags import ColorTag, ColorTagBase

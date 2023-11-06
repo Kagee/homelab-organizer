@@ -3,7 +3,7 @@ from django.utils.html import mark_safe
 from taggit.models import TagBase, GenericTaggedItemBase
 
 
-class InventoryTag(TagBase):
+class ColorTag(TagBase):
     DEFAULT_COLOR = "NONE"
     COLOR_CHOICES = [
         ("NONE", "No color"),
@@ -36,9 +36,9 @@ class InventoryTag(TagBase):
         )
 
 
-class TaggedStock(GenericTaggedItemBase):
+class ColorTagBase(GenericTaggedItemBase):
     tag = models.ForeignKey(
-        InventoryTag,
+        ColorTag,
         on_delete=models.CASCADE,
         related_name="%(app_label)s_%(class)s_items",
     )

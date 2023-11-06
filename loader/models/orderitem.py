@@ -7,6 +7,10 @@ from django.db import models
 from django.utils.html import escape, format_html, mark_safe
 from djmoney.models.fields import MoneyField
 
+from taggit.managers import TaggableManager
+
+from inventory.models import ColorTagBase
+
 from .order import Order
 from .attachement import Attachement
 
@@ -104,7 +108,7 @@ class OrderItem(models.Model):
     )
     # Weak FK for StockItem
     gen_id = models.CharField(max_length=1024, editable=False, unique=True)
-
+    tags = TaggableManager(through=ColorTagBase)
     def image_tag(self, px=150):
         # pylint: disable=no-member
         return mark_safe(
@@ -143,13 +147,13 @@ class OrderItem(models.Model):
         # pylint: disable=no-member
         if self.thumbnail:
             with self.thumbnail.open("rb") as f:
-                hash = hashlib.sha1()
+                tbhash = hashlib.sha1()
                 if f.multiple_chunks():
                     for chunk in f.chunks():
-                        hash.update(chunk)
+                        tbhash.update(chunk)
                 else:
-                    hash.update(f.read())
-                self.sha1 = hash.hexdigest()
+                    tbhash.update(f.read())
+                self.sha1 = tbhash.hexdigest()
 
                 super(OrderItem, self).save(*args, **kwargs)
         else:

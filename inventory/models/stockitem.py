@@ -1,8 +1,30 @@
 from django.db import models
 from django.db.models import UniqueConstraint
 from taggit.managers import TaggableManager
-from .taggit import TaggedStock
+from loader.models.attachement import Attachement
+from .tags import ColorTagBase
 
+class StockItem(models.Model):
+    class Meta:
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name"],
+                name="unique_name",
+            )
+        ]
+    name = models.CharField(max_length=255, null=True, blank=True)
+    count = models.PositiveIntegerField("number of items used", default=0)
+    tags = TaggableManager(through=ColorTagBase)
+    orderitems = models.ManyToManyField(
+        "loader.OrderItem",
+        through="OrderStockItemLink",
+        related_name="orderitems",
+    )
+    attachements = models.ManyToManyField(
+        Attachement,
+        related_name="stockitem",
+    )
 
 class OrderStockItemLink(models.Model):
     orderitem = models.ForeignKey(
@@ -33,22 +55,3 @@ class OrderStockItemLink(models.Model):
             # pylint: disable=no-member
             str(self.orderitem.name)
         )
-
-
-class StockItem(models.Model):
-    # class Meta:
-    #    ordering = ["name"]
-    #    constraints = [
-    #        models.UniqueConstraint(
-    #            fields=["item_id", "item_variation", "order"],
-    #            name="unique_id_sku_order",
-    #        )
-    #    ]
-    name = models.CharField(max_length=255, null=True, blank=True)
-    count = models.PositiveIntegerField("number of items used", default=0)
-    tags = TaggableManager(through=TaggedStock)
-    orderitems = models.ManyToManyField(
-        "loader.OrderItem",
-        through="OrderStockItemLink",
-        related_name="orderitems",
-    )

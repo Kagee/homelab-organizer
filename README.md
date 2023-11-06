@@ -27,6 +27,32 @@ notepad .env # Edit .env to your liking
 python update.py
 ````
 
+## (Possibly outdated) model graph
+![HLO Model Graph](hlo_model_graph.png)
+
+## Some of the external packages used
+
+* __Haystack__ provides modular search for Django - haystack
+  * <https://django-haystack.readthedocs.io/>
+* __Whoosh__ search and indexing - used by Haystack
+  * <https://whoosh.readthedocs.io>
+* __Django REST framework__ is a powerful and flexible toolkit for building Web APIs - rest_framework
+  * <https://www.django-rest-framework.org/>
+* __Django-filter__ allows users to filter down a queryset based on a
+  model’s fields and displaying the form to let them do this - django_filters
+  * <https://django-filter.readthedocs.io>
+* django_extensions
+* rangefilter
+* taggit
+* django_bootstrap5
+* Easy Bootstrap Material Design icons - django_bootstrap_icons
+  * <https://github.com/christianwgd/django-bootstrap-icons>
+    * <https://icons.getbootstrap.com/>
+    * <https://fonts.google.com/icons>
+* pygraphviz
+  * <https://pygraphviz.github.io/documentation/stable/install.html#windows>
+
+
 ## Acknowledgements
 
 For steadfast bug fixing, having orders that totally scramble my scraping, and coming up with those excellent ideas when I have been struggling with a bug for an hour.

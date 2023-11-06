@@ -7,15 +7,13 @@
     <title>{% block title %}Untitled page{% endblock title %}</title>
     {% bootstrap_css %}
     {% bootstrap_javascript %}
-    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
-    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
-
+    <link rel="stylesheet" href="{% static 'bootstrap_icons/css/bootstrap_icons.css' %}">
   </head>
   <head>
   <body>
     {% include "navbar.html" %}
-    <div class="container">
+    <main role="main" class="container">
+      <h1 class="mt-5">Sticky footer with fixed navbar</h1>
       <div class="row">
         <div class="col">
             {% block content %}
@@ -23,6 +21,6 @@
             {% endblock content %}
         </div>
       </div>
-    </div>
+    </main>
   </body>
 </html>

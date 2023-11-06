@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StockItem, InventoryTag
+from .models import StockItem, ColorTag
 
 # https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#django.contrib.admin.TabularInline
 class OrderStockItemLinkInlineAdmin(admin.TabularInline):
@@ -19,6 +19,6 @@ class StockItemAdmin(admin.ModelAdmin):
     #filter_horizontal = ['tags']
     inlines = [OrderStockItemLinkInlineAdmin,]
 
-@admin.register(InventoryTag)
-class InventoryTagAdmin(admin.ModelAdmin):
+@admin.register(ColorTag)
+class ColorTagAdmin(admin.ModelAdmin):
     list_display = ["name", "color", "name_color_tag"]

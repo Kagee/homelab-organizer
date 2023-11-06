@@ -192,3 +192,16 @@ BOOTSTRAP5 = { # We need bootstrap >= 5.3 for dark mode
         "crossorigin": "anonymous",
     },
 }
+
+GRAPH_MODELS = {
+  #'all_applications': True,
+  'group_models': True,
+  'app_labels': ["inventory", "loader"],
+  'exclude_models': ["ColorTagBase","GenericTaggedItemBase","TagBase"],
+  'output': "hlo_model_graph.png",
+  "color_code_deletions": True,
+  "arrow_shape": "normal",
+  "rankdir": "TB",
+  #'layout': "circo", # circo dot fdp neato nop nop1 nop2 twopi
+  "theme": "django2018",
+}
