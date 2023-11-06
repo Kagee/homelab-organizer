@@ -35,7 +35,7 @@ def thumnail_path(instance, filename):
 
 class OrderItem(models.Model):
     class Meta:
-        ordering = ["name"]
+        ordering = ["order__date", "name"]
         constraints = [
             models.UniqueConstraint(
                 fields=["item_id", "item_variation", "order"],

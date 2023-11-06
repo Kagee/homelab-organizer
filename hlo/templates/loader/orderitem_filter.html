@@ -1,20 +1,95 @@
 {% extends "base.html" %}
-
+{% load django_bootstrap5 %}
+{% block title %}Find order items{% endblock title %}
 {% block content %}
 <div class="row">
     <div class="col">
-        <form method="get">
-            {{ filter.form.as_table }}
-            <input type="submit" />
+        <div class="d-inline-flex justify-content-start">
+            <h4>Matching order items</h4>
+        </div>
+    </div>
+    <div class="col">
+        <form method="GET">
+            {% for field in filter.form.visible_fields %}
+            <div class="d-inline-flex justify-content-end">
+                {{ field.label_tag }}&nbsp;&nbsp;&nbsp;{{ field }}
+            </div>
+            {% endfor %}
+            <div class="d-inline-flex justify-content-end">
+                <button type="submit">SUBMIT!</button>
+            </div>
         </form>
+    </div>
+</div>
+<!--
+<br><br><br>
+<form method="get" novalidate>
+
+    {% bootstrap_form filter.form %}
+    {% bootstrap_button "Show" button_type="submit" button_class="btn-info" %}
+</form>
+<br><br><br>
+<form method="get" novalidate>
+
+    {% bootstrap_form filter.form layout='inline' %}
+    {% bootstrap_button "Show" button_type="submit" button_class="btn-info" %}
+</form>
+<br><br><br>
+<form method="get" novalidate>
+
+    {{ filter.form.non_field_errors }}
+
+    {% for hidden_field in filter.form.hidden_fields %}
+    {{ hidden_field.errors }}
+    {{ hidden_field }}
+    {% endfor %}
+
+    <table border="1">
+        {% for field in filter.form.visible_fields %}
+        <tr>
+            <th>{{ field.label_tag }}</th>
+            <td>
+                {{ field.errors }}
+                {{ field }}
+                {{ field.help_text }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <button type="submit">Submit</button>
+</form>
+<br><br><br>
+form-row:
+
+
+<br><br><br>
+-->
+<div class="row">
+    <div class="col">
         {% if not filter.data %}
         <p>Intet filter, viser alle, viser første {{ page_obj.paginator.per_page }}</p>
         {% endif %}
-        <ul>
-            {% for obj in page_obj %}
-            <li>{{ obj.name }} ({{ obj.id }})</li>
-            {% endfor %}
-        </ul>
+        <table class="table table-bordered table-striped table-hover table-sm">
+            <thead>
+                <th scope="col">Thumnail</th>
+                <th scope="col">Name</th>
+                <th scope="col">Shop</th>
+            </thead>
+            <tbody>
+                {% for orderitem in page_obj %}
+                <tr>
+                    <td>
+                        <div style="height: 50px;">
+                        <img src="{{ orderitem.thumbnail.url }}" style="height: 100%; width: auto;" />
+                        </div>
+                    </td>
+                    <td>{{ orderitem.name }}</td>
+                    <td>{{ orderitem.order.shop.list_icon }} {{ orderitem.order.date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 <div class="row">
@@ -38,6 +113,7 @@
         </div>
     </div>
 </div>
+<!--
 <div class="row">
     <div class="col">
         <h3>Debug</h3>
@@ -46,4 +122,5 @@
         <pre>{{ page_obj.paginator | json_dump_var  }}</pre>
     </div>
 </div>
+-->
 {% endblock %}

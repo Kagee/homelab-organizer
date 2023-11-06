@@ -11,18 +11,15 @@ logger = logging.getLogger(__name__)
 
 def product_list(request):
     f = OrderItemFilter(request.GET, queryset=OrderItem.objects.all())
-    paginator = Paginator(f.qs, 2)
+    paginator = Paginator(f.qs, 15)
 
     page = request.GET.get('page')
     try:
         response = paginator.page(page)
-        logger.error("page: %s", page)
     except PageNotAnInteger:
-        logger.error("PageNotAnInteger")
         response = paginator.page(1)
     except EmptyPage:
         response = paginator.page(paginator.num_pages)
-        logger.error("EmptyPage")
     return render(
         request,
         'loader/orderitem_filter.html', 

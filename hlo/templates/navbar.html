@@ -9,7 +9,12 @@
       <div class="collapse navbar-collapse" id="navbarsExample07XL">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'inventory-index' %}">Home</a>
+            {% url 'inventory-index' as inventory_index %}
+            <a class="nav-link active" aria-current="page" href="{% url 'inventory-index' %}">Home{% if request.path == inventory_index %}*{% endif  %}</a>
+          </li>
+          <li class="nav-item">
+            {% url 'orderitems-list' as orderitems_list %}
+            <a class="nav-link active" aria-current="page" href="{% url 'orderitems-list' %}">Order items{% if request.path == orderitems_list %}*{% endif  %}</a>
           </li>
           <!--
           <li class="nav-item">
@@ -21,19 +26,19 @@
             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
           </li>
           -->
-          <li class="nav-item dropdown">
+         <!-- <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdown07XL" data-bs-toggle="dropdown" aria-expanded="false">List items</a>
             <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
               <li><a class="dropdown-item" href="{% url 'orderitems-list' %}">Orderitems</a></li>
-              <!--
+
               <li><a class="dropdown-item" href="#">Another action</a></li>
               <li><a class="dropdown-item" href="#">Something else here</a></li>
-              -->
+
             </ul>
-          </li>
+          </li> -->
 
         </ul>
-
+<!--
         <form>
           <input class="form-control" type="text" placeholder="Search" aria-label="Search">
         </form>
@@ -42,6 +47,7 @@
               <a class="nav-link active" aria-current="page" href="{% url 'admin:index' %}">{% bs_icon 'alarm' size='1.5em' extra_classes="bi-valign-bottom" %}</a>
             </li>
           </ul>
+        -->
       </div>
     </div>
   </nav>

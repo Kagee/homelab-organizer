@@ -1,4 +1,5 @@
-{% load django_bootstrap5 %}{% load static %}<!doctype html>
+{% load django_bootstrap5 %}{% load static %}
+<!doctype html>
 <html lang="en" data-bs-theme="dark">
   <head>
     <!-- Required meta tags -->
@@ -9,18 +10,12 @@
     {% bootstrap_javascript %}
     <link rel="stylesheet" href="{% static 'bootstrap_icons/css/bootstrap_icons.css' %}">
   </head>
-  <head>
   <body>
     {% include "navbar.html" %}
     <main role="main" class="container">
-      <h1 class="mt-5">Sticky footer with fixed navbar</h1>
-      <div class="row">
-        <div class="col">
-            {% block content %}
-            <p>No content.</p>
-            {% endblock content %}
-        </div>
-      </div>
+      {% block content %}
+      <p>No content.</p>
+      {% endblock content %}
     </main>
   </body>
 </html>
