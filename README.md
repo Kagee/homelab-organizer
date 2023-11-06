@@ -10,7 +10,7 @@ Python 3.9 or later. Should support  Linux/Mac OS X/Windows.
 ## Linux 101
 ````python
 cd /some/folder
-git clone https://gitlab.com/Kagee/homelab-organizer.git
+git clone https://gitlab.com/Kagee/homelab-organizer
 cd homelab-organizer
 cp example.env .env
 nano .env # Edit .env to your liking
@@ -20,7 +20,7 @@ python update.py
 ## Windows 101
 ````bash
 cd /some/folder
-git clone https://gitlab.com/Kagee/homelab-organizer.git # or Github Desktop/other
+git clone https://gitlab.com/Kagee/homelab-organizer # or Github Desktop/other
 cd homelab-organizer
 cp example.env .env
 notepad .env # Edit .env to your liking
