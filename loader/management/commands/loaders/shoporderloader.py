@@ -7,6 +7,7 @@ import pprint
 import hashlib
 from typing import Any, Union
 
+import fitz
 import zipp
 from jsonschema import ValidationError, validate
 
@@ -64,9 +65,11 @@ class ShopOrderLoader(object):
                         )
                         del order[money]
 
-                # self.log.debug("Defaults are: %s", defaults)
+                # self.log.debug("Defaults are: %s", defaults)i
+                order_id = order["id"]
+                del order["id"]
                 (order_object, created) = Order.objects.update_or_create(
-                    shop=self.shop, order_id=order["id"], defaults=defaults
+                    shop=self.shop, order_id=order_id, defaults=defaults
                 )
 
                 if "attachements" in order:
@@ -116,12 +119,13 @@ class ShopOrderLoader(object):
                             self.log.debug("Found hash %s for %s", sha1, attachement_path)
                     del order["attachements"]
 
-                del order["id"]
                 del order["date"]
 
                 for item in order["items"]:
-                    self.log.debug("Order ID: %s", item["id"])
-                
+                    self.log.debug("Item ID: %s, Order ID: %s", item["id"], order_id)
+                    if float(item["quantity"]) < 0:
+                        self.log.debug("Skipping item ID: %s, order ID: %s because quantity if %s", item["id"], order_id, float(item["quantity"]))
+                        continue
                     item_variation = ""
                     if "variation" in item:
                         item_variation = item["variation"]
@@ -214,7 +218,7 @@ class ShopOrderLoader(object):
                                 attachement_zip_file.open("rb"), attachement_path
                             )
                         else:
-                            raise AttributeError(f"Thumbnail {attachement_zip_file.name} not in {zip_file.name}")
+                            raise AttributeError(f"Attachement {attachement_zip_file.name} not in {zip_file.name}")
                         sha1hash = hashlib.sha1()
                         if attachement_file.multiple_chunks():
                             for chunk in attachement_file.chunks():
@@ -233,6 +237,13 @@ class ShopOrderLoader(object):
 
                             self.log.debug("Creating Attachement.object for %s (%s)", attachement_file, defaults)
 
+                            self.log.debug("Processing %s for text extraction", attachement_file)
+                            if attachement_file.endswith(".pdf"):
+                                doc = fitz.open(attachement_file)
+                                text = ''
+                                for page in doc:
+                                    text += page.get_text()
+                                    defaults['text'] = attachement['text']
                             (attachement_object, created) = Attachement.objects.update_or_create(
                                 sha1=sha1,
                                 defaults=defaults,

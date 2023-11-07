@@ -80,12 +80,14 @@ form-row:
                 {% for orderitem in page_obj %}
                 <tr>
                     <td>
+                        {% if orderitem.thumbnail %}
                         <div style="height: 50px;">
                         <img src="{{ orderitem.thumbnail.url }}" style="height: 100%; width: auto;" />
                         </div>
+                        {% endif %}
                     </td>
                     <td>{{ orderitem.name }}</td>
-                    <td>{{ orderitem.order.shop.list_icon }} {{ orderitem.order.date }}</td>
+                    <td>{{ orderitem.order.shop.list_icon }} {{ orderitem.order.date }} {{ orderitem.order.order_id }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

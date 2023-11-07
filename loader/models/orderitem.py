@@ -72,6 +72,8 @@ class OrderItem(models.Model):
         max_digits=19,
         decimal_places=4,
         default_currency=None,
+        blank=True,
+        null=True,
     )
     subtotal = MoneyField(
         "Item subtotal",
