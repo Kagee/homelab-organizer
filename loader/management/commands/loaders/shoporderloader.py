@@ -49,6 +49,9 @@ class ShopOrderLoader(object):
         with zipfile.ZipFile(zip_file) as zip_data:
             order = shop_dict["orders"][0]
             for order in shop_dict["orders"]:
+                if all ( [float(x["quantity"]) < 0 for x in order['items'] ]):
+                    self.log.debug("Skipping order id %s because all items have negative quantity")
+                    continue
                 defaults = {
                     "date": order["date"],
                 }
@@ -210,7 +213,7 @@ class ShopOrderLoader(object):
                         attachement_path = attachement['path']
                         attachement_file = None
                         self.log.debug(
-                            "Looking for item attachement %s",attachement_path 
+                            "Looking for item attachement %s",attachement_path
                         )
                         attachement_zip_file = zipp.Path(zip_data, attachement_path)
                         if attachement_zip_file.is_file():
@@ -238,12 +241,14 @@ class ShopOrderLoader(object):
                             self.log.debug("Creating Attachement.object for %s (%s)", attachement_file, defaults)
 
                             self.log.debug("Processing %s for text extraction", attachement_file)
-                            if attachement_file.endswith(".pdf"):
-                                doc = fitz.open(attachement_file)
+                            if attachement_path.endswith(".pdf"):
+
+                                attachement_ziped_pdf_file = zipp.Path(zip_data, attachement_path)
+                                doc = fitz.open(stream=attachement_ziped_pdf_file.open("rb").read())
                                 text = ''
                                 for page in doc:
                                     text += page.get_text()
-                                    defaults['text'] = attachement['text']
+                                defaults['text'] = text
                             (attachement_object, created) = Attachement.objects.update_or_create(
                                 sha1=sha1,
                                 defaults=defaults,
