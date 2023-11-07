@@ -3,6 +3,17 @@ https://blog.majsky.cz/django-protected-media-files/
 
 https://django-storages.readthedocs.io/en/latest/index.html
 
+## Possible tags to create
+
+volt:min:1.8
+volt:max:3.3
+
+location:trillehylle:4
+
+single-dual-tri-color tags?
+trillehylle - skuff - boks?
+gul - grønn - grønn ?
+
 ## Notes on forms
 
 <https://django-bootstrap5.readthedocs.io/en/latest/templatetags.html#bootstrap-form>
