@@ -166,6 +166,9 @@ class Order(models.Model):
             f" #{self.order_id} with {self.items.count()} items"
         )
 
+    def get_order_url(self):
+        return self.shop.order_url_template.format(order_id=self.order_id)
+
     def __str__(self):
         return (  # pylint: disable=no-member
             f"{self.shop.branch_name} order #{self.order_id} with"

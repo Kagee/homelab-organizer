@@ -5,7 +5,7 @@
 <div class="row">
     <div class="col">
         <div class="d-inline-flex justify-content-start">
-            <h4>Matching order items</h4>
+            <h4>{{ filter.qs.count }} matching order items</h4>
         </div>
     </div>
     <div class="col">
@@ -86,7 +86,7 @@ form-row:
                         </div>
                         {% endif %}
                     </td>
-                    <td>{{ orderitem.name }}</td>
+                    <td><a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a></td>
                     <td>{{ orderitem.order.shop.list_icon }} {{ orderitem.order.date }} {{ orderitem.order.order_id }}</td>
                 </tr>
                 {% endfor %}

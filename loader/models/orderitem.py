@@ -5,6 +5,7 @@ import hashlib
 from django.contrib import admin
 from django.db import models
 from django.utils.html import escape, format_html, mark_safe
+from django.urls import reverse
 from djmoney.models.fields import MoneyField
 
 from taggit.managers import TaggableManager
@@ -145,6 +146,9 @@ class OrderItem(models.Model):
 
     item_ref.short_description = "Item ID / SKU"
 
+    def get_orderitem_url(self):
+        return self.order.shop.item_url_template.format(item_id=self.item_id)
+
     def save(self, *args, **kwargs):
         # pylint: disable=no-member
         if self.thumbnail:
@@ -182,6 +186,9 @@ class OrderItem(models.Model):
             "<pre>{}</pre>",
             escape(pprint.PrettyPrinter(indent=2).pformat(self.extra_data)),
         )
+
+    def get_absolute_url(self):
+        return reverse("orderitem", kwargs={ "pk": self.pk})
 
     def __str__(self):
         return (
