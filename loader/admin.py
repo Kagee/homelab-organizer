@@ -3,7 +3,6 @@ from django.db import models
 
 from django.utils.html import format_html
 from django.forms import TextInput, Textarea
-from rangefilter.filters import DateRangeQuickSelectListFilterBuilder
 
 from .models import Attachement, Order, OrderItem, Shop
 
@@ -117,7 +116,6 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ["date", "items_count", "shop_name"]
     list_filter = [
         "shop__name",
-        ("date", DateRangeQuickSelectListFilterBuilder()),
     ]
     filter_horizontal = ['attachements',]
     def get_readonly_fields(self, request, obj=None):

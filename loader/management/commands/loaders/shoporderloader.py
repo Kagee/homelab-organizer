@@ -7,6 +7,7 @@ import pprint
 import hashlib
 from typing import Any, Union
 
+import zipp
 from jsonschema import ValidationError, validate
 
 from django.conf import settings
@@ -43,6 +44,7 @@ class ShopOrderLoader(object):
                 "Shop '%s' is not in database, did you run --init-shops?", shop
             )
             sys.exit(1)
+        self.log.debug("Working with .zip file %s", zip_file)
         with zipfile.ZipFile(zip_file) as zip_data:
             order = shop_dict["orders"][0]
             for order in shop_dict["orders"]:
@@ -73,20 +75,23 @@ class ShopOrderLoader(object):
                     for attachement in order_attachements:
                         attachement_path = attachement['path']
                         attachement_file = None
-                        attachement_zip_file = zipfile.Path(zip_data, attachement_path)
-                        if attachement_zip_file.is_file():
+                        order_attachement_zip_file = zipp.Path(zip_data, attachement_path)
+                        if order_attachement_zip_file.is_file():
+                            self.log.debug("Is file %s", attachement_path)
                             attachement_file = File(
-                                attachement_zip_file.open("rb"), attachement_path
+                                order_attachement_zip_file.open("rb"), attachement_path
                             )
                         else:
-                            raise AttributeError(f"Thumbnail {attachement_zip_file.name} not in {zip_file.name}")
+                            raise AttributeError(f"Thumbnail {order_attachement_zip_file.name} not in {zip_file.name}")
                         sha1hash = hashlib.sha1()
                         if attachement_file.multiple_chunks():
                             for chunk in attachement_file.chunks():
                                 sha1hash.update(chunk)
                         else:
                             sha1hash.update(attachement_file.read())
+
                         sha1 = sha1hash.hexdigest()
+
                         if len(existing_sha1s) == 0 or sha1 not in existing_sha1s:
                             defaults = {
                                 'sha1': sha1,
@@ -95,7 +100,7 @@ class ShopOrderLoader(object):
                                 defaults['name'] = attachement['name']
                             if 'comment' in attachement:
                                 defaults['comment'] = attachement['comment']
-                            
+
                             self.log.debug("Creating Attachement.object for %s (%s)", attachement_file, defaults)
 
                             (attachement_object, created) = Attachement.objects.update_or_create(
@@ -106,7 +111,7 @@ class ShopOrderLoader(object):
                             order_object.save()
                             attachement_object.file = attachement_file
                             attachement_object.save()
-                            attachement_file.close()
+                            #attachement_file.close()
                         else:
                             self.log.debug("Found hash %s for %s", sha1, attachement_path)
                     del order["attachements"]
@@ -169,7 +174,7 @@ class ShopOrderLoader(object):
 
                     if item_thumbnail:
                         thumbnail_file = None
-                        thumbnail_zip_file = zipfile.Path(zip_data, item_thumbnail)
+                        thumbnail_zip_file = zipp.Path(zip_data, item_thumbnail)
                         if thumbnail_zip_file.is_file():
                             thumbnail_file = File(
                                 thumbnail_zip_file.open("rb"), item_thumbnail
@@ -191,7 +196,7 @@ class ShopOrderLoader(object):
                                 item_object.thumbnail.delete()
                             item_object.thumbnail = thumbnail_file
                             item_object.save()
-                            thumbnail_file.close()
+                            #thumbnail_file.close()
 
                     self.log.debug("Getting existing sha1s")
                     existing_sha1s = [x.sha1 for x in item_object.attachements.all()]
@@ -201,9 +206,9 @@ class ShopOrderLoader(object):
                         attachement_path = attachement['path']
                         attachement_file = None
                         self.log.debug(
-                            "Looking for %s",attachement_path 
+                            "Looking for item attachement %s",attachement_path 
                         )
-                        attachement_zip_file = zipfile.Path(zip_data, attachement_path)
+                        attachement_zip_file = zipp.Path(zip_data, attachement_path)
                         if attachement_zip_file.is_file():
                             attachement_file = File(
                                 attachement_zip_file.open("rb"), attachement_path
@@ -225,7 +230,7 @@ class ShopOrderLoader(object):
                                 defaults['name'] = attachement['name']
                             if 'comment' in attachement:
                                 defaults['comment'] = attachement['comment']
-                            
+
                             self.log.debug("Creating Attachement.object for %s (%s)", attachement_file, defaults)
 
                             (attachement_object, created) = Attachement.objects.update_or_create(
@@ -236,7 +241,7 @@ class ShopOrderLoader(object):
                             item_object.save()
                             attachement_object.file = attachement_file
                             attachement_object.save()
-                            attachement_file.close()
+                            #attachement_file.close()
                         else:
                             self.log.debug("Found hash %s for %s", sha1, attachement_path)
                     self.log.debug(

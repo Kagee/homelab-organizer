@@ -30,7 +30,7 @@ if here.name != "homelab-organizer":
     sys.exit()
 
 print("Saving superusers")
-conn = sqlite3.connect("db-dev.sqlite3")
+conn = sqlite3.connect("db/db-dev.sqlite3")
 cu = conn.cursor()
 sql_commands = []
 sql_commands.append("PRAGMA foreign_keys=OFF;")
@@ -62,10 +62,10 @@ except OperationalError:
 sql_commands.append("COMMIT;")
 conn.close()
 
-print("Deleting database ", "db-dev.sqlite3")
+print("Deleting database ", "db/db-dev.sqlite3")
 while True:
     try:
-        remove(here / "db-dev.sqlite3")
+        remove(here / "db/db-dev.sqlite3")
         break
     except PermissionError as pe:
         input(f"Failed to delete DB, please fix and press enter: {pe}")
@@ -82,7 +82,7 @@ print("Migrating migrations (creating DB)")
 subprocess.run([sys.executable, "manage.py", "migrate"], check=False)
 
 print("Restoring superusers")
-conn = sqlite3.connect("db-dev.sqlite3")
+conn = sqlite3.connect("db/db-dev.sqlite3")
 cu = conn.cursor()
 for sql in sql_commands:
     conn.execute(sql)

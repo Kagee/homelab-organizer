@@ -54,7 +54,7 @@ class Attachement(models.Model):
         ("other", "Other"),
     ]
     name = models.CharField(max_length=255, blank=True, null=True)
-    comment = models.CharField(max_length=255, blank=True, null=True)
+    comment = models.CharField(max_length=255, blank=True, default='')
     type = models.CharField(
         max_length=50,
         choices=ATTACHEMENT_TYPE_CHOICES,
