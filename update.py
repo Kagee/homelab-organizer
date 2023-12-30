@@ -52,6 +52,6 @@ if nuke.lower() != "n":
 nuke = input("Init order metadata? (Y/n): ")
 if nuke.lower() != "n":
     subprocess.run(
-        [sys.executable, "manage.py", "loader", "--import-shop", "all"],
+        [sys.executable, "manage.py", "loader", "--import-shop", "all", '--skip-attachements'],
         check=False,
     )

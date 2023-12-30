@@ -31,6 +31,14 @@ class Command(BaseCommand):
             help="Import order data from shop(s) (default: all)",
         )
 
+        scraper.add_argument(
+            "--skip-attachements",
+            action="store_true",
+            help=(
+                "Skip attachements when importing."
+            ),
+        )
+
     def setup_logger(self, options):
         log = logging.getLogger(__name__)
         if options["verbosity"] == 0:

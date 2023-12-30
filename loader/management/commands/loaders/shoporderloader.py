@@ -9,7 +9,6 @@ from typing import Any, Union
 
 import fitz
 import zipp
-from jsonschema import ValidationError, validate
 
 from django.conf import settings
 from django.core.files import File
@@ -18,8 +17,6 @@ from djmoney.money import Money
 
 # pylint: disable=relative-beyond-top-level
 from ....models import Shop, Order, OrderItem, Attachement
-
-import logging
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -76,50 +73,51 @@ class ShopOrderLoader(object):
                 )
 
                 if "attachements" in order:
-                    order_attachements = order["attachements"]
-                    existing_sha1s = [x.sha1 for x in order_object.attachements.all()]
-                    for attachement in order_attachements:
-                        attachement_path = attachement['path']
-                        attachement_file = None
-                        order_attachement_zip_file = zipp.Path(zip_data, attachement_path)
-                        if order_attachement_zip_file.is_file():
-                            self.log.debug("Is file %s", attachement_path)
-                            attachement_file = File(
-                                order_attachement_zip_file.open("rb"), attachement_path
-                            )
-                        else:
-                            raise AttributeError(f"Thumbnail {order_attachement_zip_file.name} not in {zip_file.name}")
-                        sha1hash = hashlib.sha1()
-                        if attachement_file.multiple_chunks():
-                            for chunk in attachement_file.chunks():
-                                sha1hash.update(chunk)
-                        else:
-                            sha1hash.update(attachement_file.read())
+                    if not options['skip_attachements']:
+                        order_attachements = order["attachements"]
+                        existing_sha1s = [x.sha1 for x in order_object.attachements.all()]
+                        for attachement in order_attachements:
+                            attachement_path = attachement['path']
+                            attachement_file = None
+                            order_attachement_zip_file = zipp.Path(zip_data, attachement_path)
+                            if order_attachement_zip_file.is_file():
+                                self.log.debug("Is file %s", attachement_path)
+                                attachement_file = File(
+                                    order_attachement_zip_file.open("rb"), attachement_path
+                                )
+                            else:
+                                raise AttributeError(f"Thumbnail {order_attachement_zip_file.name} not in {zip_file.name}")
+                            sha1hash = hashlib.sha1()
+                            if attachement_file.multiple_chunks():
+                                for chunk in attachement_file.chunks():
+                                    sha1hash.update(chunk)
+                            else:
+                                sha1hash.update(attachement_file.read())
 
-                        sha1 = sha1hash.hexdigest()
+                            sha1 = sha1hash.hexdigest()
 
-                        if len(existing_sha1s) == 0 or sha1 not in existing_sha1s:
-                            defaults = {
-                                'sha1': sha1,
-                            }
-                            if 'name' in attachement:
-                                defaults['name'] = attachement['name']
-                            if 'comment' in attachement:
-                                defaults['comment'] = attachement['comment']
+                            if len(existing_sha1s) == 0 or sha1 not in existing_sha1s:
+                                defaults = {
+                                    'sha1': sha1,
+                                }
+                                if 'name' in attachement:
+                                    defaults['name'] = attachement['name']
+                                if 'comment' in attachement:
+                                    defaults['comment'] = attachement['comment']
 
-                            self.log.debug("Creating Attachement.object for %s (%s)", attachement_file, defaults)
+                                self.log.debug("Creating Attachement.object for %s (%s)", attachement_file, defaults)
 
-                            (attachement_object, created) = Attachement.objects.update_or_create(
-                                sha1=sha1,
-                                defaults=defaults,
-                            )
-                            order_object.attachements.add(attachement_object)
-                            order_object.save()
-                            attachement_object.file = attachement_file
-                            attachement_object.save()
-                            #attachement_file.close()
-                        else:
-                            self.log.debug("Found hash %s for %s", sha1, attachement_path)
+                                (attachement_object, created) = Attachement.objects.update_or_create(
+                                    sha1=sha1,
+                                    defaults=defaults,
+                                )
+                                order_object.attachements.add(attachement_object)
+                                order_object.save()
+                                attachement_object.file = attachement_file
+                                attachement_object.save()
+                                #attachement_file.close()
+                            else:
+                                self.log.debug("Found hash %s for %s", sha1, attachement_path)
                     del order["attachements"]
 
                 del order["date"]
@@ -168,7 +166,8 @@ class ShopOrderLoader(object):
                         del item["thumbnail"]
                     item_attachements = []
                     if "attachements" in item:
-                        item_attachements = item["attachements"]
+                        if not options['skip_attachements']:
+                            item_attachements = item["attachements"]
                         del item["attachements"]
 
                     assert item == {}, item
@@ -181,10 +180,10 @@ class ShopOrderLoader(object):
 
                     if item_thumbnail:
                         thumbnail_file = None
-                        thumbnail_zip_file = zipp.Path(zip_data, item_thumbnail)
+                        thumbnail_zip_file = zipp.Path(zip_data, Path(item_thumbnail).as_posix())
                         if thumbnail_zip_file.is_file():
                             thumbnail_file = File(
-                                thumbnail_zip_file.open("rb"), item_thumbnail
+                                thumbnail_zip_file.open("rb"), Path(item_thumbnail).as_posix()
                             )
                         else:
                             raise AttributeError(f"Thumbnail {thumbnail_zip_file.name} not in {zip_file.name}")
