@@ -27,6 +27,8 @@ class StockItemCreate(CreateView):
             f.fields["orderitems"].widget.attrs["size"] = min(
                 f.fields["orderitems"].queryset.all().count(), 5
             )
+        # Try to use this for tags: https://django-select2.readthedocs.io/en/latest/
+        # or this https://stackoverflow.com/questions/18743253/manage-tag-with-django-select2
         return f
 
     def get_initial(self):
