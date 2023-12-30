@@ -3,6 +3,10 @@ https://blog.majsky.cz/django-protected-media-files/
 
 https://django-storages.readthedocs.io/en/latest/index.html
 
+
+    # https://docs.djangoproject.com/en/4.2/ref/templates/builtins/
+    # https://getbootstrap.com/docs/5.0/examples/navbars/
+
 ## Possible tags to create
 
 volt:min:1.8

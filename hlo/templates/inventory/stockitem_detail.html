@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% block title %}Details for {{ stock_item.name }}{% endblock title %}
+{% block content %}
+<div class="row">
+    <div class="col-6">
+    name {{ stock_item.name }}<br>
+    count {{ stock_item.count }}<br>
+    tags {{ stock_item.tags.all }}<br>
+    orderitems {{ stock_item.orderitems.all }}<br>
+    attachements {{ stock_item.attachements.all }}<br>
+  </div>                    
+{% endblock %}

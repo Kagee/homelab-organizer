@@ -16,27 +16,35 @@
             {% url 'orderitems-list' as orderitems_list %}
             <a class="nav-link active" aria-current="page" href="{% url 'orderitems-list' %}">Order items{% if request.path == orderitems_list %}*{% endif  %}</a>
           </li>
-          <!--
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown07XL" data-bs-toggle="dropdown" aria-expanded="false">Stockitems</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
+              <li>
+                {% url 'stockitem-create' as stockitem_create_list %}
+                <a class="dropdown-item" aria-current="page" href="{% url 'stockitem-create' %}">Add stock{% if request.path == stockitem_create_list %}*{% endif  %}</a>
+              </li>
+              <li>
+                {% url 'stockitem-detail' as stockitem_detail_list %}
+                <a class="dropdown-item" aria-current="page" href="{% url 'stockitem-detail' '1' %}">View stock item{% if request.path == stockitem_detail_list %}*{% endif  %}</a>
+              </li>
+              <li>
+                {% url 'stockitem-list' as stockitem_list_list %}
+                <a class="dropdown-item" aria-current="page" href="{% url 'stockitem-list' %}">List stock{% if request.path == stockitem_list_list %}*{% endif  %}</a>
+              </li>
+
+              
+              
+
+            </ul>
           </li>
-          -->
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'admin:index' %}">Admin</a>
+          </li>
           <!--
           <li class="nav-item">
             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
           </li>
           -->
-         <!-- <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown07XL" data-bs-toggle="dropdown" aria-expanded="false">List items</a>
-            <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
-              <li><a class="dropdown-item" href="{% url 'orderitems-list' %}">Orderitems</a></li>
-
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-
-            </ul>
-          </li> -->
-
         </ul>
 <!--
         <form>

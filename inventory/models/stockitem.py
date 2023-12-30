@@ -1,10 +1,16 @@
 from django.db import models
+from django.urls import reverse
 from django.db.models import UniqueConstraint
 from taggit.managers import TaggableManager
+
 from loader.models.attachement import Attachement
 from .tags import ColorTagBase
 
+
 class StockItem(models.Model):
+    def get_absolute_url(self):
+        return reverse("stockitem-detail", kwargs={"pk": self.pk})
+
     class Meta:
         ordering = ["name"]
         constraints = [
@@ -13,18 +19,22 @@ class StockItem(models.Model):
                 name="unique_name",
             )
         ]
+
     name = models.CharField(max_length=255, null=True, blank=True)
     count = models.PositiveIntegerField("number of items used", default=0)
-    tags = TaggableManager(through=ColorTagBase)
+    tags = TaggableManager(through=ColorTagBase, blank=True)
     orderitems = models.ManyToManyField(
         "loader.OrderItem",
         through="OrderStockItemLink",
         related_name="orderitems",
+        blank=True,
     )
     attachements = models.ManyToManyField(
         Attachement,
-        related_name="stockitem",
+        related_name="attachements",
+        blank=True,
     )
+
 
 class OrderStockItemLink(models.Model):
     orderitem = models.ForeignKey(

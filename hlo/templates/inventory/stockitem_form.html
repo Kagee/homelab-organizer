@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Create stock item{% endblock title %}
+{% block content %}
+<h1>Create stock item</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p}}
+    {{ form.non_field_errors }}
+    {{ field.errors }}
+    <button type="submit">Create</button>
+</form>
+{% endblock content %}

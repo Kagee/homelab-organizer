@@ -2,31 +2,24 @@
 {% load django_bootstrap5 %}
 {% block title %}Details for {{ order_item.name }}{% endblock title %}
 {% block content %}
-        <table class="table table-bordered table-striped table-hover table-sm">
-            <thead>
-                <th scope="col">Thumnail</th>
-                <th scope="col">Name</th>
-                <th scope="col">Shop</th>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        {% if order_item.thumbnail %}
-                        <div style="height: 50px;">
-                        <img src="{{ order_item.thumbnail.url }}" style="height: 100%; width: auto;" />
-                        </div>
-                        {% endif %}
-                    </td>
-                    <td>{{ order_item.name }}</td>
-                    <td>{{ order_item.order.shop.list_icon }} {{ order_item.order.date }} {{ order_item.order.order_id }}</td>
-                </tr>
-            </tbody>
-        </table>
-        Order: <a href="{{ order_item.order.get_order_url }}">{{ order_item.order.get_order_url }}</a><br>
-        Item:  <a href="{{ order_item.get_orderitem_url }}">{{ order_item.get_orderitem_url }}</a><br>
-        {% for attachement in order_item.attachements.all %}
-        Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a><br>
-        {% endfor %}
+<div class="row">
+    <div class="col-6">
+        <h1>{{ order_item.name }}</h1>
+        
+
+        <a href="{{ order_item.order.get_order_url }}">View original order on {{ order_item.order.shop.branch_name }}</a><br>
+<a href="{{ order_item.get_orderitem_url }}">View original item listing on {{ order_item.order.shop.branch_name }}</a><br>
+<h4> {{ order_item.order.date }} {{ order_item.order.order_id }}</h4>
+{% for attachement in order_item.attachements.all %}
+Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a><br>
+{% endfor %}
     </div>
-</div>
+    <div class="col-6">
+        {% if order_item.thumbnail %}
+        <img src="{{ order_item.thumbnail.url }}" style="height: 100%; width: auto;" />
+        {% endif %}
+    </div>
+
+    https://getbootstrap.com/docs/5.0/layout/grid/
+  </div>                    
 {% endblock %}

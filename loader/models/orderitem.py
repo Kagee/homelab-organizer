@@ -112,6 +112,7 @@ class OrderItem(models.Model):
     # Weak FK for StockItem
     gen_id = models.CharField(max_length=1024, editable=False, unique=True)
     tags = TaggableManager(through=ColorTagBase)
+
     def image_tag(self, px=150):
         # pylint: disable=no-member
         return mark_safe(
@@ -188,7 +189,7 @@ class OrderItem(models.Model):
         )
 
     def get_absolute_url(self):
-        return reverse("orderitem", kwargs={ "pk": self.pk})
+        return reverse("orderitem", kwargs={"pk": self.pk})
 
     def __str__(self):
         return (
