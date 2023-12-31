@@ -65,27 +65,29 @@ class StockItemCreate(CreateView):
     fields = ["name", "count", "tags", "orderitems"]
 
     def get_form(self, form_class=None):
-        f = super().get_form(form_class)
+        form = super().get_form(form_class)
         # We override the widget for tags for autocomplete
-        f.fields['tags'].widget = ColorTagChoices(data_view='stockitem-tag-auto-json')
-        f.fields['tags'].to_field = 'name' # unsure what this does/notinh?
-        if "id_orderitems" in self.kwargs:
-            f.fields["orderitems"].label = "Preselected order items"
-            f.fields["orderitems"].disabled = True
-            f.fields["orderitems"].queryset = OrderItem.objects.filter(
-                pk__in=[int(x) for x in self.kwargs["id_orderitems"].split(",")]
+        form.fields['tags'].widget = ColorTagChoices(data_view='stockitem-tag-auto-json')
+        # if get paramenter fromitems is set, lock down orderitem list
+        if "fromitems" in self.kwargs:
+            form.fields["orderitems"].label = "Preselected order items"
+            form.fields["orderitems"].disabled = True
+            form.fields["orderitems"].queryset = OrderItem.objects.filter(
+                pk__in=[int(x) for x in self.kwargs["fromitems"].split(",")]
             )
-            f.fields["orderitems"].widget.attrs["size"] = min(
-                f.fields["orderitems"].queryset.all().count(), 5
+            # Grow/shrink the html list size as required
+            form.fields["orderitems"].widget.attrs["size"] = min(
+                form.fields["orderitems"].queryset.all().count(), 5
             )
-        return f
+        return form
 
     def get_initial(self):
         # Get the initial dictionary from the superclass method
         initial = super().get_initial()
         # Copy the dictionary so we don't accidentally change a mutable dict
         initial = initial.copy()
-        if "id_orderitems" in self.kwargs:
+        # if get paramenter fromitems is set, preselect these items
+        if "fromitems" in self.kwargs:
             initial["orderitems"] = OrderItem.objects.filter(
                 pk__in=[int(x) for x in self.kwargs["id_orderitems"].split(",")]
             )
