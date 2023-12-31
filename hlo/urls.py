@@ -16,6 +16,8 @@ urlpatterns = [
     path('search/', JohnSearchView.as_view(), name="search"),
     path('inventory/', include('inventory.urls')),
     path('loader/', include('loader.urls')),
+    # django-select2
+    path("select2/", include("django_select2.urls")),
     # Return empty for favicon
     path('favicon.ico', lambda request: HttpResponse()),
     # Serve static contect through Django

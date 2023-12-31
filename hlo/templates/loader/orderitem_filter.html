@@ -89,7 +89,7 @@ form-row:
                     </td>
                     <td><a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a></td>
                     <td>{{ orderitem.order.shop.list_icon }} {{ orderitem.order.date }} {{ orderitem.order.order_id }}</td>
-                    <td><a href="{% url 'stockitem-create' %}/{{ orderitem.id }}">Create</a></td>
+                    <td><a href="{% url 'stockitem-create-from' orderitem.id %}">Create</a></td>
                 </tr>
                 {% endfor %}
             </tbody>

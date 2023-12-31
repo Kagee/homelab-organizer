@@ -1,7 +1,7 @@
 <header>{% load bootstrap_icons %}
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Ninth navbar example">
     <div class="container-xl">
-      <a class="navbar-brand" href="#">Homelab Organizer</a>
+      <a class="navbar-brand" href="{% url 'inventory-index' %}">Homelab Organizer</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample07XL" aria-controls="navbarsExample07XL" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -9,40 +9,28 @@
       <div class="collapse navbar-collapse" id="navbarsExample07XL">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            {% url 'inventory-index' as inventory_index %}
-            <a class="nav-link active" aria-current="page" href="{% url 'inventory-index' %}">Home{% if request.path == inventory_index %}*{% endif  %}</a>
+            {% url 'orderitems-list' as link %}
+            <a class="nav-link{% if request.path == link %} active{% endif %}" aria-current="page" href="{{ link }}">Order items</a>
+          </li>
+          <li>
+            {% url 'stockitem-list' as link %}
+            <a class="nav-link{% if request.path == link %} active{% endif %}" aria-current="page" href="{{ link }}">Stock items</a>
           </li>
           <li class="nav-item">
-            {% url 'orderitems-list' as orderitems_list %}
-            <a class="nav-link active" aria-current="page" href="{% url 'orderitems-list' %}">Order items{% if request.path == orderitems_list %}*{% endif  %}</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown07XL" data-bs-toggle="dropdown" aria-expanded="false">Stockitems</a>
-            <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
-              <li>
-                {% url 'stockitem-create' as stockitem_create_list %}
-                <a class="dropdown-item" aria-current="page" href="{% url 'stockitem-create' %}">Add stock{% if request.path == stockitem_create_list %}*{% endif  %}</a>
-              </li>
-              <li>
-                {% url 'stockitem-detail' as stockitem_detail_list %}
-                <a class="dropdown-item" aria-current="page" href="{% url 'stockitem-detail' '1' %}">View stock item{% if request.path == stockitem_detail_list %}*{% endif  %}</a>
-              </li>
-              <li>
-                {% url 'stockitem-list' as stockitem_list_list %}
-                <a class="dropdown-item" aria-current="page" href="{% url 'stockitem-list' %}">List stock{% if request.path == stockitem_list_list %}*{% endif  %}</a>
-              </li>
-
-              
-              
-
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'admin:index' %}">Admin</a>
+            <a class="nav-link{% if request.path == link %} active{% endif %}" aria-current="page" href="{% url 'admin:index' %}" target="_blank">Admin</a>
           </li>
           <!--
           <li class="nav-item">
             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </li>
+                <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown07XL" data-bs-toggle="dropdown" aria-expanded="false">Stockitems</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
+              <li>
+                
+                <a class="dropdown-item" aria-current="page" href="">List stock</a>
+              </li>
+            </ul>
           </li>
           -->
         </ul>

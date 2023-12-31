@@ -14,3 +14,4 @@ djangorestframework>=3.14.0
 django-filter>=23.3
 django-bootstrap-icons>=0.8.6
 zipp>=3.17.0
+django-select2>=8.1.2
