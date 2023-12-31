@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Details for {{ order_item.name }}{% endblock title %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>{{ order.items.count }} items from {{ order.shop.branch_name }} on {{ order.date }}</h1>
+        <div class="product-main-info-partnumber-store">
+            <p>
+            <span>Order number/date:</span>
+            <span><a href="{{ order.get_order_url }}" title="View original order details">{{ order.order_id }}
+            </a></span>
+            </p>
+        </div>
+
+        </a><br>
+<br>
+<h4>  </h4>
+{% for attachement in order.attachements.all %}
+Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a><br>
+{% endfor %}
+    </div>
+  </div>                    
+{% endblock %}

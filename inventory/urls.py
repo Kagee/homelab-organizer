@@ -5,6 +5,7 @@ from .views import (
     StockItemCreate,
     StockItemDetail,
     StockItemList,
+    StockItemUpdate,
     ColorTagAutoResponseView,
 )
 
@@ -19,6 +20,11 @@ urlpatterns = [
         "stockitem/detail/<int:pk>",
         StockItemDetail.as_view(),
         name="stockitem-detail",
+    ),
+    path(
+        "stockitem/update/<int:pk>",
+        StockItemUpdate.as_view(),
+        name="stockitem-update",
     ),
     path(
         "stockitem/create/<str:fromitems>",

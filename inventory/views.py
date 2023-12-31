@@ -1,9 +1,9 @@
 import logging
 
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.http import JsonResponse
-from django_select2.forms import ModelSelect2TagWidget 
+from django_select2.forms import ModelSelect2TagWidget
 from django_select2.views import AutoResponseView
 from loader.models import OrderItem
 from .models import StockItem, ColorTag
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 def index(request):
     # count stuff here
-    order_count = 0
+    #order_count = 0
     return render(request, template_name="inventory/index.html")
 
 class ColorTagAutoResponseView(AutoResponseView):
@@ -40,10 +40,8 @@ class ColorTagAutoResponseView(AutoResponseView):
 class ColorTagChoices(ModelSelect2TagWidget):
     queryset = ColorTag.objects.all().order_by('name')
     search_fields = ['name__icontains']
-
-    @property
-    def empty_label(self):
-        return 'Start typing to search or create tags...'
+    data_view='stockitem-tag-auto-json' # urls.py
+    empty_label = 'Start typing to search or create tags...'
 
     def get_model_field_values(self, value):
         return {'name': value }
@@ -58,7 +56,7 @@ class ColorTagChoices(ModelSelect2TagWidget):
         for val in values - names:
             cleaned_values.append(self.queryset.create(name=val).name)
         # django-taggit expects a comma-separated list
-        return ",".join(cleaned_values)       
+        return ",".join(cleaned_values)
 
 class StockItemCreate(CreateView):
     model = StockItem
@@ -67,10 +65,11 @@ class StockItemCreate(CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         # We override the widget for tags for autocomplete
-        form.fields['tags'].widget = ColorTagChoices(data_view='stockitem-tag-auto-json')
+        form.fields['tags'].widget = ColorTagChoices()
+
         # if get paramenter fromitems is set, lock down orderitem list
         if "fromitems" in self.kwargs:
-            form.fields["orderitems"].label = "Preselected order items"
+            form.fields["orderitems"].label = "Order items"
             form.fields["orderitems"].disabled = True
             form.fields["orderitems"].queryset = OrderItem.objects.filter(
                 pk__in=[int(x) for x in self.kwargs["fromitems"].split(",")]
@@ -89,7 +88,7 @@ class StockItemCreate(CreateView):
         # if get paramenter fromitems is set, preselect these items
         if "fromitems" in self.kwargs:
             initial["orderitems"] = OrderItem.objects.filter(
-                pk__in=[int(x) for x in self.kwargs["id_orderitems"].split(",")]
+                pk__in=[int(x) for x in self.kwargs["fromitems"].split(",")]
             )
         return initial
 
@@ -98,6 +97,17 @@ class StockItemDetail(DetailView):
     model = StockItem
     context_object_name = "stock_item"
 
+class StockItemUpdate(UpdateView):
+    model = StockItem
+    context_object_name = "stock_item"
+    fields = ["name", "count", "tags", "orderitems"]
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # We override the widget for tags for autocomplete
+        form.fields['tags'].widget = ColorTagChoices(data_view='stockitem-tag-auto-json')
+        # if get paramenter fromitems is set, lock down orderitem list
+        return form
 
 class StockItemList(ListView):
     model = StockItem

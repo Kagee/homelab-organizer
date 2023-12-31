@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Orders{% endblock title %}
+{% block content %}
+<h1>Order List</h1>
+{% if object_list %}
+  <ul>
+    {% for book in object_list %}
+    <li>
+      <a href="{%  url 'order-detail' book.id %}">{{ book }}</a>
+      ({{book.author}})
+    </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>There are no books in the library.</p>
+{% endif %}
+{% endblock content %}
