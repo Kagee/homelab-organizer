@@ -1,8 +1,8 @@
 #import logging
 from datetime import datetime
 import django_filters
-#from django.db.models import Max, Min
-from .models import OrderItem #, Order
+from django.db.models import Max, Min
+from .models import OrderItem, Order
 
 
 class OrderDateRangeFilter(django_filters.DateRangeFilter):
@@ -33,7 +33,7 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
 
     # pylint: disable=keyword-arg-before-vararg
     def __init__(self, choices=None, filters=None, *args, **kwargs):
-        """  order_years = Order.objects.aggregate(
+        order_years = Order.objects.aggregate(
             Max("date__year"), Min("date__year")
         )
         this_year = datetime.now().year
@@ -53,7 +53,7 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
                         "%s__year" % name: lambda_year,
                     }
                 )
-            ) """
+            )
         super().__init__(
             choices=self.order_choices,
             filters=self.order_filters,
