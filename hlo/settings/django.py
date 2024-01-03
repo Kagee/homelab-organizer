@@ -103,7 +103,6 @@ ALLOWED_HOSTS: List[str] = env.list("ALLOWED_HOSTS")
 
 STATIC_URL: str = env("STATIC_URL")
 
-
 INSTALLED_APPS: List[str] = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -204,20 +203,3 @@ GRAPH_MODELS = {
   "rankdir": "TB",
   "theme": "django2018",
 }
-
-
-INPUT_FOLDER: Path = Path(
-        env("INPUT_FOLDER", default="./input")
-    ).resolve()
-
-JSON_SCHEMA: Path = Path(
-        env("JSON_SCHEMA", default="./schema/webshop-orders.json")
-    ).resolve()
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': './whoosh_index' 
-    },
-}
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'

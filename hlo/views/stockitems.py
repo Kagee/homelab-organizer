@@ -1,27 +1,9 @@
-import logging
-
-from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.http import JsonResponse
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django_select2.forms import ModelSelect2TagWidget
 from django_select2.views import AutoResponseView
-
-from haystack.generic_views import SearchView # , FacetedSearchView
-from haystack.forms import SearchForm
-from haystack.query import SearchQuerySet
-
 # pylint: disable=wildcard-import,unused-wildcard-import
-from .models import *
-from .filters import OrderItemFilter
-
-logger = logging.getLogger(__name__)
-
-# Create your views here.
-def index(request):
-    # count stuff here
-    #order_count = 0
-    return render(request, template_name="index.html")
+from hlo.models import *
 
 class ColorTagAutoResponseView(AutoResponseView):
     def get(self, request, *args, **kwargs):
@@ -67,6 +49,7 @@ class ColorTagChoices(ModelSelect2TagWidget):
 
 class StockItemCreate(CreateView):
     model = StockItem
+    template_name = "stockitem/create.html"
     fields = ["name", "count", "tags", "orderitems"]
 
     def get_form(self, form_class=None):
@@ -102,10 +85,12 @@ class StockItemCreate(CreateView):
 
 class StockItemDetail(DetailView):
     model = StockItem
+    template_name = "stockitem/detail.html"
     context_object_name = "stock_item"
 
 class StockItemUpdate(UpdateView):
     model = StockItem
+    template_name = "stockitem/create.html"
     context_object_name = "stock_item"
     fields = ["name", "count", "tags", "orderitems"]
 
@@ -118,51 +103,6 @@ class StockItemUpdate(UpdateView):
 
 class StockItemList(ListView):
     model = StockItem
+    template_name = "stockitem/list.html"
     context_object_name = "stock_items"
     paginate_by = 20
-
-
-
-
-
-
-def product_list(request):
-    f = OrderItemFilter(request.GET, queryset=OrderItem.objects.all().order_by('-order__date'))
-    paginator = Paginator(f.qs, 10)
-
-    page = request.GET.get('page')
-    try:
-        response = paginator.page(page)
-    except PageNotAnInteger:
-        response = paginator.page(1)
-    except EmptyPage:
-        response = paginator.page(paginator.num_pages)
-    return render(
-        request,
-        'orderitem_filter.html',
-        {'page_obj': response, 'filter': f}
-    )
-
-#class OrderItemListView(ListView):
-#    model = OrderItem
-#    context_object_name = "order_items"
-#    order_by = ""
-#    paginate_by = 20
-
-class OrderItemDetailView(DetailView):
-    model = OrderItem
-    context_object_name = "order_item"
-
-
-class OrderListView(ListView):
-    model = Order
-    #context_object_name = "order" #object_list
-
-class OrderDetailView(DetailView):
-    model = Order
-    # context_object_name = "order" #object
-
-class JohnSearchView(SearchView):
-    template_name = 'search/search.html'
-    queryset = SearchQuerySet().all()
-    form_class = SearchForm

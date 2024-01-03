@@ -38,7 +38,7 @@ class ColorTag(TagBase):
 
 class ColorTagBase(GenericTaggedItemBase):
     tag = models.ForeignKey(
-        ColorTag,
+        "ColorTag",
         on_delete=models.CASCADE,
         related_name="%(app_label)s_%(class)s_items",
     )
