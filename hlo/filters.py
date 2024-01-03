@@ -1,7 +1,8 @@
-#import logging
+# import logging
 from datetime import datetime
 import django_filters
 from django.db.models import Max, Min
+from django.db.utils import OperationalError
 from .models import OrderItem, Order
 
 
@@ -33,10 +34,26 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
 
     # pylint: disable=keyword-arg-before-vararg
     def __init__(self, choices=None, filters=None, *args, **kwargs):
-        order_years = Order.objects.aggregate(
-            Max("date__year"), Min("date__year")
-        )
         this_year = datetime.now().year
+        try:
+            order_years = Order.objects.aggregate(
+                Max("date__year"), Min("date__year")
+            )
+        except OperationalError:
+            order_years = {}
+            order_years["date__year__max"] = this_year
+            order_years["date__year__min"] = this_year - 1
+        
+        if (
+            "date__year__max" not in order_years
+            or not order_years["date__year__max"]
+        ):
+            order_years["date__year__max"] = this_year
+        if (
+            "date__year__min" not in order_years
+            or not order_years["date__year__min"]
+        ):
+            order_years["date__year__min"] = this_year - 1
         for year in reversed(
             range(
                 order_years["date__year__min"],
@@ -72,10 +89,11 @@ class OrderItemFilter(django_filters.FilterSet):
     )
 
     order_date_year_range = OrderDateRangeFilter()
+
     o = django_filters.OrderingFilter(
         label="Order by",
-        empty_label = None,
-        null_label = None,
+        empty_label=None,
+        null_label=None,
         # tuple-mapping retains order
         fields=(
             ("name", "name"),
