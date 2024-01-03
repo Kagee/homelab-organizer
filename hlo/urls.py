@@ -6,19 +6,52 @@ from django.contrib import admin
 
 from django.shortcuts import redirect
 from django.conf.urls import include
-
-from .views import JohnSearchView
 from django.http import HttpResponse
+
+from . import views
+from .views import (
+    StockItemCreate,
+    StockItemDetail,
+    StockItemList,
+    StockItemUpdate,
+    ColorTagAutoResponseView,
+    JohnSearchView,
+)
 
 urlpatterns = [
     path('', lambda request: redirect('inventory/', permanent=False)),
     path("admin/", admin.site.urls, name="admin"),
     path('search/', JohnSearchView.as_view(), name="search"),
-    path('inventory/', include('inventory.urls')),
-    path('loader/', include('loader.urls')),
     # django-select2
     path("select2/", include("django_select2.urls")),
     # Return empty for favicon
     path('favicon.ico', lambda request: HttpResponse()),
+    path(
+        "",
+        views.index,
+        name="inventory-index",
+    ),
+    path("stockitem/list", StockItemList.as_view(), name="stockitem-list"),
+    path(
+        "stockitem/detail/<int:pk>",
+        StockItemDetail.as_view(),
+        name="stockitem-detail",
+    ),
+    path(
+        "stockitem/update/<int:pk>",
+        StockItemUpdate.as_view(),
+        name="stockitem-update",
+    ),
+    path(
+        "stockitem/create/<str:fromitems>",
+        StockItemCreate.as_view(),
+        name="stockitem-create-from",
+    ),
+    # This is used by the tag-selector on stockitem-create
+    path(
+        "stockitem/tags.json",
+        ColorTagAutoResponseView.as_view(),
+        name="stockitem-tag-auto-json",
+    ),
     # Serve static contect through Django
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
