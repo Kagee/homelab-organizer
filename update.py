@@ -46,12 +46,12 @@ subprocess.run([sys.executable, "sudo-nuke-db.py"], check=False)
 nuke = input("Init shops? (Y/n): ")
 if nuke.lower() != "n":
     subprocess.run(
-        [sys.executable, "manage.py", "loader", "--init-shops"], check=False
+        [sys.executable, "manage.py", "hlo", "--init-shops"], check=False
     )
 
 nuke = input("Init order metadata? (Y/n): ")
 if nuke.lower() != "n":
     subprocess.run(
-        [sys.executable, "manage.py", "loader", "--import-shop", "all", '--skip-attachements'],
+        [sys.executable, "manage.py", "hlo", "--import-shop", "all", '--skip-attachements'],
         check=False,
     )

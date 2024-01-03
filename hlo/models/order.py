@@ -122,7 +122,7 @@ class Order(models.Model):
                     [
                         (
                             reverse(
-                                "admin:loader_orderitem_change",
+                                "admin:hlo_orderitem_change",
                                 args=(i[1],),
                             ),
                             i[0],

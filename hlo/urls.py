@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from django.urls import path #, include
+from django.urls import path  # , include
 from django.conf.urls.static import static
 from django.contrib import admin
 
@@ -16,20 +16,23 @@ from .views import (
     StockItemUpdate,
     ColorTagAutoResponseView,
     JohnSearchView,
+    OrderItemDetailView,
+    OrderDetailView,
+    OrderListView,
 )
 
+
 urlpatterns = [
-    path('', lambda request: redirect('inventory/', permanent=False)),
     path("admin/", admin.site.urls, name="admin"),
-    path('search/', JohnSearchView.as_view(), name="search"),
+    path("search/", JohnSearchView.as_view(), name="search"),
     # django-select2
     path("select2/", include("django_select2.urls")),
     # Return empty for favicon
-    path('favicon.ico', lambda request: HttpResponse()),
+    path("favicon.ico", lambda request: HttpResponse()),
     path(
         "",
         views.index,
-        name="inventory-index",
+        name="index",
     ),
     path("stockitem/list", StockItemList.as_view(), name="stockitem-list"),
     path(
@@ -52,6 +55,16 @@ urlpatterns = [
         "stockitem/tags.json",
         ColorTagAutoResponseView.as_view(),
         name="stockitem-tag-auto-json",
+    ),
+    path("orderitems/list", views.product_list, name="orderitems-list"),
+    path(
+        "orderitems/detail/<int:pk>",
+        OrderItemDetailView.as_view(),
+        name="orderitem",
+    ),
+    path("order/list", OrderListView.as_view(), name="orders-list"),
+    path(
+        "order/detail/<int:pk>", OrderDetailView.as_view(), name="order-detail"
     ),
     # Serve static contect through Django
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -90,7 +90,7 @@ except ImportError:
         "loggers": {
             #'order_scraper.management.commands.scrapers.......'
             #'order_scraper.management.commands....'
-            "loader.management.commands": {
+            "hlo.management.commands": {
                 #"handlers": ["console", "file"],
                 "handlers": ["console"],
                 "level": "DEBUG",  # Will be overriden by --verbosity
@@ -196,7 +196,7 @@ BOOTSTRAP5 = { # We need bootstrap >= 5.3 for dark mode
 # run `python ./manage.py graph_models` to update hlo_model_graph.png
 GRAPH_MODELS = {
   'group_models': True,
-  'app_labels': ["inventory", "loader"],
+  'app_labels': ["hlo"],
   'exclude_models': ["ColorTagBase","GenericTaggedItemBase","TagBase"],
   'output': "hlo_model_graph.png",
   "color_code_deletions": True,
@@ -204,3 +204,20 @@ GRAPH_MODELS = {
   "rankdir": "TB",
   "theme": "django2018",
 }
+
+
+INPUT_FOLDER: Path = Path(
+        env("INPUT_FOLDER", default="./input")
+    ).resolve()
+
+JSON_SCHEMA: Path = Path(
+        env("JSON_SCHEMA", default="./schema/webshop-orders.json")
+    ).resolve()
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': './whoosh_index' 
+    },
+}
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'

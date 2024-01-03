@@ -73,4 +73,4 @@ class Command(BaseCommand):
         elif "init_shops" in options and options["init_shops"]:
             ShopMetaLoader.load()
         else:
-            self.print_help("manage.py", "loader")
+            self.print_help("manage.py", "load")

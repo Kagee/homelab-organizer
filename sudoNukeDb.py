@@ -70,7 +70,7 @@ while True:
     except PermissionError as pe:
         input(f"Failed to delete DB, please fix and press enter: {pe}")
 
-for app in [ "hlo", "loader", "inventory" ]:
+for app in [ "hlo" ]:
     for migration in (here / Path(f"{app}/migrations/")).glob("0*.py"):
         print("Deleting migration ", migration)
         remove(migration)

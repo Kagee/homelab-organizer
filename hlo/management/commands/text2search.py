@@ -1,5 +1,4 @@
 import logging
-from whoosh.index import create_in
 from whoosh.fields import *
 from whoosh.index import open_dir
 from whoosh.qparser import QueryParser
@@ -7,8 +6,6 @@ from django.core.management.base import (
     BaseCommand,
     no_translations,
 )
-from loader.models import OrderItem
-
 
 class Command(BaseCommand):
     help = "Extract text from all item PDFs"

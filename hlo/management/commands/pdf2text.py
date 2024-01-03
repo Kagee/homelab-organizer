@@ -1,18 +1,15 @@
-import fitz
-from loader.models import OrderItem
 import logging
-from django.conf import settings
 from django.core.management.base import (
     BaseCommand,
     no_translations,
 )
+import fitz
+from hlo.models import OrderItem
 
 
 class Command(BaseCommand):
     help = "Extract text from all item PDFs"
     requires_migrations_checks = True
-
-
 
     @no_translations
     def handle(self, *_, **options):

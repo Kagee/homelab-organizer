@@ -1,9 +1,10 @@
 from django.db import models
 from django.urls import reverse
 from django.db.models import UniqueConstraint
+
 from taggit.managers import TaggableManager
 
-from loader.models.attachement import Attachement
+from . import Attachement
 from .tags import ColorTagBase
 
 
@@ -24,7 +25,7 @@ class StockItem(models.Model):
     count = models.PositiveIntegerField("number of items used", default=0)
     tags = TaggableManager(through=ColorTagBase, blank=True)
     orderitems = models.ManyToManyField(
-        "loader.OrderItem",
+        "OrderItem",
         through="OrderStockItemLink",
         related_name="orderitems",
         blank=True,
@@ -38,7 +39,7 @@ class StockItem(models.Model):
 
 class OrderStockItemLink(models.Model):
     orderitem = models.ForeignKey(
-        "loader.OrderItem",
+        "OrderItem",
         to_field="gen_id",
         # When OrderItem is deleted, do nothing
         on_delete=models.DO_NOTHING,

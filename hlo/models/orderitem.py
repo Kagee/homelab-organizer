@@ -10,11 +10,7 @@ from djmoney.models.fields import MoneyField
 
 from taggit.managers import TaggableManager
 
-from inventory.models import ColorTagBase
-
-from .order import Order
-from .attachement import Attachement
-
+from . import ColorTagBase, Order, Attachement
 
 def thumnail_path(instance, filename):
     ext = Path(filename).suffix[1:]
@@ -31,7 +27,7 @@ def thumnail_path(instance, filename):
     filename_b64 = base64.urlsafe_b64encode(
         filename_str.encode("utf-8")
     ).decode("utf-8")
-    return f"loader/thumbnails/{shopname_b64}/{order_b64}/{filename_b64}.{ext}"
+    return f"thumbnails/{shopname_b64}/{order_b64}/{filename_b64}.{ext}"
 
 
 class OrderItem(models.Model):

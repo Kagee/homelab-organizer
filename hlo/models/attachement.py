@@ -25,7 +25,7 @@ def attachement_file_path(instance, filename):
         order_b64 = base64.urlsafe_b64encode(
             order.order_id.encode("utf-8")
         ).decode("utf-8")
-        return f"loader/attachements/{shopname_b64}/{order_b64}/{filename}"
+        return f"attachements/{shopname_b64}/{order_b64}/{filename}"
     elif instance.orderitem.count():
         orderitem = instance.orderitem.first()
         shopname_b64 = base64.urlsafe_b64encode(
@@ -38,10 +38,10 @@ def attachement_file_path(instance, filename):
             f"{orderitem.item_id}{'-' if len(orderitem.item_variation) else ''}{orderitem.item_variation}"
             .encode("utf-8")
         ).decode("utf-8")
-        return f"loader/attachements/{shopname_b64}/{order_b64}/{order_item_b64}/{filename}"
+        return f"attachements/{shopname_b64}/{order_b64}/{order_item_b64}/{filename}"
     else:
         raise ValueError(
-            "loader.Attachement used on something not order or orderitem"
+            "Attachement used on something not order or orderitem"
         )
 
 
@@ -93,7 +93,7 @@ class Attachement(models.Model):
             return format_html(
                 '<a href="{}">{} ({})</a>',
                 reverse(
-                    "admin:loader_order_change",
+                    "admin:hlo_order_change",
                     args=(order.id,),
                 ),
                 order.order_id,
@@ -104,7 +104,7 @@ class Attachement(models.Model):
             return format_html(
                 '<a href="{}">{}</a>',
                 reverse(
-                    "admin:loader_orderitem_change",
+                    "admin:hlo_orderitem_change",
                     args=(orderitem.id,),
                 ),
                 orderitem.name,
