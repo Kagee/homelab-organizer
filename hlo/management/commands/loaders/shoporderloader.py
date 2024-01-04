@@ -77,7 +77,7 @@ class ShopOrderLoader(object):
                         order_attachements = order["attachements"]
                         existing_sha1s = [x.sha1 for x in order_object.attachements.all()]
                         for attachement in order_attachements:
-                            attachement_path = attachement['path']
+                            attachement_path = Path(attachement['path']).as_posix()
                             attachement_file = None
                             order_attachement_zip_file = zipp.Path(zip_data, attachement_path)
                             if order_attachement_zip_file.is_file():
@@ -209,7 +209,7 @@ class ShopOrderLoader(object):
                     self.log.debug("Got existing sha1s: %s ", existing_sha1s)
 
                     for attachement in item_attachements:
-                        attachement_path = attachement['path']
+                        attachement_path = Path(attachement['path']).as_posix()
                         attachement_file = None
                         self.log.debug(
                             "Looking for item attachement %s",attachement_path
