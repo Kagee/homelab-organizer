@@ -21,50 +21,7 @@
         </form>
     </div>
 </div>
-<!--
-<br><br><br>
-<form method="get" novalidate>
 
-    {% bootstrap_form filter.form %}
-    {% bootstrap_button "Show" button_type="submit" button_class="btn-info" %}
-</form>
-<br><br><br>
-<form method="get" novalidate>
-
-    {% bootstrap_form filter.form layout='inline' %}
-    {% bootstrap_button "Show" button_type="submit" button_class="btn-info" %}
-</form>
-<br><br><br>
-<form method="get" novalidate>
-
-    {{ filter.form.non_field_errors }}
-
-    {% for hidden_field in filter.form.hidden_fields %}
-    {{ hidden_field.errors }}
-    {{ hidden_field }}
-    {% endfor %}
-
-    <table border="1">
-        {% for field in filter.form.visible_fields %}
-        <tr>
-            <th>{{ field.label_tag }}</th>
-            <td>
-                {{ field.errors }}
-                {{ field }}
-                {{ field.help_text }}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <button type="submit">Submit</button>
-</form>
-<br><br><br>
-form-row:
-
-
-<br><br><br>
--->
 <div class="row">
     <div class="col">
         {% if not filter.data %}
@@ -98,23 +55,46 @@ form-row:
 </div>
 <div class="row">
     <div class="col">
+        {% load debug_object_dump %}
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              
+              <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+                <a class="page-link"{% if page_obj.has_previous %} href="?{% url_replace_parameter page=1 %}"{% endif %} aria-label="First">
+                  <span aria-hidden="true">« First</span>
+                </a>
+              </li>
+              
+              <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+                <a class="page-link"{% if page_obj.has_previous %}  href="?{% url_replace_parameter page=page_obj.previous_page_number %}"{% endif %} aria-label="Previous">
+                  <span aria-hidden="true">‹ Previous</span>
+                </a>
+              </li>
+              
+              <li class="page-item"><a class="page-link disabled">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a></li>
+              
+              <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
+                <a class="page-link"{% if page_obj.has_next %} href="?{% url_replace_parameter page=page_obj.next_page_number %}"{% endif %} aria-label="Next">
+                  <span aria-hidden="true">Next ›</span>
+                </a>
+              </li>
+              
+              <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
+                <a class="page-link"{% if page_obj.has_next %} href="?{% url_replace_parameter page=page_obj.paginator.num_pages %}"{% endif %} aria-label="Last">
+                  <span aria-hidden="true">Last »</span>
+                </a>
+              </li>
+              
+            </ul>
+          </nav>
+
+
         <div class="pagination">
             <span class="step-links">
-                {% load debug_object_dump %}
-                {% if page_obj.has_previous %}
-                <a href="?{% url_replace_parameter page=1 %}">&laquo; first</a>
-                <a href="?{% url_replace_parameter page=page_obj.previous_page_number %}">previous</a>
-                {% endif %}
-
+                
                 <span class="current">
-                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    
                 </span>
-               
-                {% if page_obj.has_next %}
-                <a href="?{% url_replace_parameter page=page_obj.next_page_number %}">next</a>
-                <a href="?{% url_replace_parameter page=page_obj.paginator.num_pages %}">last &raquo;</a>
-                {% endif %}
-            </span>
         </div>
     </div>
 </div>
