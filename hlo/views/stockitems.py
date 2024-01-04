@@ -49,7 +49,7 @@ class ColorTagChoices(ModelSelect2TagWidget):
 
 class StockItemCreate(CreateView):
     model = StockItem
-    template_name = "stockitem/create.html"
+    template_name = "stockitem/form.html"
     fields = ["name", "count", "tags", "orderitems"]
 
     def get_form(self, form_class=None):
@@ -90,7 +90,7 @@ class StockItemDetail(DetailView):
 
 class StockItemUpdate(UpdateView):
     model = StockItem
-    template_name = "stockitem/create.html"
+    template_name = "stockitem/form.html"
     context_object_name = "stock_item"
     fields = ["name", "count", "tags", "orderitems"]
 
