@@ -8,3 +8,4 @@ pyOpenSSL
 black
 pylint-django
 types-jsonschema
+pydotplus # graph
