@@ -37,12 +37,21 @@ class Shop(models.Model):
             return format_html(
                 # pylint: disable=no-member
                 f'<img src="{self.icon.url}" width="25"'
-                f" />&nbsp;&nbsp;&nbsp; {self.longname()}"
+                f" />&nbsp;{self.longname()}"
             )
         else:
             return f"{self.longname()}"
 
     list_icon.short_description = "Shop"
+
+    def img_icon(self):
+        if self.icon:
+            return format_html(
+                # pylint: disable=no-member
+                f'<img src="{self.icon.url}" style="min-height: 2em; min-width: 1em; max-height: 2em;">'
+            )
+        else:
+            return f"{self.longname()[0]}"
 
     order_url_template = models.CharField(
         max_length=250,

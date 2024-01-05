@@ -75,11 +75,13 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
             choices=self.order_choices,
             filters=self.order_filters,
             field_name="order__date",
+            *args, **kwargs
         )
 
 
 class OrderItemFilter(django_filters.FilterSet):
     name = django_filters.LookupChoiceFilter(
+        label="Order item name",
         lookup_choices=[
             ("icontains", "Contains"),
             ("istartswith", "Starts with"),
@@ -88,9 +90,9 @@ class OrderItemFilter(django_filters.FilterSet):
         empty_label=None,
     )
 
-    order_date_year_range = OrderDateRangeFilter()
+    date_range = OrderDateRangeFilter(label="Order time")
 
-    o = django_filters.OrderingFilter(
+    order = django_filters.OrderingFilter(
         label="Order by",
         empty_label=None,
         null_label=None,
