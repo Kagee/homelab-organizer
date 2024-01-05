@@ -27,7 +27,6 @@ def index(request):
             "attachement_count": Attachement.objects.count(),
             "attachement_pdf": Attachement.objects.filter(file__endswith=".pdf").count(),
             "attachement_html": Attachement.objects.filter(file__endswith=".html").count(),
-            "order_count": Order.objects.count(),
             }
     )
 

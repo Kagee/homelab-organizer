@@ -1,17 +1,14 @@
 <header>{% load bootstrap_icons %}
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Ninth navbar example">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-xl">
       <a class="navbar-brand" href="{% url 'index' %}">Homelab Organizer</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample07XL" aria-controls="navbarsExample07XL" aria-expanded="false" aria-label="Toggle navigation">
+      <!-- Navbar toggle button for small screens -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarsExample07XL">
+      <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            {% url 'orders-list' as link %}
-            <a class="nav-link{% if request.path == link %} active{% endif %}" aria-current="page" href="{{ link }}">Orders</a>
-          </li>
           <li class="nav-item">
             {% url 'orderitems-list' as link %}
             <a class="nav-link{% if request.path == link %} active{% endif %}" aria-current="page" href="{{ link }}">Order items</a>
@@ -23,31 +20,7 @@
           <li class="nav-item">
             <a class="nav-link{% if request.path == link %} active{% endif %}" aria-current="page" href="{% url 'admin:index' %}" target="_blank">Admin</a>
           </li>
-          <!--
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-          </li>
-                <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown07XL" data-bs-toggle="dropdown" aria-expanded="false">Stockitems</a>
-            <ul class="dropdown-menu" aria-labelledby="dropdown07XL">
-              <li>
-                
-                <a class="dropdown-item" aria-current="page" href="">List stock</a>
-              </li>
-            </ul>
-          </li>
-          -->
         </ul>
-<!--
-        <form>
-          <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-        </form>
-        <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'admin:index' %}">{% bs_icon 'alarm' size='1.5em' extra_classes="bi-valign-bottom" %}</a>
-            </li>
-          </ul>
-        -->
       </div>
     </div>
   </nav>

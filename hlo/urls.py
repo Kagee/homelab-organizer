@@ -62,7 +62,7 @@ urlpatterns = [
         OrderItemDetailView.as_view(),
         name="orderitem",
     ),
-    path("order/list", OrderListView.as_view(), name="orders-list"),
+    #path("order/list", OrderListView.as_view(), name="orders-list"),
     path(
         "order/detail/<int:pk>", OrderDetailView.as_view(), name="order-detail"
     ),
