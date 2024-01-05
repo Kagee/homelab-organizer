@@ -2,6 +2,7 @@ from pathlib import Path
 import environ  # type: ignore
 
 env = environ.FileAwareEnv()
+env.prefix = "HLO_"
 
 INPUT_FOLDER: Path = Path(
         env("INPUT_FOLDER", default="./input")
