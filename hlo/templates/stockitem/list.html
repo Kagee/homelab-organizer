@@ -40,7 +40,7 @@
                 <span class="current">
                     Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
                 </span>
-                {% load debug_object_dump %}
+                {% load hlo_tags %}
                 {% if page_obj.has_next %}
                 <a href="?{% url_replace_parameter page=page_obj.next_page_number %}">next</a>
                 <a href="?{% url_replace_parameter page=page_obj.paginator.num_pages %}">last &raquo;</a>
