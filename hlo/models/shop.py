@@ -48,7 +48,8 @@ class Shop(models.Model):
         if self.icon:
             return format_html(
                 # pylint: disable=no-member
-                f'<img src="{self.icon.url}" style="min-height: 2em; min-width: 1em; max-height: 2em;">'
+                f'<img src="{self.icon.url}" style="min-height: 2em; min-width:'
+                ' 1em; max-height: 2em;">'
             )
         else:
             return f"{self.longname()[0]}"

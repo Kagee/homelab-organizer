@@ -15,11 +15,14 @@
         <form method="GET">
           <!--   order__shop name date_range order  -->
           {% for field in filter.form.visible_fields %}
-          {{ field.name }}
+          {{ field }}
           {% endfor %}
           <!-- modal body ends here, buttons im modal footer -->
       </div>
       <div class="modal-footer">
+        {% for field in filter.form.hidden_fields %}
+          {{ field }}
+          {% endfor %}
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
         <a href="{{ request.path }}" class="btn btn-secondary">Clear</a>
         <button type="submit" class="btn btn-primary">Apply</button>
@@ -32,32 +35,6 @@
 <div class="row">
   <div class="col-12 text-end">
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
-  </div>
-  <div class="col-12">
-{% load debug_object_dump %}
-    <form method="GET">
-      <!--   order__shop name date_range order  -->
-      {% for f in filter.form.visible_fields %}
-        {% if f.name == 'name' %}
-
-        both: {{ f | dump_var }}<br><br>
-        both: {{ f.value }}<br><br>
-        select: {{ f.field.fields.1 | dump_var }}<br>
-        select: {{ f.field.fields.1.name }}<br>
-        select widget: {{ f.field.fields.1.widget | dump_var }}<br>
-        print widget: {{ f.field.fields.1.widget }}<br>
-        print fields.1: {{ f.field.fields.1 }}<br>
-        id = id_<name>
-        {% endif %}
-        {{ f }}
-      {% endfor %}
-      <!-- modal body ends here, buttons im modal footer -->
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
-    <a href="{{ request.path }}" class="btn btn-secondary">Clear</a>
-    <button type="submit" class="btn btn-primary">Apply</button>
-    </form>
-
-
   </div>
 </div>
 

@@ -1,4 +1,4 @@
 from . import CommonTreeModel
 
-class Project(CommonTreeModel):
+class Category(CommonTreeModel):
     pass
