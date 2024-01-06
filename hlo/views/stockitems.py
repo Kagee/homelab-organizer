@@ -2,10 +2,12 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.http import JsonResponse
 from django_select2.forms import ModelSelect2TagWidget
 from django_select2.views import AutoResponseView
+from taggit.models import Tag
 # pylint: disable=wildcard-import,unused-wildcard-import
 from hlo.models import *
 
-class ColorTagAutoResponseView(AutoResponseView):
+
+class TagAutoResponseView(AutoResponseView):
     def get(self, request, *args, **kwargs):
         """
         This method is overriden for changing id to name instead of pk.
@@ -26,11 +28,11 @@ class ColorTagAutoResponseView(AutoResponseView):
             'more': context['page_obj'].has_next()
         })
 
-class ColorTagChoices(ModelSelect2TagWidget):
-    queryset = ColorTag.objects.all().order_by('name')
+class TagChoices(ModelSelect2TagWidget):
+    queryset = Tag.objects.all().order_by('name')
     search_fields = ['name__icontains']
-    data_view='stockitem-tag-auto-json' # urls.py
     empty_label = 'Start typing to search or create tags...'
+    
 
     def get_model_field_values(self, value):
         return {'name': value }
@@ -55,7 +57,7 @@ class StockItemCreate(CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         # We override the widget for tags for autocomplete
-        form.fields['tags'].widget = ColorTagChoices()
+        form.fields['tags'].widget = TagChoices(data_view='stockitem-tag-auto-json')
 
         # if get paramenter fromitems is set, lock down orderitem list
         if "fromitems" in self.kwargs:
@@ -97,7 +99,7 @@ class StockItemUpdate(UpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         # We override the widget for tags for autocomplete
-        form.fields['tags'].widget = ColorTagChoices(data_view='stockitem-tag-auto-json')
+        form.fields['tags'].widget = TagChoices()
         # if get paramenter fromitems is set, lock down orderitem list
         return form
 

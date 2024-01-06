@@ -8,9 +8,7 @@ from django.utils.html import escape, format_html, mark_safe
 from django.urls import reverse
 from djmoney.models.fields import MoneyField
 
-from taggit.managers import TaggableManager
-
-from . import ColorTagBase, Order, Attachement
+from . import Order, Attachement
 
 def thumnail_path(instance, filename):
     ext = Path(filename).suffix[1:]
@@ -107,7 +105,6 @@ class OrderItem(models.Model):
     )
     # Weak FK for StockItem
     gen_id = models.CharField(max_length=1024, editable=False, unique=True)
-    tags = TaggableManager(through=ColorTagBase)
 
     def image_tag(self, px=150):
         # pylint: disable=no-member

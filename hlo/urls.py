@@ -14,7 +14,7 @@ from .views import (
     StockItemDetail,
     StockItemList,
     StockItemUpdate,
-    ColorTagAutoResponseView,
+    TagAutoResponseView,
     JohnSearchView,
     OrderItemDetailView,
     OrderDetailView,
@@ -27,6 +27,12 @@ urlpatterns = [
     path("search/", JohnSearchView.as_view(), name="search"),
     # django-select2
     path("select2/", include("django_select2.urls")),
+    # This is used by the tag-selector on stockitem-create     
+    path(
+        "select2/fields/tags.json",
+        TagAutoResponseView.as_view(),
+        name="stockitem-tag-auto-json",
+    ),
     # Return empty for favicon
     path("favicon.ico", lambda request: HttpResponse()),
     path(
@@ -49,12 +55,6 @@ urlpatterns = [
         "stockitem/create/<str:fromitems>",
         StockItemCreate.as_view(),
         name="stockitem-create-from",
-    ),
-    # This is used by the tag-selector on stockitem-create
-    path(
-        "stockitem/tags.json",
-        ColorTagAutoResponseView.as_view(),
-        name="stockitem-tag-auto-json",
     ),
     path("orderitems/list", views.product_list, name="orderitems-list"),
     path(

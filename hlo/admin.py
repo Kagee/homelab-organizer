@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.html import format_html
 from django.forms import TextInput, Textarea
 
-from .models import StockItem, ColorTag, Attachement, Order, OrderItem, Shop
+from .models import StockItem, Attachement, Order, OrderItem, Shop
 
 logger = logging.getLogger(__name__)
 
@@ -30,13 +30,6 @@ class StockItemAdmin(admin.ModelAdmin):
     #    (None, {'fields': ('tags',)}),
     #]
     #filter_horizontal = ['tags']
-
-
-@admin.register(ColorTag)
-class ColorTagAdmin(admin.ModelAdmin):
-    list_display = ["name", "color", "name_color_tag"]
-
-
 
 
 @admin.register(Attachement)
@@ -125,7 +118,6 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "subtotal",
                 "tax",
                 "indent_extra_data",
-                
             ]
         else:
             return [

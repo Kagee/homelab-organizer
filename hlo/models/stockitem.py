@@ -5,7 +5,6 @@ from django.db.models import UniqueConstraint
 from taggit.managers import TaggableManager
 
 from . import Attachement
-from .tags import ColorTagBase
 
 
 class StockItem(models.Model):
@@ -23,7 +22,10 @@ class StockItem(models.Model):
 
     name = models.CharField(max_length=255, null=True, blank=True)
     count = models.PositiveIntegerField("number of items used", default=0)
-    tags = TaggableManager(through=ColorTagBase, blank=True)
+    tags = TaggableManager(blank=True)
+    #category
+    #project
+    #storage
     orderitems = models.ManyToManyField(
         "OrderItem",
         through="OrderStockItemLink",

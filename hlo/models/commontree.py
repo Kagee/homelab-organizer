@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class CommonTreeModel(models.Model):
     name = models.CharField(
         max_length=50,
@@ -13,7 +14,7 @@ class CommonTreeModel(models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name='child',
+        related_name="child",
     )
 
     class Meta:
