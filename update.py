@@ -49,9 +49,16 @@ if nuke.lower() != "n":
         [sys.executable, "manage.py", "hlo", "--init-shops"], check=False
     )
 
-nuke = input("Init order metadata? (Y/n): ")
+nuke = input("Init order metadata without attachements? (Y/n): ")
 if nuke.lower() != "n":
     subprocess.run(
         [sys.executable, "manage.py", "hlo", "--import-shop", "all", '--skip-attachements'],
+        check=False,
+    )
+
+nuke = input("Init order metadata with attachements ?  (Y/n): ")
+if nuke.lower() != "n":
+    subprocess.run(
+        [sys.executable, "manage.py", "hlo", "--import-shop", "all"],
         check=False,
     )
