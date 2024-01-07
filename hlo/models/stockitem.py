@@ -29,7 +29,7 @@ class StockItem(models.Model):
     orderitems = models.ManyToManyField(
         "OrderItem",
         through="OrderStockItemLink",
-        related_name="orderitems",
+        related_name="stockitems",
         blank=True,
     )
     attachements = models.ManyToManyField(
@@ -45,14 +45,14 @@ class OrderStockItemLink(models.Model):
         to_field="gen_id",
         # When OrderItem is deleted, do nothing
         on_delete=models.DO_NOTHING,
-        related_name="orderitem",
+        related_name="stockitem",
         db_constraint=False,
     )
     stockitem = models.ForeignKey(
         "StockItem",
         # When StockItem is deleted, delete link
         on_delete=models.CASCADE,
-        related_name="stockitem",
+        related_name="orderitem",
     )
 
     class Meta:

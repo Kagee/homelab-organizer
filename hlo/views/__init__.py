@@ -1,15 +1,14 @@
 import logging
 from django.shortcuts import render
-from django.db.models import Q
-from haystack.generic_views import SearchView
-from haystack.forms import SearchForm
-from haystack.query import SearchQuerySet
 
 # pylint: disable=wildcard-import,unused-wildcard-import
-from hlo.models import *
-from hlo.views.orders import *
-from hlo.views.orderitems import *
-from hlo.views.stockitems import *
+from .search import *
+from .orders import *
+from .orderitems import *
+from .stockitems import *
+from .storage import *
+from .project import *
+from .category import *
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +29,3 @@ def index(request):
             }
     )
 
-
-class JohnSearchView(SearchView):
-    template_name = "search/search.html"
-    queryset = SearchQuerySet().all()
-    form_class = SearchForm

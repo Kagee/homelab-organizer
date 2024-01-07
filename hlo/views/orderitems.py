@@ -6,7 +6,9 @@ from hlo.filters import OrderItemFilter
 
 
 def product_list(request):
-    f = OrderItemFilter(request.GET, queryset=OrderItem.objects.all().order_by('-order__date'))
+    qs_orderitems = OrderItem.objects.all().select_related('order').select_related('order__shop').prefetch_related('stockitems').order_by('-order__date')
+    # .values('id', 'name', 'thumbnail', 'order')
+    f = OrderItemFilter(request.GET, queryset=qs_orderitems)
     paginator = Paginator(f.qs, 10)
 
     page = request.GET.get('page')

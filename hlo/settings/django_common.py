@@ -34,6 +34,10 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 DEBUG: bool = env("DEBUG")
 
+INTERNAL_IPS = [
+    "127.0.0.1"
+]
+
 LANGUAGE_CODE: str = env("LANGUAGE_CODE")
 TIME_ZONE: str = env("TIME_ZONE")
 USE_I18N: bool = env("USE_I18N")
@@ -111,11 +115,21 @@ INSTALLED_APPS: List[str] = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "djmoney",  # MoneyField
+    "haystack",
+    "rest_framework",
+    "django_filters",
+    "django_bootstrap_icons",
+    "django_extensions",
+    "taggit",
+    "django_bootstrap5",
+    "django_select2",
+    "debug_toolbar",
 ]
 
 INSTALLED_APPS += env.list("INSTALLED_APPS", default=[])
 
 MIDDLEWARE: List[str] = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -123,6 +137,7 @@ MIDDLEWARE: List[str] = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    
 ]
 
 ROOT_URLCONF: str = "hlo.urls"

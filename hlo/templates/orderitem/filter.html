@@ -60,8 +60,12 @@
           <!-- Hide shop col on small screens -->
           <td class="text-center d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell">
             {{ orderitem.order.shop.img_icon }}</td><!-- {{ orderitem.order.date | slice:"0:7" }} -->
-          <td class="text-center"><a href="{% url 'stockitem-create-from' orderitem.id %}"
-              class="btn btn-primary btn-sm">{% bs_icon 'box-arrow-in-right' %}</a></td>
+          <td class="text-center">
+            {% if not orderitem.stockitems.count %}
+                <a href="{% url 'stockitem-create-from' orderitem.id %}"
+            class="btn btn-primary btn-sm">{% bs_icon 'box-arrow-in-right' %}</a>
+            {% endif %}
+            </td>
         </tr>
         {% endfor %}
       </tbody>

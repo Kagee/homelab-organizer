@@ -17,6 +17,13 @@
             {% url 'stockitem-list' as link %}
             <a class="nav-link{% if request.path == link %} active{% endif %}" aria-current="page" href="{{ link }}">Stock items</a>
           </li>
+          <li>
+            {% url 'attachementsearch' as link %}
+            <a class="nav-link{% if request.path == link %} active{% endif %}" aria-current="page" href="{{ link }}">Attachement search</a>
+          </li>
+
+          
+
           <li class="nav-item">
             <a class="nav-link{% if request.path == link %} active{% endif %}" aria-current="page" href="{% url 'admin:index' %}" target="_blank">Admin</a>
           </li>

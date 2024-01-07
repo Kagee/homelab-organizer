@@ -94,12 +94,6 @@ class OrderItem(models.Model):
     # Extra data that we do not import into model
     extra_data = models.JSONField(default=dict, blank=True)
 
-    hide = models.BooleanField(
-        default=False,
-        verbose_name="Hide item in inventory",
-        help_text="Set to true when i.e. item was for another person.",
-    )
-
     sha1 = models.CharField(
         max_length=40, editable=False, default=None, null=True
     )

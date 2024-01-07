@@ -3,8 +3,6 @@ from django.conf import settings
 from django.urls import path  # , include
 from django.conf.urls.static import static
 from django.contrib import admin
-
-from django.shortcuts import redirect
 from django.conf.urls import include
 from django.http import HttpResponse
 
@@ -15,16 +13,16 @@ from .views import (
     StockItemList,
     StockItemUpdate,
     TagAutoResponseView,
-    JohnSearchView,
+    AttachementSearchView,
     OrderItemDetailView,
     OrderDetailView,
-    OrderListView,
 )
 
 
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
-    path("search/", JohnSearchView.as_view(), name="search"),
+    # django-debug-toolbar
+    path("__debug__/", include("debug_toolbar.urls")),
     # django-select2
     path("select2/", include("django_select2.urls")),
     # This is used by the tag-selector on stockitem-create     
@@ -40,6 +38,7 @@ urlpatterns = [
         views.index,
         name="index",
     ),
+    path("search/", AttachementSearchView.as_view(), name="attachementsearch"),
     path("stockitem/list", StockItemList.as_view(), name="stockitem-list"),
     path(
         "stockitem/detail/<int:pk>",
