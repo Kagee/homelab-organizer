@@ -3,12 +3,13 @@ from . import CommonTreeModel
 
 class Storage(CommonTreeModel):
     COLOR_CHOICES = [
-        (
-            "No color",
-            (
-                ("", "None"),
-            ),
-        ),
+        #(
+        #    "No color",
+        #    (
+        #        ("", "None"),
+        #    ),
+        #),
+        ("", "None"),
         ("black", "Black"),      # 1f1d1e Eerie Black. Black #000000
         ("blue", "Blue"),        # 0165df True Blue. Blue #0000FF
         ("brown", "Brown"),      # 5d392d Van Dyke Brown. SaddleBrown #8B4513
@@ -25,3 +26,8 @@ class Storage(CommonTreeModel):
         choices=COLOR_CHOICES,
         default="",
     )
+    class Meta:
+        verbose_name_plural = "storage"
+
+    def __str__(self):
+        return str(self.name)

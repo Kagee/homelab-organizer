@@ -1,10 +1,10 @@
 from django.conf import settings
 
 from django.urls import path  # , include
-from django.conf.urls.static import static
-from django.contrib import admin
 from django.conf.urls import include
+from django.conf.urls.static import static
 from django.http import HttpResponse
+from django.contrib import admin
 
 from . import views
 from .views import (
@@ -18,14 +18,17 @@ from .views import (
     OrderDetailView,
 )
 
+#from .admin import hlo_admin
 
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
+    #path("admin/", hlo_admin.urls, name="admin"),
+    
     # django-debug-toolbar
     path("__debug__/", include("debug_toolbar.urls")),
     # django-select2
     path("select2/", include("django_select2.urls")),
-    # This is used by the tag-selector on stockitem-create     
+    # This is used by the tag-selector on stockitem-create
     path(
         "select2/fields/tags.json",
         TagAutoResponseView.as_view(),

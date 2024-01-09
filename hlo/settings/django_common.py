@@ -108,7 +108,7 @@ ALLOWED_HOSTS: List[str] = env.list("ALLOWED_HOSTS")
 STATIC_URL: str = env("STATIC_URL")
 
 INSTALLED_APPS: List[str] = [
-    "django.contrib.admin",
+    "admin_app.HLOAdminConfig", #"django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -124,6 +124,8 @@ INSTALLED_APPS: List[str] = [
     "django_bootstrap5",
     "django_select2",
     "debug_toolbar",
+    "mptt",
+    "hlo",
 ]
 
 INSTALLED_APPS += env.list("INSTALLED_APPS", default=[])
@@ -137,7 +139,6 @@ MIDDLEWARE: List[str] = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    
 ]
 
 ROOT_URLCONF: str = "hlo.urls"

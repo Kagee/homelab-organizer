@@ -20,3 +20,5 @@ class CommonTreeModel(MPTTModel):
 
     class Meta:
         abstract = True
+    class MPTTMeta:
+        order_insertion_by = ['name']

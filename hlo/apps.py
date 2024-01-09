@@ -1,7 +1,6 @@
-from django.apps import AppConfig
+from django import apps as dapps
 
-
-class InventoryConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'hlo'
+class InventoryConfig(dapps.AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "hlo"
     verbose_name = "Homelab Inventory"
