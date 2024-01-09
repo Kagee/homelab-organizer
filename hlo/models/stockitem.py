@@ -23,7 +23,7 @@ class StockItem(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     count = models.PositiveIntegerField("number of items used", default=0)
     tags = TaggableManager(blank=True)
-    #category
+    #category https://stackoverflow.com/questions/65040416/using-django-mptt-in-django-filters-to-get-children-on-filtering-parent-node
     #project
     #storage
     orderitems = models.ManyToManyField(

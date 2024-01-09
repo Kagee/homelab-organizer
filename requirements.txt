@@ -16,3 +16,4 @@ django-bootstrap-icons>=0.8.6
 zipp>=3.17.0
 django-select2>=8.1.2
 django-debug-toolbar>=4.2.0
+django-mptt>=0.15.0

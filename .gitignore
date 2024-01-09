@@ -3,6 +3,8 @@ __pycache__
 *.swp
 chromedriver
 *.sqlite3
+*.sqlite3-journal
+*.sql
 hlo/settings/logging.py
 *.log
 *~

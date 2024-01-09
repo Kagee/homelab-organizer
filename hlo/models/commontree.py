@@ -1,7 +1,8 @@
 from django.db import models
+from mptt.models import MPTTModel, TreeForeignKey
 
 
-class CommonTreeModel(models.Model):
+class CommonTreeModel(MPTTModel):
     name = models.CharField(
         max_length=50,
         blank=True,  # Should not use null for Char/Text
@@ -9,12 +10,12 @@ class CommonTreeModel(models.Model):
     text = models.TextField(
         blank=True,  # Should not use null for Char/Text
     )
-    parent = models.ForeignKey(
+    parent = TreeForeignKey(
         "self",
         on_delete=models.CASCADE,
-        blank=True,
         null=True,
-        related_name="child",
+        blank=True,
+        related_name="children",
     )
 
     class Meta:
