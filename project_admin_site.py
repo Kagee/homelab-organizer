@@ -7,7 +7,7 @@ from django.contrib import admin as a
 
 logger = logging.getLogger(__name__)
 
-class HLOAdminSite(a.AdminSite):
+class HLOProjectAdminSite(a.AdminSite):
     site_header = "Monty Python administration"
 
     #def get_app_list(self, request):

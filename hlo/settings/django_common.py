@@ -108,7 +108,7 @@ ALLOWED_HOSTS: List[str] = env.list("ALLOWED_HOSTS")
 STATIC_URL: str = env("STATIC_URL")
 
 INSTALLED_APPS: List[str] = [
-    "admin_app.HLOAdminConfig", #"django.contrib.admin",
+    "hlo.admin_app.HLOAdminConfig", #"django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",

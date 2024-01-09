@@ -9,8 +9,6 @@ from .stockitem import StockItemAdmin
 from .order import *
 from .shop import *
 from .attachement import *
-#from .site import HLOAdminSite
-from hlo.models import Shop
 
 from ..models import Category, Project, Storage
 
