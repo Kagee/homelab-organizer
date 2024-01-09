@@ -4,11 +4,11 @@ from django.contrib import admin
 
 from mptt.admin import DraggableMPTTAdmin
 
-from .orderitem import *
+from .orderitem import OrderItemAdmin
 from .stockitem import StockItemAdmin
-from .order import *
-from .shop import *
-from .attachement import *
+from .order import OrderAdmin
+from .shop import ShopAdmin
+from .attachement import AttachementAdmin
 
 from ..models import Category, Project, Storage
 
