@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.db.models import UniqueConstraint
 
 from taggit.managers import TaggableManager
+from mptt.fields import TreeManyToManyField
 
 from . import Attachement
 
@@ -23,9 +24,9 @@ class StockItem(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     count = models.PositiveIntegerField("number of items used", default=0)
     tags = TaggableManager(blank=True)
-    #category https://stackoverflow.com/questions/65040416/using-django-mptt-in-django-filters-to-get-children-on-filtering-parent-node
-    #project
-    #storage
+    category = TreeManyToManyField('Category', blank=True)
+    project = TreeManyToManyField('Project', blank=True, related_name="stockitems",)
+    storage = TreeManyToManyField('Storage', blank=True)
     orderitems = models.ManyToManyField(
         "OrderItem",
         through="OrderStockItemLink",

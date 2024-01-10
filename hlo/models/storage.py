@@ -46,16 +46,30 @@ class Storage(CommonTreeModel):
     class Meta:
         verbose_name_plural = "storage"
 
+    def get_hex(self):
+        return self.VALUE_TO_HEX[self.color] if self.color else ""
+
+    def get_html_box(self):
+        return mark_safe(
+            (self.parent.get_html_box() + '&nbsp;' if self.parent else "")
+            + '<span style="'
+            + "display: inline-block; "
+            + "width: 1.2em; "
+            + "height: 1.2em; "
+            + "border: 3px solid grey; "
+            + "margin-top: 0.2em; "
+            + "background-color: "
+            + self.get_hex()
+            + ';"></span>'
+            if self.color
+            else ""
+        )
+
     def html_rep(self):
         return mark_safe(
-            str(self.name)
-            + str(
-                '&nbsp;<span style="color: '
-                + self.VALUE_TO_HEX[self.color]
-                + '">██</span>'
-                if self.color
-                else ""
-            )
+            (self.parent.name + "&nbsp;" if self.parent else "")
+            + str(self.name)
+            + str("&nbsp;&nbsp;&nbsp;" + self.get_html_box())
         )
 
     def __str__(self):
