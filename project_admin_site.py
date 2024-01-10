@@ -8,9 +8,9 @@ from django.contrib import admin as a
 logger = logging.getLogger(__name__)
 
 class HLOProjectAdminSite(a.AdminSite):
-    site_header = "Monty Python administration"
+    site_header = "HLO administration"
 
-    #def get_app_list(self, request):
+    def get_app_list(self, request):
         #"""
         #Return a sorted list of all the installed apps that have been
         #registered in this site.
@@ -29,8 +29,18 @@ class HLOProjectAdminSite(a.AdminSite):
         # Sort the models alphabetically within each app.
         #for app in app_list:
         #    app['models'].sort(key=lambda x: ordering[x['name']])
-    #    app_list = super().get_app_list(request)
-    #    logger.error(app_list)
-    #    return app_list
+        app_list = super().get_app_list(request)
+        #import pprint
+        #pp = pprint.PrettyPrinter(indent=4)
+        #logger.error(pp.pformat(app_list))
+        #for app in app_list:
+        #    if app['app_label'] == 'hlo':
+        #        models = app['models'].copy()
+        #        app['models'] = []
+        #        for model in models:
+        #            if model['object_name'] in ['Category', 'Project', 'Storage']:
+        #                continue
+        #            app['models'].append(model.copy())
+        return app_list
 
 #my_admin = HLOAdminSite()

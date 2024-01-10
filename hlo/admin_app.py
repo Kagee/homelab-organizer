@@ -1,7 +1,8 @@
-#from django.contrib.admin import apps as aapps
 from django.contrib.admin.apps import AdminConfig
-#from hlo.admin.site import HLOAdminSite
 
+# If this is in apps.py, i get
+# django.core.exceptions.ImproperlyConfigured:
+# Application labels aren't unique, duplicates: admin
 
 class HLOAdminConfig(AdminConfig):
     # Notice that HLOProjectAdminSite and HLOAdminSite are
