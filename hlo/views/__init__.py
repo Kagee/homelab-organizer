@@ -10,6 +10,8 @@ from .storage import *
 from .project import *
 from .category import *
 
+from hlo.models import *
+
 logger = logging.getLogger(__name__)
 
 
@@ -29,3 +31,7 @@ def index(request):
             }
     )
 
+def render404(request, exception):
+     return render(
+        request, "404.html"
+    )

@@ -101,13 +101,29 @@ class OrderItemFilter(django_filters.FilterSet):
             ("name", "name"),
             ("order__date", "order__date"),
         ),
-        # field_labels={
-        #    'name': 'Title',
-        # }
     )
 
     class Meta:
         model = OrderItem
         fields = {
             "order__shop": ["exact"],
+        }
+
+class StockItemFilter(django_filters.FilterSet):
+    name = django_filters.LookupChoiceFilter(
+        label="Stock item name",
+        lookup_choices=[
+            ("icontains", "Contains"),
+            ("istartswith", "Starts with"),
+            ("iexact", "Equals"),
+        ],
+        empty_label=None,
+    )
+
+
+    class Meta:
+        model = OrderItem
+        fields = {
+            "name" # not suire if correct, fields is required
+            #"order__shop": ["exact"],
         }

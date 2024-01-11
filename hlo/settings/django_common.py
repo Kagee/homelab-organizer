@@ -32,7 +32,7 @@ MEDIA_URL: str = "files/"
 # Take environment variables from .env file
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
-DEBUG: bool = env("DEBUG")
+DEBUG: bool = env("DEBUG", False)
 
 INTERNAL_IPS = [
     "127.0.0.1"

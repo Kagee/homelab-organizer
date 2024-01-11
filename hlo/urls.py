@@ -10,7 +10,6 @@ from . import views
 from .views import (
     StockItemCreate,
     StockItemDetail,
-    StockItemList,
     StockItemUpdate,
     TagAutoResponseView,
     AttachementSearchView,
@@ -42,7 +41,7 @@ urlpatterns = [
         name="index",
     ),
     path("search/", AttachementSearchView.as_view(), name="attachementsearch"),
-    path("stockitem/list", StockItemList.as_view(), name="stockitem-list"),
+    path("stockitem/list", views.stockitem_list, name="stockitem-list"),
     path(
         "stockitem/detail/<int:pk>",
         StockItemDetail.as_view(),
@@ -70,3 +69,5 @@ urlpatterns = [
     ),
     # Serve static contect through Django
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler404 = "hlo.views.render404"

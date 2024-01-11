@@ -14,9 +14,17 @@
 			  integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 			  crossorigin="anonymous"></script>
         {{ form.media.css }}
-         <style>
+    <style>
         .select2 input, select.django-select2 { width: 20em; }
+        {% block css %}
+        /* No custom CSS for this page */
+        {% endblock css %}
     </style>
+    <script type="text/javascript">
+      {% block javascript %}
+      // No custom JS for this page
+      {% endblock javascript %}
+    </script>
   </head>
   <body>
     {% include "navbar.html" %}

@@ -24,9 +24,17 @@ class StockItem(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     count = models.PositiveIntegerField("number of items used", default=0)
     tags = TaggableManager(blank=True)
-    category = TreeManyToManyField('Category', blank=True)
-    project = TreeManyToManyField('Project', blank=True, related_name="stockitems",)
-    storage = TreeManyToManyField('Storage', blank=True)
+    category = TreeManyToManyField(
+        "Category", blank=True, related_name="stockitems"
+    )
+    project = TreeManyToManyField(
+        "Project",
+        blank=True,
+        related_name="stockitems",
+    )
+    storage = TreeManyToManyField(
+        "Storage", blank=True, related_name="stockitems"
+    )
     orderitems = models.ManyToManyField(
         "OrderItem",
         through="OrderStockItemLink",
@@ -38,6 +46,13 @@ class StockItem(models.Model):
         related_name="attachements",
         blank=True,
     )
+
+    def thumbnail(self):
+        if self.orderitems:
+            for orderitem in self.orderitems.all():
+                if orderitem.thumbnail:
+                    return orderitem.thumbnail.url
+        return None
 
 
 class OrderStockItemLink(models.Model):
