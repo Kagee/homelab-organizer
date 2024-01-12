@@ -47,12 +47,24 @@ class StockItem(models.Model):
         blank=True,
     )
 
+    def orderitems_names(self):
+        names = []
+        if self.orderitems:
+            for orderitem in self.orderitems.all():
+                names.append(orderitem.name)
+        return names
+
     def thumbnail(self):
         if self.orderitems:
             for orderitem in self.orderitems.all():
                 if orderitem.thumbnail:
                     return orderitem.thumbnail.url
         return None
+
+    def __str__(self):
+        if self.name:
+            return str(self.name)
+        return str(self.orderitems.all().first().name)
 
 
 class OrderStockItemLink(models.Model):
@@ -61,9 +73,10 @@ class OrderStockItemLink(models.Model):
         to_field="gen_id",
         # When OrderItem is deleted, do nothing
         on_delete=models.DO_NOTHING,
-        related_name="stockitem",
         db_constraint=False,
+        related_name="stockitem",
     )
+
     stockitem = models.ForeignKey(
         "StockItem",
         # When StockItem is deleted, delete link

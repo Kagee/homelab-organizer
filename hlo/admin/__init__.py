@@ -12,5 +12,6 @@ from .attachement import AttachementAdmin
 from .category import CategoryAdmin
 from .project import ProjectAdmin
 from .storage import StorageAdmin
+from .orderitemmeta import OrderItemMetaAdmin
 
 logger = logging.getLogger(__name__)

@@ -80,25 +80,37 @@ except ImportError:
                 "class": "logging.StreamHandler",
                 "formatter": "verbose",
             },
-            "file": {
-                "class": "logging.FileHandler",
-                "filename": "scraper.log",
-                "formatter": "verbose",
-                "encoding": "utf-8",
-            },
+            #"file": {
+            #    "class": "logging.FileHandler",
+            #    "filename": "scraper.log",
+            #    "formatter": "verbose",
+            #    "encoding": "utf-8",
+            #},
         },
         "root": {
-            "handlers": [],
+            "handlers": ["console"],
             "level": "WARNING",
         },
         "loggers": {
             #'order_scraper.management.commands.scrapers.......'
             #'order_scraper.management.commands....'
-            "hlo.management.commands": {
+            #"hlo.management.commands": {
+                #"handlers": ["console", "file"],
+            #    "handlers": ["console"],
+            #    "level": "DEBUG",  # Will be overriden by --verbosity
+            #},
+            "": {
                 #"handlers": ["console", "file"],
                 "handlers": ["console"],
-                "level": "DEBUG",  # Will be overriden by --verbosity
-            }
+                "level": "INFO",  # Will be overriden by --verbosity
+            },
+            # Prod level server
+            #'daphne': {
+            #    'handlers': [
+            #        'console',
+            #    ],
+            #    'level': 'DEBUG'
+            #},
         },
     }
 
@@ -125,6 +137,8 @@ INSTALLED_APPS: List[str] = [
     "django_select2",
     "debug_toolbar",
     "mptt",
+    "crispy_forms",
+    "crispy_bootstrap5",
     "hlo",
 ]
 
@@ -219,3 +233,13 @@ GRAPH_MODELS = {
   "rankdir": "TB",
   "theme": "django2018",
 }
+
+#DEBUG_TOOLBAR_CONFIG = {
+#    'DISABLE_PANELS': {
+#         'debug_toolbar.panels.staticfiles.StaticFilesPanel'
+#    }
+#}
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"

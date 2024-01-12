@@ -10,7 +10,7 @@ class OrderItemStockItemLinkInlineAdmin(admin.TabularInline):
     fields = ['orderitem',]
     autocomplete_fields = ['orderitem',]
 
-
+@admin.register(StockItem)
 class StockItemAdmin(admin.ModelAdmin):
     search_fields = ["name", "orderitems__name"]
     def get_inlines(self, request, obj=None):
@@ -18,5 +18,3 @@ class StockItemAdmin(admin.ModelAdmin):
         if obj.orderitems.count():
             return [OrderItemStockItemLinkInlineAdmin,]
         return []
-
-admin.site.register(StockItem, StockItemAdmin)

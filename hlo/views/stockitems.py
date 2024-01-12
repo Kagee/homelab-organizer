@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import DetailView, CreateView, UpdateView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 
@@ -8,8 +8,12 @@ from django_select2.views import AutoResponseView
 
 from taggit.models import Tag
 
-from hlo.models import StockItem
+from hlo.models import StockItem, OrderItem
 from hlo.filters import StockItemFilter
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class TagAutoResponseView(AutoResponseView):
@@ -59,13 +63,31 @@ class TagChoices(ModelSelect2TagWidget):
         return ",".join(cleaned_values)
 
 
+from django import forms
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+
+
+class ExampleForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+
+
 class StockItemCreate(CreateView):
     model = StockItem
+    # form_class = ExampleForm
     template_name = "stockitem/form.html"
     fields = ["name", "count", "tags", "orderitems"]
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
+        # django-crispy-form formhelper
+        # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
+        form.helper = FormHelper()
+        form.helper.add_input(
+            Submit("submit", "Create", css_class="btn-primary")
+        )
         # We override the widget for tags for autocomplete
         form.fields["tags"].widget = TagChoices(
             data_view="stockitem-tag-auto-json"
@@ -82,6 +104,8 @@ class StockItemCreate(CreateView):
             form.fields["orderitems"].widget.attrs["size"] = min(
                 form.fields["orderitems"].queryset.all().count(), 5
             )
+            #
+            logger.error(dir(form.fields["name"]))  # .value = "Order items"
         return form
 
     def get_initial(self):
@@ -91,16 +115,22 @@ class StockItemCreate(CreateView):
         initial = initial.copy()
         # if get paramenter fromitems is set, preselect these items
         if "fromitems" in self.kwargs:
-            initial["orderitems"] = OrderItem.objects.filter(
+            qs = OrderItem.objects.filter(
                 pk__in=[int(x) for x in self.kwargs["fromitems"].split(",")]
             )
+            initial["orderitems"] = qs
+            initial["name"] = qs.first().name
         return initial
 
 
 class StockItemDetail(DetailView):
     model = StockItem
+    queryset = model.objects.all().prefetch_related(
+        "tags",
+        "orderitems",
+    )
     template_name = "stockitem/detail.html"
-    context_object_name = "stock_item"
+    context_object_name = "stockitem"
 
 
 class StockItemUpdate(UpdateView):
@@ -118,9 +148,7 @@ class StockItemUpdate(UpdateView):
 
 
 def stockitem_list(request):
-    qs_orderitems = (
-        StockItem.objects.all()
-    )
+    qs_orderitems = StockItem.objects.all()
     f = StockItemFilter(request.GET, queryset=qs_orderitems)
     paginator = Paginator(f.qs, 10)
 

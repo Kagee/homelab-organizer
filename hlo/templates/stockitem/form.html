@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Create stock item{% endblock title %}
 {% block content %}
-<h1>Create stock item</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p}}
-    {{ form.non_field_errors }}
-    {{ field.errors }}
-    <button type="submit">Create</button>
-</form>
-{{ form.media.js }}
+
+<div class="row">
+    <div class="col">
+        {% load crispy_forms_tags %}
+
+        <form method="post" class="my-class">
+            {% crispy form %}
+        </form>
+    </div>
+</div>
 {% endblock content %}

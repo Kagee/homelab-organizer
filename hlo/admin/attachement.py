@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from ..models import Attachement
 
-#@admin.site.register(Attachement)
+@admin.register(Attachement)
 class AttachementAdmin(admin.ModelAdmin):
     search_fields = ["name", "comment", "file"]
     readonly_fields = ["used_by", "text_ornot"]
@@ -37,6 +37,3 @@ class AttachementInlineAdmin(admin.TabularInline):
     extra = 1
     fields = ['attachements',]
     #autocomplete_fields = ['orderitem',]
-
-
-admin.site.register(Attachement, AttachementAdmin)

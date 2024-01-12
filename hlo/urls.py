@@ -67,7 +67,7 @@ urlpatterns = [
     path(
         "order/detail/<int:pk>", OrderDetailView.as_view(), name="order-detail"
     ),
-    # Serve static contect through Django
+    # Serve static content through Django
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = "hlo.views.render404"

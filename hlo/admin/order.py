@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from ..models import Order
 
+@admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ["date", "items_count", "shop_name"]
     list_filter = [
@@ -44,5 +45,3 @@ class OrderAdmin(admin.ModelAdmin):
                 fields.insert(len(fields)-1, "shipping")
             return fields
         return super().get_fields(request, obj)
-
-admin.site.register(Order, OrderAdmin)

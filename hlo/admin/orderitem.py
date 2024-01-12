@@ -4,7 +4,7 @@ from django.forms import TextInput, Textarea
 
 from ..models import OrderItem
 
-admin.site.register(OrderItem)
+@admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     search_fields = ["name", "item_id", "item_variation", "order__shop__branch_name"]
     def get_readonly_fields(self, request, obj=None):

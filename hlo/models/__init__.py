@@ -10,3 +10,4 @@ from .commontree import CommonTreeModel
 from .storage import Storage
 from .category import Category
 from .project import Project
+from .orderitemmeta import OrderItemMeta

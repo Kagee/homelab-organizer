@@ -2,12 +2,134 @@
 {% load django_bootstrap5 %}
 {% block title %}Details for {{ stock_item.name }}{% endblock title %}
 {% block content %}
-<div class="row">
-    <div class="col-6">
-    name {{ stock_item.name }}<br>
-    count {{ stock_item.count }}<br>
-    tags {{ stock_item.tags.all }}<br>
-    orderitems {{ stock_item.orderitems.all }}<br>
-    attachements {{ stock_item.attachements.all }}<br>
-  </div>                    
+{% load mptt_tags %}
+<div class="row mt-3">
+  <div class="col-7">
+    <div class="row">
+      <div class="col-12">
+        <h3>
+          {{ stockitem }}
+        </h3>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-12">
+        <div class="table-responsive">
+          <table class="table">
+            <tr class="table-dark">
+              <td colspan="2">Tags</td>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <ul class="list-inline">
+                  {% for tag in stockitem.tags.all %}
+                  <li class="list-inline-item">{{ tag.name }}</li>
+                  {% empty %}
+                  <li class="list-inline-item">No tags applied</li>
+                  {% endfor %}
+                </ul>
+
+              </td>
+            </tr>
+
+            <tr class="table-dark">
+              <td colspan="2">studff</td>
+              </td>
+            </tr>
+            <tr>
+              <td>Categories</td>
+              <td colspan="2">
+                <ul class="list">
+                  {% for tag in stockitem.category.all %}
+                  <li class="list-item">{{ tag.name }}</li>
+                  {% empty %}
+                  <li class="list-item">No categories</li>
+                  {% endfor %}
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Projects</td>
+              <td colspan="2">
+                <ul class="list">
+                  {% for tag in stockitem.project.all %}
+                  <li class="list-item">{{ tag.name }}</li>
+                  {% empty %}
+                  <li class="list-item">No projects</li>
+                  {% endfor %}
+                </ul>
+              </td>
+            </tr>
+
+            <tr>
+              <td>Storage</td>
+              <td colspan="2">
+                <ul class="list">
+                  {% for storage in stockitem.storage.all %}
+                    {% drilldown_tree_for_node storage as storage_drilldown %}
+                    <li class="list-item">
+                      {% for node,structure in storage_drilldown|tree_info %}
+                      {{ node.name }}{% if not node.is_leaf_node %}&nbsp;&gt;&nbsp;{% endif %}
+                      {% endfor %}
+                    </li>
+                  {% empty %}
+                    <li class="list-item">No storage locations</li>
+                  {% endfor %}
+                </ul>
+              </td>
+            </tr>
+
+            <tr class="table-dark">
+              <td colspan="2">Related items and attachements</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                Order items
+              </td>
+              <td>
+                {% for orderitem in stockitem.orderitems.all %}
+                {{ orderitem }}<br>
+                {% if orderitem.attachements.all %}
+                <ul>
+                  {% endif %}
+                  {% for attachement in orderitem.attachements.all %}
+                  <li><a href="{{ attachement.file.url }}" target="_blank">{{ attachement.name }}</a></li>
+                  {% endfor %}
+                  {% if orderitem.attachements.all %}
+                </ul>
+                {% endif %}
+                {% empty %}
+                No linked order items
+                {% endfor %}
+              </td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                Attachements
+              </td>
+              <td>
+                {% for attachement in stockitem.attachements.all %}
+                {{ attachement }}<br>
+                {% empty %}
+                No attachements
+                {% endfor %}
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-5">
+    {% for orderitem in stockitem.orderitems.all %}
+    <img src="{{ orderitem.thumbnail.url }}" class="img-fluid" />
+    {% empty %}
+    TODO: Insert no-image image
+    {% endfor %}
+  </div>
+</div>
+</div>
+
 {% endblock %}
