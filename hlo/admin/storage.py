@@ -14,6 +14,6 @@ class StorageAdmin(DraggableMPTTAdmin):
         return format_html(
             '<div style="text-indent:{}px">{}</div>',
             # pylint: disable=protected-access
-            instance._mpttfield("level") * self.mptt_level_indent,
+            instance._mpttfield("level") * self.mptt_level_indent,  # noqa: SLF001
             instance.html_rep(),  # Or whatever you want to put here
         )

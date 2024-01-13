@@ -1,4 +1,4 @@
-import environ  # type: ignore
+import environ
 
 env = environ.FileAwareEnv()
 env.prefix = "HLO_"

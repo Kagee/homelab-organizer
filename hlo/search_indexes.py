@@ -17,6 +17,10 @@ class AttachementIndex(indexes.SearchIndex, indexes.Indexable):
     def get_model(self):
         return Attachement
 
-    def index_queryset(self, using=None):
+    def index_queryset(self, _using=None):
         """Used when the entire index for model is updated."""
-        return self.get_model().objects.annotate(text_len=Length("text")).filter(text_len__gte=10)
+        return (
+            self.get_model().objects
+            .annotate(text_len=Length("text"))
+            .filter(text_len__gte=10)
+            )

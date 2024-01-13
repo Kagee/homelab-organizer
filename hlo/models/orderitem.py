@@ -31,15 +31,6 @@ def thumnail_path(instance, filename):
 
 
 class OrderItem(models.Model):
-    class Meta:
-        ordering = ["order__date", "name"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["item_id", "item_variation", "order"],
-                name="unique_id_sku_order",
-            ),
-        ]
-
     name = models.CharField(max_length=255)
     item_id = models.CharField(
         "Shop item ID",
@@ -97,10 +88,57 @@ class OrderItem(models.Model):
     extra_data = models.JSONField(default=dict, blank=True)
 
     sha1 = models.CharField(
-        max_length=40, editable=False, default=None, null=True,
+        max_length=40,
+        editable=False,
+        default=None,
+        blank=True,
     )
     # Weak FK for StockItem
     gen_id = models.CharField(max_length=1024, editable=False, unique=True)
+
+    class Meta:
+        ordering = ["order__date", "name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["item_id", "item_variation", "order"],
+                name="unique_id_sku_order",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            # pylint: disable=no-member
+            f"{self.order.shop.branch_name} item"
+            f" #{self.item_id}"
+            f"/{self.item_variation}" if len(self.item_variation) else ""
+            f": {self.name}"
+        )
+
+    def save(self, *args, **kwargs):
+        # pylint: disable=no-member
+        if self.thumbnail:
+            with self.thumbnail.open("rb") as f:
+                tbhash = hashlib.sha1()  # noqa: S324
+                if f.multiple_chunks():
+                    for chunk in f.chunks():
+                        tbhash.update(chunk)
+                else:
+                    tbhash.update(f.read())
+                self.sha1 = tbhash.hexdigest()
+
+                super().save(*args, **kwargs)
+        else:
+            self.sha1 = None
+        self.gen_id = (
+            f"{self.order.shop.branch_name}-{self.order.order_id}-"
+            f"{self.item_id}-"
+            f"{self.item_variation}"
+            if len(self.item_variation) else "novariation"
+        )
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("orderitem", kwargs={"pk": self.pk})
 
     def image_tag(self, px=150):
         # pylint: disable=no-member
@@ -117,48 +155,28 @@ class OrderItem(models.Model):
         # pylint: disable=no-member
         if self.attachements.count() == 0:
             return "No attachements"
-        else:
-            html = '<ul style="margin: 0;">'
-            for attachement in self.attachements.all():
-                html += (
-                    f'<li><a href="{attachement.file.url}"'
-                    f' target="_blank">{attachement}</a></li>'
-                )
-            html += "</ul>"
-            return mark_safe(html)
+        html = '<ul style="margin: 0;">'
+        for attachement in self.attachements.all():
+            html += (
+                f'<li><a href="{attachement.file.url}"'
+                f' target="_blank">{attachement}</a></li>'
+            )
+        html += "</ul>"
+        return mark_safe(html)
 
     attachements_tag.short_description = "Attachements"
 
     def item_ref(self):
         return (
-            f"{self.item_id}{' / ' if len(self.item_variation) else ''}{self.item_variation}"
+            f"{self.item_id}"
+            f"{' / ' if len(self.item_variation) else ''}"
+            f"{self.item_variation}"
         )
 
     item_ref.short_description = "Item ID / SKU"
 
     def get_orderitem_url(self):
         return self.order.shop.item_url_template.format(item_id=self.item_id)
-
-    def save(self, *args, **kwargs):
-        # pylint: disable=no-member
-        if self.thumbnail:
-            with self.thumbnail.open("rb") as f:
-                tbhash = hashlib.sha1()
-                if f.multiple_chunks():
-                    for chunk in f.chunks():
-                        tbhash.update(chunk)
-                else:
-                    tbhash.update(f.read())
-                self.sha1 = tbhash.hexdigest()
-
-                super().save(*args, **kwargs)
-        else:
-            self.sha1 = None
-        self.gen_id = (
-            f"{self.order.shop.branch_name}-{self.order.order_id}-"
-            f"{self.item_id}-{self.item_variation if len(self.item_variation) else 'novariation'}"
-        )
-        super().save(*args, **kwargs)
 
     @admin.display(description="Order ID")
     def item_url(self):
@@ -175,15 +193,4 @@ class OrderItem(models.Model):
         return format_html(
             "<pre>{}</pre>",
             escape(pprint.PrettyPrinter(indent=2).pformat(self.extra_data)),
-        )
-
-    def get_absolute_url(self):
-        return reverse("orderitem", kwargs={"pk": self.pk})
-
-    def __str__(self):
-        return (
-            # pylint: disable=no-member
-            f"{self.order.shop.branch_name} item"
-            f" #{self.item_id}{f'/{self.item_variation}' if len(self.item_variation) else ''}:"
-            f" {self.name}"
         )

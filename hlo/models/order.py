@@ -12,15 +12,6 @@ from .shop import Shop
 
 
 class Order(models.Model):
-    class Meta:
-        ordering = ["date"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["shop", "order_id"],
-                name="unique_shop_order_id",
-            ),
-        ]
-
     shop: Shop = models.ForeignKey(
         Shop,
         on_delete=models.CASCADE,
@@ -73,7 +64,9 @@ class Order(models.Model):
     )
 
     created_at = models.DateTimeField(
-        "Created at", auto_now_add=True, editable=True,
+        "Created at",
+        auto_now_add=True,
+        editable=True,
     )
     # Extra data that we do not import into model
     extra_data = models.JSONField(
@@ -81,20 +74,35 @@ class Order(models.Model):
         blank=True,
     )
 
+    class Meta:
+        ordering = ["date"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["shop", "order_id"],
+                name="unique_shop_order_id",
+            ),
+        ]
+
+    def __str__(self):
+        return (  # pylint: disable=no-member
+            f"{self.shop.branch_name} order #{self.order_id} with"
+            # 2pylint: disable=no-member
+            f" {self.items.count()} items"
+        )
+
     @admin.display(description="Items")
     def attachements_tag(self):
         # pylint: disable=no-member
         if self.attachements.count() == 0:
             return "No attachements"
-        else:
-            html = '<ul style="margin: 0;">'
-            for attachement in self.attachements.all():
-                html += (
-                    f'<li><a href="{attachement.file.url}"'
-                    f' target="_blank">{attachement}</a></li>'
-                )
-            html += "</ul>"
-            return mark_safe(html)
+        html = '<ul style="margin: 0;">'
+        for attachement in self.attachements.all():
+            html += (
+                f'<li><a href="{attachement.file.url}"'
+                f' target="_blank">{attachement}</a></li>'
+            )
+        html += "</ul>"
+        return mark_safe(html)
 
     attachements_tag.short_description = "Attachements"
 
@@ -111,30 +119,31 @@ class Order(models.Model):
     def items_list(self):
         if not self.items.count():
             return "No items in database"
-        else:
-            return format_html(
-                '<ul style="margin: 0;">{}</ul>',
-                format_html_join(
-                    "\n",
-                    '<li><a href="{}">{}</a>&nbsp;&nbsp;(<a target="_blank"'
-                    ' href="{}">View on {}</a>)</li>',
-                    [
-                        (
-                            reverse(
-                                "admin:hlo_orderitem_change",
-                                args=(i[1],),
-                            ),
-                            i[0],
-                            # pylint: disable=no-member
-                            self.shop.item_url_template.format(item_id=i[2]),
-                            self.shop.branch_name,
-                        )
-                        for i in self.items.all().values_list(
-                            "name", "id", "item_id",
-                        )
-                    ],
-                ),
-            )
+        return format_html(
+            '<ul style="margin: 0;">{}</ul>',
+            format_html_join(
+                "\n",
+                '<li><a href="{}">{}</a>&nbsp;&nbsp;(<a target="_blank"'
+                ' href="{}">View on {}</a>)</li>',
+                [
+                    (
+                        reverse(
+                            "admin:hlo_orderitem_change",
+                            args=(i[1],),
+                        ),
+                        i[0],
+                        # pylint: disable=no-member
+                        self.shop.item_url_template.format(item_id=i[2]),
+                        self.shop.branch_name,
+                    )
+                    for i in self.items.all().values_list(
+                        "name",
+                        "id",
+                        "item_id",
+                    )
+                ],
+            ),
+        )
 
     @admin.display(description="Order URL")
     def order_url(self):
@@ -167,10 +176,3 @@ class Order(models.Model):
 
     def get_order_url(self):
         return self.shop.order_url_template.format(order_id=self.order_id)
-
-    def __str__(self):
-        return (  # pylint: disable=no-member
-            f"{self.shop.branch_name} order #{self.order_id} with"
-            # 2pylint: disable=no-member
-            f" {self.items.count()} items"
-        )

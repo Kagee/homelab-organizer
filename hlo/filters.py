@@ -1,9 +1,7 @@
-# import logging
-from datetime import datetime
-
 import django_filters
 from django.db.models import Max, Min
 from django.db.utils import OperationalError
+from django.utils.timezone import now
 
 from .models import Order, OrderItem
 
@@ -11,32 +9,32 @@ from .models import Order, OrderItem
 class OrderDateRangeFilter(django_filters.DateRangeFilter):
     order_choices = [
         ("month", "This month"),
-        (f"year-{datetime.now().year}", "This year"),
-        (f"year-{datetime.now().year-1}", "Previous year"),
+        (f"year-{now().year}", "This year"),
+        (f"year-{now().year-1}", "Previous year"),
     ]
 
     order_filters = {
         "month": lambda qs, name: qs.filter(
             **{
-                "%s__year" % name: datetime.now().year,
-                "%s__month" % name: datetime.now().month,
+                "%s__year" % name: now().year,
+                "%s__month" % name: now().month,
             },
         ),
-        f"year-{datetime.now().year}": lambda qs, name: qs.filter(
+        f"year-{now().year}": lambda qs, name: qs.filter(
             **{
-                "%s__year" % name: datetime.now().year,
+                "%s__year" % name: now().year,
             },
         ),
-        f"year-{datetime.now().year-1}": lambda qs, name: qs.filter(
+        f"year-{now().year-1}": lambda qs, name: qs.filter(
             **{
-                "%s__year" % name: datetime.now().year - 1,
+                "%s__year" % name: now().year - 1,
             },
         ),
     }
 
     # pylint: disable=keyword-arg-before-vararg
-    def __init__(self, choices=None, filters=None, *args, **kwargs):
-        this_year = datetime.now().year
+    def __init__(self, _choices=None, _filters=None, *args, **kwargs):
+        this_year = now().year
         try:
             order_years = Order.objects.aggregate(
                 Max("date__year"), Min("date__year"),
@@ -65,7 +63,8 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
             if year in (this_year, this_year - 1):
                 continue
             self.order_choices.append((f"year-{year!s}", str(year)))
-            # We have to capture year in l_year, if not all lambdas would use the same year value
+            # We have to capture year in l_year,
+            # if not all lambdas would use the same year value
             self.order_filters[f"year-{year!s}"] = (
                 lambda qs, name, lambda_year=year: qs.filter(
                     **{
@@ -77,7 +76,7 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
             choices=self.order_choices,
             filters=self.order_filters,
             field_name="order__date",
-            *args, **kwargs,
+            *args, **kwargs,  # noqa: B026
         )
 
 
@@ -127,5 +126,5 @@ class StockItemFilter(django_filters.FilterSet):
         model = OrderItem
         fields = {
             "name", # not suire if correct, fields is required
-            #"order__shop": ["exact"],
+            # "order__shop": ["exact"],  # noqa: ERA001
         }

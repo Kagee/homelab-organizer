@@ -15,9 +15,9 @@ from .views import (
     TagAutoResponseView,
 )
 
-urlpatterns = [
+urlpatterns = [*[
     path("admin/", admin.site.urls, name="admin"),
-    # path("admin/", hlo_admin.urls, name="admin"),
+    # path("admin/", hlo_admin.urls, name="admin"),  # noqa: ERA001
     # django-debug-toolbar
     path("__debug__/", include("debug_toolbar.urls")),
     # django-select2
@@ -29,7 +29,7 @@ urlpatterns = [
         name="stockitem-tag-auto-json",
     ),
     # Return empty for favicon
-    path("favicon.ico", lambda request: HttpResponse()),
+    path("favicon.ico", lambda _request: HttpResponse()),
     path(
         "",
         views.index,
@@ -58,11 +58,10 @@ urlpatterns = [
         OrderItemDetailView.as_view(),
         name="orderitem",
     ),
-    # path("order/list", OrderListView.as_view(), name="orders-list"),
     path(
         "order/detail/<int:pk>", OrderDetailView.as_view(), name="order-detail",
     ),
     # Serve static content through Django
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+], *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)]
 
 handler404 = "hlo.views.render404"

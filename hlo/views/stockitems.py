@@ -63,8 +63,10 @@ class TagChoices(ModelSelect2TagWidget):
         cleaned_values = list(names)
         # if a value is not in names (tag with name does
         # not exists), it has to be created
-        for val in values - names:
-            cleaned_values.append(self.queryset.create(name=val).name)
+        cleaned_values += [
+            self.queryset.create(name=val).name
+            for val in (values - names)
+            ]
         # django-taggit expects a comma-separated list
         return ",".join(cleaned_values)
 

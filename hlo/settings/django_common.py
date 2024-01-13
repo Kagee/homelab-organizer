@@ -1,11 +1,9 @@
 """Django settings for hlo project.
 """
-import os
-import os.path
 from pathlib import Path
 from typing import Any
 
-import environ  # type: ignore
+import environ
 
 env = environ.FileAwareEnv(
     # set casting, default value
@@ -30,9 +28,9 @@ BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
 MEDIA_ROOT: Path = (BASE_DIR / Path("media_root")).resolve()
 MEDIA_URL: str = "files/"
 # Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+environ.Env.read_env(BASE_DIR / ".env")
 
-DEBUG: bool = env("DEBUG", False)
+DEBUG: bool = env("DEBUG", default=False)
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -60,7 +58,7 @@ DATABASES = {
 
 try:
     # Define you own logging in LOGGING here
-    from .logging import *  # type: ignore  # pylint: disable=wildcard-import
+    from .logging import *  # noqa: F403
 except ImportError:
     LOGGING = {
         "version": 1,
@@ -183,7 +181,8 @@ WSGI_APPLICATION: str = "hlo.wsgi.application"
 
 AUTH_PASSWORD_VALIDATORS: list[dict[str, Any]] = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation."
+        "UserAttributeSimilarityValidator",
     },
     {
         "NAME": (
@@ -213,12 +212,14 @@ DEFAULT_AUTO_FIELD: str = "django.db.models.BigAutoField"
 BOOTSTRAP5 = { # We need bootstrap >= 5.3 for dark mode
     "css_url": {
         "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css",
-        "integrity": "sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN",
+        "integrity": "sha384-T3c6CoIi6uLrA9TneNEoa7R"
+        "xnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN",
         "crossorigin": "anonymous",
     },
     "javascript_url": {
         "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js",
-        "integrity": "sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL",
+        "integrity": "sha384-C6RzsynM9kWDrMNeT87bh95O"
+        "GNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL",
         "crossorigin": "anonymous",
     },
 }

@@ -6,8 +6,7 @@ from django.core.management.base import (
     no_translations,
 )
 
-# pylint: disable=wildcard-import
-from .loaders import *
+from .loaders import ShopMetaLoader, ShopOrderLoader
 
 
 class Command(BaseCommand):
@@ -35,9 +34,7 @@ class Command(BaseCommand):
         scraper.add_argument(
             "--skip-attachements",
             action="store_true",
-            help=(
-                "Skip attachements when importing."
-            ),
+            help=("Skip attachements when importing."),
         )
 
     def setup_logger(self, options):
@@ -48,10 +45,10 @@ class Command(BaseCommand):
         elif options["verbosity"] == 1:
             # 1 = normal output
             log.setLevel(logging.WARNING)
-        elif options["verbosity"] == 2:
+        elif options["verbosity"] == 2:  # noqa: PLR2004
             # 2 = verbose output
             log.setLevel(logging.INFO)
-        elif options["verbosity"] == 3:
+        elif options["verbosity"] == 3:  # noqa: PLR2004
             # 3 = very verbose output
             log.setLevel(logging.DEBUG)
         # pylint: disable=attribute-defined-outside-init

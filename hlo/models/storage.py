@@ -6,6 +6,8 @@ from .commontree import CommonTreeModel
 
 class Storage(CommonTreeModel):
     COLOR_CHOICES = [
+        # ruff: noqa: ERA001
+        # Optional sub-options
         # (
         #    "No color",
         #    (
@@ -41,7 +43,6 @@ class Storage(CommonTreeModel):
         choices=COLOR_CHOICES,
         default="",
         blank=True,
-        null=True,
     )
 
     class Meta:

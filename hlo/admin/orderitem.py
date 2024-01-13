@@ -7,8 +7,13 @@ from hlo.models import OrderItem
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
-    search_fields = ["name", "item_id", "item_variation", "order__shop__branch_name"]
-    def get_readonly_fields(self, request, obj=None):
+    search_fields = [
+        "name",
+        "item_id",
+        "item_variation",
+        "order__shop__branch_name",
+        ]
+    def get_readonly_fields(self, _request, obj=None):
         if (
             obj
         ):  # This is the case when obj is already created i.e. it's an edit
@@ -29,8 +34,7 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "attachements_tag",
                 "indent_extra_data",
             ]
-        else:
-            return []
+        return []
 
     filter_horizontal = ["attachements"]
     formfield_overrides = {
@@ -40,7 +44,7 @@ class OrderItemAdmin(admin.ModelAdmin):
         },
     }
 
-    def get_fields(self, request, obj=None):
+    def get_fields(self, _request, obj=None):
         if (
             obj
         ):  # This is the case when obj is already created i.e. it's an edit
@@ -57,17 +61,16 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "tax",
                 "indent_extra_data",
             ]
-        else:
-            return [
-                "name",
-                "count",
-                "thumbnail",
-                "attachements",
-                "order",
-                "item_id",
-                "item_variation",
-                "extra_data",
-                "total",
-                "subtotal",
-                "tax",
-            ]
+        return [
+            "name",
+            "count",
+            "thumbnail",
+            "attachements",
+            "order",
+            "item_id",
+            "item_variation",
+            "extra_data",
+            "total",
+            "subtotal",
+            "tax",
+        ]

@@ -14,7 +14,7 @@ class OrderItemStockItemLinkInlineAdmin(admin.TabularInline):
 @admin.register(StockItem)
 class StockItemAdmin(admin.ModelAdmin):
     search_fields = ["name", "orderitems__name"]
-    def get_inlines(self, request, obj=None):
+    def get_inlines(self, _request, obj=None):
         # We do this to not kill admin if OrderItem is deleted
         if obj.orderitems.count():
             return [OrderItemStockItemLinkInlineAdmin]

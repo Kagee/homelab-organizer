@@ -8,7 +8,7 @@ from . import Attachement
 
 
 class StockItem(models.Model):
-    name = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=255, blank=True, default="")
     count = models.PositiveIntegerField("number of items used", default=0)
     tags = TaggableManager(blank=True)
     category = TreeManyToManyField(
@@ -44,6 +44,13 @@ class StockItem(models.Model):
             ),
         ]
 
+
+    def __str__(self):
+        if self.name:
+            return str(self.name)
+        return str(self.orderitems.all().first().name)
+
+
     def get_absolute_url(self) -> str:
         return reverse("stockitem-detail", kwargs={"pk": self.pk})
 
@@ -51,8 +58,7 @@ class StockItem(models.Model):
     def orderitems_names(self):
         names = []
         if self.orderitems:
-            for orderitem in self.orderitems.all():
-                names.append(orderitem.name)
+            names = [orderitem.name for orderitem in self.orderitems.all()]
         return names
 
     def thumbnail(self):
@@ -61,11 +67,6 @@ class StockItem(models.Model):
                 if orderitem.thumbnail:
                     return orderitem.thumbnail.url
         return None
-
-    def __str__(self):
-        if self.name:
-            return str(self.name)
-        return str(self.orderitems.all().first().name)
 
 
 class OrderStockItemLink(models.Model):
