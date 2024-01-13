@@ -6,7 +6,7 @@ from django.core.management.base import (
     no_translations,
 )
 
-from .loaders import ShopMetaLoader, ShopOrderLoader
+from .loaders import ShopMetaLoader, ShopOrderLoader, TreeLoader
 
 
 class Command(BaseCommand):
@@ -22,6 +22,21 @@ class Command(BaseCommand):
                 "Initialize database with shop data from JSON files. Will"
                 " update existing data."
             ),
+        )
+
+        scraper.add_argument(
+            "--init-categories",
+            action="store_true",
+        )
+
+        scraper.add_argument(
+            "--init-projects",
+            action="store_true",
+        )
+
+        scraper.add_argument(
+            "--init-storage",
+            action="store_true",
         )
 
         scraper.add_argument(
@@ -68,7 +83,11 @@ class Command(BaseCommand):
                     ShopOrderLoader(shop, options)
             else:
                 ShopOrderLoader(options["import_shop"], options)
-        elif "init_shops" in options and options["init_shops"]:
+        if "init_shops" in options and options["init_shops"]:
             ShopMetaLoader.load()
-        else:
-            self.print_help("manage.py", "load")
+        if "init_categories" in options and options["init_categories"]:
+            TreeLoader.init_projects()
+        if "init_projects" in options and options["init_projects"]:
+            TreeLoader.init_categories()
+        if "init_storage" in options and options["init_storage"]:
+            TreeLoader.init_storage()
