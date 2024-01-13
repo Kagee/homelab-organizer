@@ -90,7 +90,7 @@ class OrderItem(models.Model):
     sha1 = models.CharField(
         max_length=40,
         editable=False,
-        default=None,
+        default="",
         blank=True,
     )
     # Weak FK for StockItem
