@@ -7,6 +7,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import CreateView, DetailView, UpdateView
+from django_select2 import forms as s2forms
 from django_select2.forms import ModelSelect2TagWidget
 from django_select2.views import AutoResponseView
 from taggit.models import Tag
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class TagAutoResponseView(AutoResponseView):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *_args, **kwargs):
         """This method is overriden for changing id to name instead of pk.
         """
         # pylint: disable=attribute-defined-outside-init
@@ -49,14 +50,19 @@ class TagChoices(ModelSelect2TagWidget):
         return {"name": value}
 
     def value_from_datadict(self, data, files, name):
-        """Create objects for missing tags. Return comma separates string of tags."""
+        """Create objects for missing tags.
+
+        Return comma separates string of tags.
+        """
         values = set(super().value_from_datadict(data, files, name))
         names = self.queryset.filter(name__in=list(values)).values_list(
-            "name", flat=True,
+            "name",
+            flat=True,
         )
         names = set(map(str, names))
         cleaned_values = list(names)
-        # if a value is not in names (tag with name does not exists), it has to be created
+        # if a value is not in names (tag with name does
+        # not exists), it has to be created
         for val in values - names:
             cleaned_values.append(self.queryset.create(name=val).name)
         # django-taggit expects a comma-separated list
@@ -71,7 +77,6 @@ class ExampleForm(forms.Form):
 
 class StockItemCreate(CreateView):
     model = StockItem
-    # form_class = ExampleForm
     template_name = "stockitem/form.html"
     fields = ["name", "count", "tags", "orderitems"]
 
@@ -97,7 +102,8 @@ class StockItemCreate(CreateView):
             )
             # Grow/shrink the html list size as required
             form.fields["orderitems"].widget.attrs["size"] = min(
-                form.fields["orderitems"].queryset.all().count(), 5,
+                form.fields["orderitems"].queryset.all().count(),
+                5,
             )
             #
             logger.error(dir(form.fields["name"]))  # .value = "Order items"
@@ -170,5 +176,7 @@ def stockitem_list(request):
     except EmptyPage:
         response = paginator.page(paginator.num_pages)
     return render(
-        request, "stockitem/filter.html", {"stockitems": response, "filter": f},
+        request,
+        "stockitem/filter.html",
+        {"stockitems": response, "filter": f},
     )

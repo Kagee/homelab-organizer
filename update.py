@@ -4,13 +4,13 @@ from bootstrap import python_checks
 python_checks()
 
 # pylint: disable=wrong-import-position,wrong-import-order
-import subprocess
-import sys
+import subprocess  # noqa: E402
+import sys  # noqa: E402
 
 nuke = input("Upgrade pip? (Y/n): ")
 if nuke.lower() != "n":
     subprocess.run(
-        [
+        [  # noqa: S603
             sys.executable,
             "-m",
             "pip",
@@ -26,7 +26,7 @@ if nuke.lower() != "n":
 nuke = input("Pip install? (Y/n): ")
 if nuke.lower() != "n":
     subprocess.run(
-        [
+        [  # noqa: S603
             sys.executable,
             "-m",
             "pip",
@@ -40,25 +40,35 @@ if nuke.lower() != "n":
         check=False,
     )
 
-print("Nuke database")
-subprocess.run([sys.executable, "sudo-nuke-db.py"], check=False)
-
 nuke = input("Init shops? (Y/n): ")
 if nuke.lower() != "n":
     subprocess.run(
-        [sys.executable, "manage.py", "hlo", "--init-shops"], check=False,
+        [  # noqa: S603
+            sys.executable,
+            "manage.py",
+            "hlo",
+            "--init-shops",
+        ],
+        check=False,
     )
 
 nuke = input("Init order metadata without attachements? (Y/n): ")
 if nuke.lower() != "n":
     subprocess.run(
-        [sys.executable, "manage.py", "hlo", "--import-shop", "all", "--skip-attachements"],
+        [  # noqa: S603
+            sys.executable,
+            "manage.py",
+            "hlo",
+            "--import-shop",
+            "all",
+            "--skip-attachements",
+        ],
         check=False,
     )
 
 nuke = input("Init order metadata with attachements ?  (Y/n): ")
 if nuke.lower() != "n":
     subprocess.run(
-        [sys.executable, "manage.py", "hlo", "--import-shop", "all"],
+        [sys.executable, "manage.py", "hlo", "--import-shop", "all"],  # noqa: S603
         check=False,
     )

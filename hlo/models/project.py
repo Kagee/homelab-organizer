@@ -1,4 +1,4 @@
-from . import CommonTreeModel
+from .commontree import CommonTreeModel
 
 
 class Project(CommonTreeModel):

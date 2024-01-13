@@ -1,24 +1,13 @@
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path, WindowsPath
 from shutil import which
 
 
-def python_checks():
-    me = Path(sys.argv[0])
-
-    if me.is_absolute() and isinstance(me, WindowsPath):
-        print(
-            "This script can not be ran directly, please restart as 'python"
-            f" {me.name}'",
-        )
-        import time
-
-        time.sleep(30)
-        sys.exit(1)
-
-    def find_pythons():
+# ruff: noqa: T201
+def find_pythons():
         python = None
         pythons = [
             "python3.9",
@@ -29,9 +18,10 @@ def python_checks():
             "python3.14",
         ]
         installed_pythons = None
-        if os.getenv("LocalAppData", None):
+        if os.getenv("LOCALAPPDATA", None):
             lad = Path(
-                os.getenv("LocalAppData", None), "Microsoft/WindowsApps/",
+                os.getenv("LOCALAPPDATA", None),
+                "Microsoft/WindowsApps/",
             ).resolve()
             installed_pythons = [x.stem for x in list(lad.glob("python*"))]
         for pyt in pythons:
@@ -47,14 +37,28 @@ def python_checks():
             sys.exit(1)
         return python
 
-    if sys.version_info.major < 3 or sys.version_info.minor < 9:
+def python_checks():
+    me = Path(sys.argv[0])
+
+    if me.is_absolute() and isinstance(me, WindowsPath):
         print(
-            "Requires Python 3.9 or newer, this is %s.%s"
+            "This script can not be ran directly, please restart as 'python"
+            f" {me.name}'",
+        )
+
+        time.sleep(30)
+        sys.exit(1)
+
+    if  sys.version_info < (3, 10):  # noqa: UP036
+        print(
+            f"Requires Python 3.10 or newer, this is %s.%s"  # noqa: F541
             % (sys.version_info.major, sys.version_info.minor),
         )
         newest_python = find_pythons()
-        print("Found %s, reloading..." % (newest_python,))
-        subprocess.run([newest_python, os.path.abspath(sys.argv[0]), "no-git"], check=False)
+        print("Found %s, reloading..." % (newest_python,))  # noqa: UP031
+        subprocess.run(
+            [newest_python, os.path.abspath(sys.argv[0]), "no-git"], check=False,  # noqa: S603, PTH100
+        )
         sys.exit(0)
 
     if (

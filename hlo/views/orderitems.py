@@ -8,8 +8,7 @@ from hlo.models import OrderItem
 
 def product_list(request):
     qs_orderitems = (
-        OrderItem.objects
-        .exclude(meta__hidden=True) # Items with meta = hidden
+        OrderItem.objects.exclude(meta__hidden=True)  # Items with meta = hidden
         .select_related("order")
         .select_related("order__shop")
         .prefetch_related("stockitems")
@@ -27,7 +26,9 @@ def product_list(request):
     except EmptyPage:
         response = paginator.page(paginator.num_pages)
     return render(
-        request, "orderitem/filter.html", {"page_obj": response, "filter": f},
+        request,
+        "orderitem/filter.html",
+        {"page_obj": response, "filter": f},
     )
 
 
@@ -35,3 +36,9 @@ class OrderItemDetailView(DetailView):
     model = OrderItem
     template_name = "orderitem/detail.html"
     context_object_name = "order_item"
+
+
+__all__ = [
+    "product_list",
+    "OrderItemDetailView",
+]

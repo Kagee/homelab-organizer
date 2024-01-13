@@ -80,6 +80,7 @@ except ImportError:
                 "class": "logging.StreamHandler",
                 "formatter": "verbose",
             },
+            # ruff: noqa: ERA001
             #"file": {
             #    "class": "logging.FileHandler",
             #    "filename": "scraper.log",

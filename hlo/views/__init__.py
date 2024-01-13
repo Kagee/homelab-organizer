@@ -2,7 +2,7 @@ import logging
 
 from django.shortcuts import render
 
-from hlo.models import *
+from hlo.models import Attachement, OrderItem, StockItem
 
 from .category import *
 from .orderitems import *
@@ -26,10 +26,10 @@ def index(request):
             "stockitem_without_location": 0,
             "attachement_count": Attachement.objects.count(),
             "attachement_pdf": Attachement.objects.filter(
-                file__endswith=".pdf"
+                file__endswith=".pdf",
             ).count(),
             "attachement_html": Attachement.objects.filter(
-                file__endswith=".html"
+                file__endswith=".html",
             ).count(),
         },
     )

@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.html import mark_safe
 
-from . import CommonTreeModel
+from .commontree import CommonTreeModel
 
 
 class Storage(CommonTreeModel):
