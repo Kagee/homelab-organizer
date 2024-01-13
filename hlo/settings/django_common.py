@@ -56,62 +56,58 @@ DATABASES = {
 }
 
 
-try:
-    # Define you own logging in LOGGING here
-    from .logging import *  # noqa: F403
-except ImportError:
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            "verbose": {
-                "format": "{asctime} [{levelname}] {module}: {message}",
-                "style": "{",
-            },
-            "simple": {
-                "format": "{levelname} {message}",
-                "style": "{",
-            },
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{asctime} [{levelname}] {module}: {message}",
+            "style": "{",
         },
-        "handlers": {
-            "console": {
-                "class": "logging.StreamHandler",
-                "formatter": "verbose",
-            },
-            # ruff: noqa: ERA001
-            #"file": {
-            #    "class": "logging.FileHandler",
-            #    "filename": "scraper.log",
-            #    "formatter": "verbose",
-            #    "encoding": "utf-8",
-            #},
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
         },
-        "root": {
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        # ruff: noqa: ERA001
+        #"file": {
+        #    "class": "logging.FileHandler",
+        #    "filename": "scraper.log",
+        #    "formatter": "verbose",
+        #    "encoding": "utf-8",
+        #},
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+    "loggers": {
+        #'order_scraper.management.commands.scrapers.......'
+        #'order_scraper.management.commands....'
+        #"hlo.management.commands": {
+            #"handlers": ["console", "file"],
+        #    "handlers": ["console"],
+        #    "level": "DEBUG",  # Will be overriden by --verbosity
+        #},
+        "hlo.management.commands.loaders.shopmetaloader": {
+            #"handlers": ["console", "file"],
             "handlers": ["console"],
-            "level": "WARNING",
+            "level": "INFO",  # Will be overriden by --verbosity
         },
-        "loggers": {
-            #'order_scraper.management.commands.scrapers.......'
-            #'order_scraper.management.commands....'
-            #"hlo.management.commands": {
-                #"handlers": ["console", "file"],
-            #    "handlers": ["console"],
-            #    "level": "DEBUG",  # Will be overriden by --verbosity
-            #},
-            "": {
-                #"handlers": ["console", "file"],
-                "handlers": ["console"],
-                "level": "INFO",  # Will be overriden by --verbosity
-            },
-            # Prod level server
-            #'daphne': {
-            #    'handlers': [
-            #        'console',
-            #    ],
-            #    'level': 'DEBUG'
-            #},
-        },
-    }
+        # Prod level server
+        #'daphne': {
+        #    'handlers': [
+        #        'console',
+        #    ],
+        #    'level': 'DEBUG'
+        #},
+    },
+}
 
 
 ALLOWED_HOSTS: list[str] = env.list("ALLOWED_HOSTS")
