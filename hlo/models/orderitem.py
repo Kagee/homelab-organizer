@@ -151,14 +151,14 @@ class OrderItem(models.Model):
                     tbhash.update(f.read())
                 self.sha1 = tbhash.hexdigest()
 
-                super(OrderItem, self).save(*args, **kwargs)
+                super().save(*args, **kwargs)
         else:
             self.sha1 = None
         self.gen_id = (
             f"{self.order.shop.branch_name}-{self.order.order_id}-"
             f"{self.item_id}-{self.item_variation if len(self.item_variation) else 'novariation'}"
         )
-        super(OrderItem, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @admin.display(description="Order ID")
     def item_url(self):

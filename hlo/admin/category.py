@@ -1,7 +1,7 @@
 from django.contrib import admin
 from mptt.admin import DraggableMPTTAdmin
 
-from ..models import Category
+from hlo.models import Category
 
 
 @admin.register(Category)

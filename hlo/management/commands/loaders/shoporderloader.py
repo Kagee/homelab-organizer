@@ -5,7 +5,7 @@ import pprint
 import sys
 import zipfile
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import fitz
 import zipp
@@ -44,7 +44,7 @@ class ShopOrderLoader:
         with zipfile.ZipFile(zip_file) as zip_data:
             order = shop_dict["orders"][0]
             for order in shop_dict["orders"]:
-                if all ( [float(x["quantity"]) < 0 for x in order["items"] ]):
+                if all ( float(x["quantity"]) < 0 for x in order["items"]):
                     self.log.debug("Skipping order id %s because all items have negative quantity")
                     continue
                 defaults = {
@@ -84,7 +84,8 @@ class ShopOrderLoader:
                                     order_attachement_zip_file.open("rb"), attachement_path,
                                 )
                             else:
-                                raise AttributeError(f"Thumbnail {order_attachement_zip_file.name} not in {zip_file.name}")
+                                msg = f"Thumbnail {order_attachement_zip_file.name} not in {zip_file.name}"
+                                raise AttributeError(msg)
                             sha1hash = hashlib.sha1()
                             if attachement_file.multiple_chunks():
                                 for chunk in attachement_file.chunks():
@@ -184,7 +185,8 @@ class ShopOrderLoader:
                                 thumbnail_zip_file.open("rb"), Path(item_thumbnail).as_posix(),
                             )
                         else:
-                            raise AttributeError(f"Thumbnail {thumbnail_zip_file.name} not in {zip_file.name}")
+                            msg = f"Thumbnail {thumbnail_zip_file.name} not in {zip_file.name}"
+                            raise AttributeError(msg)
                         sha1 = None
                         if item_object.sha1:
                             sha1hash = hashlib.sha1()
@@ -218,7 +220,8 @@ class ShopOrderLoader:
                                 attachement_zip_file.open("rb"), attachement_path,
                             )
                         else:
-                            raise AttributeError(f"Attachement {attachement_zip_file.name} not in {zip_file.name}")
+                            msg = f"Attachement {attachement_zip_file.name} not in {zip_file.name}"
+                            raise AttributeError(msg)
                         sha1hash = hashlib.sha1()
                         if attachement_file.multiple_chunks():
                             for chunk in attachement_file.chunks():
@@ -269,7 +272,7 @@ class ShopOrderLoader:
 
     def read(
         self,
-        path: Union[Path, str],
+        path: Path | str,
         from_json=False,
         **kwargs,
     ) -> Any:
@@ -280,8 +283,9 @@ class ShopOrderLoader:
                     contents = json.loads(contents)
                 except json.decoder.JSONDecodeError as jde:
                     self.log.error("Encountered error when reading %s", path)
+                    msg = f"Encountered error when reading {path}"
                     raise OSError(
-                        f"Encountered error when reading {path}", jde,
+                        msg, jde,
                     ) from jde
             return contents
 

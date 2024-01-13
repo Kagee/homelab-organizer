@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from ..models import Order
+from hlo.models import Order
 
 
 @admin.register(Order)
@@ -24,7 +24,7 @@ class OrderAdmin(admin.ModelAdmin):
                 "extra_data",
                 "indent_extra_data",
             ]
-        return super(OrderAdmin, self).get_readonly_fields(request, obj)
+        return super().get_readonly_fields(request, obj)
 
     def get_fields(self, request, obj=None):
         if obj:

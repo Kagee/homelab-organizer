@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from ..models import Shop
+from hlo.models import Shop
 
 
 @admin.register(Shop)
@@ -30,7 +30,7 @@ class ShopAdmin(admin.ModelAdmin):
     # pylint: disable=arguments-differ
     # they do not?
     def get_form(self, request, obj=None, **kwargs):
-        form = super(ShopAdmin, self).get_form(request, obj, **kwargs)
+        form = super().get_form(request, obj, **kwargs)
         form.base_fields["order_url_template"].widget.attrs[
             "style"
         ] = "width: 45em;"

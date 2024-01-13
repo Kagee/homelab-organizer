@@ -57,7 +57,11 @@ def python_checks():
         newest_python = find_pythons()
         print("Found %s, reloading..." % (newest_python,))  # noqa: UP031
         subprocess.run(
-            [newest_python, os.path.abspath(sys.argv[0]), "no-git"], check=False,  # noqa: S603, PTH100
+            [   # noqa: S603
+                newest_python,
+                os.path.abspath(sys.argv[0]),  # noqa: PTH100
+                "no-git"],
+                check=False,
         )
         sys.exit(0)
 
@@ -70,8 +74,7 @@ def python_checks():
             " (Y/n): ",
         )
         print(
-            "Using python %s.%s"
-            % (sys.version_info.major, sys.version_info.minor),
+            f"Using python {sys.version_info.major}.{sys.version_info.minor}",
         )
         if venv_inp.lower() == "y" or venv_inp == "":
             from importlib.util import find_spec
@@ -80,7 +83,8 @@ def python_checks():
             if not venv_loader:
                 print(
                     "Failed to find venv module using"
-                    f" {sys.executable} ({sys.version_info.major}.{sys.version_info.minor})."
+                    f" {sys.executable} "
+                    f"({sys.version_info.major}.{sys.version_info.minor})."
                     " Please install it using your system package manager.",
                 )
                 sys.exit(1)

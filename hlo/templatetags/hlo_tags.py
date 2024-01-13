@@ -1,3 +1,5 @@
+import contextlib
+
 from django import template
 from django.utils.html import mark_safe
 
@@ -7,9 +9,7 @@ register = template.Library()
 def url_replace_parameter(context, **kwargs):
     query = context["request"].GET.copy()
     for kwarg in kwargs:
-        try:
+        with contextlib.suppress(KeyError):
             query.pop(kwarg)
-        except KeyError:
-            pass
     query.update(kwargs)
     return mark_safe(query.urlencode())

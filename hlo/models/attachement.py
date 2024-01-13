@@ -40,8 +40,9 @@ def attachement_file_path(instance, filename):
         ).decode("utf-8")
         return f"attachements/{shopname_b64}/{order_b64}/{order_item_b64}/{filename}"
     else:
+        msg = "Attachement used on something not order or orderitem"
         raise ValueError(
-            "Attachement used on something not order or orderitem",
+            msg,
         )
 
 
@@ -121,10 +122,10 @@ class Attachement(models.Model):
                 else:
                     sha1hash.update(f.read())
                 self.sha1 = sha1hash.hexdigest()
-                super(Attachement, self).save(*args, **kwargs)
+                super().save(*args, **kwargs)
         else:
             self.sha1 = self.sha1 if self.sha1 else None
-        super(Attachement, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} ({self.type}) ({Path(self.file.name).name})"

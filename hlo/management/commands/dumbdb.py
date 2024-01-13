@@ -1,4 +1,3 @@
-import os
 import subprocess
 from pathlib import Path
 
@@ -27,30 +26,30 @@ class Command(BaseCommand):
             "hlo_orderitem_attachements",
         ]
 
-        os.makedirs("db/table_export/", exist_ok=True)
+        Path.mkdir("db/table_export/", parents=True)
 
         if "dump_read" in options and options["dump_read"] == "dump":
             for sql in Path("db").glob("*.sql"):
                 sql.unlink()
             for table in tables:
-                print(table)
+                print(table)  # noqa: T201
                 file = Path(fr"db\table_export\{table}.sql")
                 subprocess.run(
-                    [
-                        "sqlite3",
-                        f"{db}",
-                        f".mode insert {table}",
-                        f".output {file}",
-                        f"select * from {table};",
+                    [  # noqa: S603, S607
+                       "sqlite3",
+                       f"{db}",
+                       f".mode insert {table}",
+                       f".output {file}",
+                       f"select * from {table};",  # noqa: S608
                     ],
                     check=False,
                 )
         else:
             for table in tables:
-                print(table)
+                print(table)  # noqa: T201
                 file = Path(fr"db\table_export\{table}.sql")
                 subprocess.run(
-                    [
+                    [  # noqa: S603, S607
                         "sqlite3",
                         f"{db}",
                         f".read {file}",

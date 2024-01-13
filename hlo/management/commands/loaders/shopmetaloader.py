@@ -2,14 +2,14 @@ import json
 import logging
 import os
 import zipfile
-from pathlib import Path
+from pathlib import Path  # noqa: TCH003
 
 from django.conf import settings
 from django.core.files import File
 from jsonschema import ValidationError, validate
 
 # pylint: disable=relative-beyond-top-level
-from ....models import Shop
+from hlo.models import Shop
 
 
 class ShopMetaLoader:
@@ -18,14 +18,14 @@ class ShopMetaLoader:
         log = logging.getLogger(__name__)
         log.debug("Initializing database with shops")
         log.debug("Input folder is %s", settings.INPUT_FOLDER)
-        json_file: Path
 
+        json_file: Path
         for json_file in settings.INPUT_FOLDER.glob("*.json"):
             if not os.access(json_file, os.R_OK):
                 log.error("Could not open/read %s", json_file)
                 continue
 
-            with open(json_file, encoding="utf-8") as json_file_handle:
+            with json_file.open(encoding="utf-8") as json_file_handle:
                 json_data = json.load(json_file_handle)
                 if cls.valid_json(json_data):
                     log.debug("Valid schema in %s", json_file.name)
@@ -75,12 +75,12 @@ class ShopMetaLoader:
     @classmethod
     def valid_json(cls, structure):
         log = logging.getLogger(__name__)
-        with open(settings.JSON_SCHEMA, encoding="utf-8") as schema_file:
+        with settings.JSON_SCHEMA.open(encoding="utf-8") as schema_file:
             schema = json.load(schema_file)
             try:
                 validate(instance=structure, schema=schema)
             except ValidationError as vde:
-                log.error(
+                log.exception(
                     "JSON failed validation: %s at %s",
                     vde.message,
                     vde.json_path,

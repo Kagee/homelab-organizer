@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from mptt.admin import DraggableMPTTAdmin
 
-from ..models import Storage
+from hlo.models import Storage
 
 
 @admin.register(Storage)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from ..models import StockItem
+from hlo.models import StockItem
 
 
 # https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#django.contrib.admin.TabularInline

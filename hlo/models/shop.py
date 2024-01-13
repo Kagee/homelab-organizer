@@ -86,7 +86,7 @@ class Shop(models.Model):
     def save(self, *args, **kwargs):
         if not self.branch_name:
             self.branch_name = self.name
-        super(Shop, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         # pylint: disable=no-member
