@@ -90,7 +90,8 @@ class ShopOrderLoader:
                             ).as_posix()
                             attachement_file = None
                             order_attachement_zip_file = zipp.Path(
-                                zip_data, attachement_path,
+                                zip_data,
+                                attachement_path,
                             )
                             if order_attachement_zip_file.is_file():
                                 self.log.debug("Is file %s", attachement_path)
@@ -99,9 +100,11 @@ class ShopOrderLoader:
                                     attachement_path,
                                 )
                             else:
-                                msg = f"Thumbnail {
-                                    order_attachement_zip_file.name
-                                    } not in {zip_file.name}"
+                                msg = (
+                                    "Thumbnail "
+                                    f"{order_attachement_zip_file.name}"
+                                    f" not in {zip_file.name}"
+                                )
                                 raise AttributeError(msg)
                             sha1hash = hashlib.sha1()  # noqa: S324
                             if attachement_file.multiple_chunks():
@@ -155,7 +158,9 @@ class ShopOrderLoader:
 
                 for item in order["items"]:
                     self.log.debug(
-                        "Item ID: %s, Order ID: %s", item["id"], order_id,
+                        "Item ID: %s, Order ID: %s",
+                        item["id"],
+                        order_id,
                     )
                     if float(item["quantity"]) < 0:
                         self.log.debug(
@@ -225,7 +230,8 @@ class ShopOrderLoader:
                     if item_thumbnail:
                         thumbnail_file = None
                         thumbnail_zip_file = zipp.Path(
-                            zip_data, Path(item_thumbnail).as_posix(),
+                            zip_data,
+                            Path(item_thumbnail).as_posix(),
                         )
                         if thumbnail_zip_file.is_file():
                             thumbnail_file = File(
@@ -238,7 +244,7 @@ class ShopOrderLoader:
                                 f" not in {zip_file.name}"
                             )
                             raise AttributeError(msg)
-                        sha1 = None
+                        sha1 = ""
                         if item_object.sha1:
                             sha1hash = hashlib.sha1()  # noqa: S324
                             if thumbnail_file.multiple_chunks():
@@ -272,7 +278,8 @@ class ShopOrderLoader:
                             attachement_path,
                         )
                         attachement_zip_file = zipp.Path(
-                            zip_data, attachement_path,
+                            zip_data,
+                            attachement_path,
                         )
                         if attachement_zip_file.is_file():
                             attachement_file = File(
@@ -316,7 +323,8 @@ class ShopOrderLoader:
                             )
                             if attachement_path.endswith(".pdf"):
                                 attachement_ziped_pdf_file = zipp.Path(
-                                    zip_data, attachement_path,
+                                    zip_data,
+                                    attachement_path,
                                 )
                                 doc = fitz.open(
                                     stream=attachement_ziped_pdf_file.open(
@@ -340,7 +348,9 @@ class ShopOrderLoader:
                             attachement_object.save()
                         else:
                             self.log.debug(
-                                "Found hash %s for %s", sha1, attachement_path,
+                                "Found hash %s for %s",
+                                sha1,
+                                attachement_path,
                             )
                     self.log.debug(
                         "Item %s %s",
@@ -370,7 +380,8 @@ class ShopOrderLoader:
                     contents = json.loads(contents)
                 except json.decoder.JSONDecodeError as jde:
                     self.log.exception(
-                        "Encountered error when reading %s", path,
+                        "Encountered error when reading %s",
+                        path,
                     )
                     msg = f"Encountered error when reading {path}"
                     raise OSError(
