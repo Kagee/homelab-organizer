@@ -1,11 +1,11 @@
-import hashlib
 import base64
-from pathlib import Path
+import hashlib
 import logging
+from pathlib import Path
 
 from django.db import models
 from django.urls import reverse
-from django.utils.html import escape, format_html, format_html_join, mark_safe
+from django.utils.html import format_html
 
 logger = logging.getLogger(__name__)
 
@@ -20,28 +20,28 @@ def attachement_file_path(instance, filename):
     if instance.order.count():
         order = instance.order.first()
         shopname_b64 = base64.urlsafe_b64encode(
-            order.shop.branch_name.encode("utf-8")
+            order.shop.branch_name.encode("utf-8"),
         ).decode("utf-8")
         order_b64 = base64.urlsafe_b64encode(
-            order.order_id.encode("utf-8")
+            order.order_id.encode("utf-8"),
         ).decode("utf-8")
         return f"attachements/{shopname_b64}/{order_b64}/{filename}"
     elif instance.orderitem.count():
         orderitem = instance.orderitem.first()
         shopname_b64 = base64.urlsafe_b64encode(
-            orderitem.order.shop.branch_name.encode("utf-8")
+            orderitem.order.shop.branch_name.encode("utf-8"),
         ).decode("utf-8")
         order_b64 = base64.urlsafe_b64encode(
-            orderitem.order.order_id.encode("utf-8")
+            orderitem.order.order_id.encode("utf-8"),
         ).decode("utf-8")
         order_item_b64 = base64.urlsafe_b64encode(
             f"{orderitem.item_id}{'-' if len(orderitem.item_variation) else ''}{orderitem.item_variation}"
-            .encode("utf-8")
+            .encode(),
         ).decode("utf-8")
         return f"attachements/{shopname_b64}/{order_b64}/{order_item_b64}/{filename}"
     else:
         raise ValueError(
-            "Attachement used on something not order or orderitem"
+            "Attachement used on something not order or orderitem",
         )
 
 
@@ -64,7 +64,7 @@ class Attachement(models.Model):
 
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#filefield
     file = models.FileField(
-        upload_to=attachement_file_path, max_length=255, blank=True
+        upload_to=attachement_file_path, max_length=255, blank=True,
     )
 
     sha1 = models.CharField(max_length=40, editable=True)

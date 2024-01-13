@@ -1,9 +1,11 @@
 import logging
+
+import fitz
 from django.core.management.base import (
     BaseCommand,
     no_translations,
 )
-import fitz
+
 from hlo.models import OrderItem
 
 
@@ -22,7 +24,7 @@ class Command(BaseCommand):
                 for pdf in pdfs:
                     self.log.debug("Processing %s", pdf.file.path)
                     doc = fitz.open(pdf.file.path)
-                    text = ''
+                    text = ""
                     for i, page in enumerate(doc):
                         text += page.get_text()
                     pdf.text = text

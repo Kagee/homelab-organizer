@@ -1,10 +1,10 @@
-"""
-Django settings for hlo project.
+"""Django settings for hlo project.
 """
 import os
 import os.path
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
+
 import environ  # type: ignore
 
 env = environ.FileAwareEnv(
@@ -35,7 +35,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 DEBUG: bool = env("DEBUG", False)
 
 INTERNAL_IPS = [
-    "127.0.0.1"
+    "127.0.0.1",
 ]
 
 LANGUAGE_CODE: str = env("LANGUAGE_CODE")
@@ -44,7 +44,7 @@ USE_I18N: bool = env("USE_I18N")
 USE_L10N: bool = env("USE_L10N")
 USE_TZ: bool = env("USE_TZ")
 
-DATE_FORMAT = 'Y-m-d'
+DATE_FORMAT = "Y-m-d"
 
 # Raises Django's ImproperlyConfigured
 # exception if SECRET_KEY not in os.environ
@@ -115,11 +115,11 @@ except ImportError:
     }
 
 
-ALLOWED_HOSTS: List[str] = env.list("ALLOWED_HOSTS")
+ALLOWED_HOSTS: list[str] = env.list("ALLOWED_HOSTS")
 
 STATIC_URL: str = env("STATIC_URL")
 
-INSTALLED_APPS: List[str] = [
+INSTALLED_APPS: list[str] = [
     "hlo.admin_app.HLOAdminConfig", #"django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -144,7 +144,7 @@ INSTALLED_APPS: List[str] = [
 
 INSTALLED_APPS += env.list("INSTALLED_APPS", default=[])
 
-MIDDLEWARE: List[str] = [
+MIDDLEWARE: list[str] = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -157,7 +157,7 @@ MIDDLEWARE: List[str] = [
 
 ROOT_URLCONF: str = "hlo.urls"
 
-TEMPLATES: List[Dict[str, Any]] = [
+TEMPLATES: list[dict[str, Any]] = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
@@ -180,7 +180,7 @@ WSGI_APPLICATION: str = "hlo.wsgi.application"
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS: List[Dict[str, Any]] = [
+AUTH_PASSWORD_VALIDATORS: list[dict[str, Any]] = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
@@ -215,7 +215,7 @@ BOOTSTRAP5 = { # We need bootstrap >= 5.3 for dark mode
         "integrity": "sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN",
         "crossorigin": "anonymous",
     },
-    "javascript_url": { 
+    "javascript_url": {
         "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js",
         "integrity": "sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL",
         "crossorigin": "anonymous",
@@ -224,10 +224,10 @@ BOOTSTRAP5 = { # We need bootstrap >= 5.3 for dark mode
 
 # run `python ./manage.py graph_models` to update hlo_model_graph.png
 GRAPH_MODELS = {
-  'group_models': True,
-  'app_labels': ["hlo"],
-  'exclude_models': ["ColorTagBase","GenericTaggedItemBase","TagBase"],
-  'output': "hlo_model_graph.png",
+  "group_models": True,
+  "app_labels": ["hlo"],
+  "exclude_models": ["ColorTagBase","GenericTaggedItemBase","TagBase"],
+  "output": "hlo_model_graph.png",
   "color_code_deletions": True,
   "arrow_shape": "normal",
   "rankdir": "TB",

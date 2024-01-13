@@ -1,5 +1,7 @@
-from django.views.generic import DetailView, ListView, CreateView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from hlo.models import Project
+
 
 class ProjectDetailView(DetailView):
     model = Project

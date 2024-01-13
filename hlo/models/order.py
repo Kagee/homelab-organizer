@@ -5,7 +5,6 @@ from django.contrib import admin
 from django.db import models
 from django.urls import reverse
 from django.utils.html import escape, format_html, format_html_join, mark_safe
-
 from djmoney.models.fields import MoneyField
 
 from .attachement import Attachement
@@ -19,7 +18,7 @@ class Order(models.Model):
             models.UniqueConstraint(
                 fields=["shop", "order_id"],
                 name="unique_shop_order_id",
-            )
+            ),
         ]
 
     shop: Shop = models.ForeignKey(
@@ -74,7 +73,7 @@ class Order(models.Model):
     )
 
     created_at = models.DateTimeField(
-        "Created at", auto_now_add=True, editable=True
+        "Created at", auto_now_add=True, editable=True,
     )
     # Extra data that we do not import into model
     extra_data = models.JSONField(
@@ -131,7 +130,7 @@ class Order(models.Model):
                             self.shop.branch_name,
                         )
                         for i in self.items.all().values_list(
-                            "name", "id", "item_id"
+                            "name", "id", "item_id",
                         )
                     ],
                 ),
@@ -163,7 +162,7 @@ class Order(models.Model):
                 else ""
             )
             + f"&nbsp;&nbsp;&nbsp; {self.shop.branch_name} order"
-            f" #{self.order_id} with {self.items.count()} items"
+            f" #{self.order_id} with {self.items.count()} items",
         )
 
     def get_order_url(self):

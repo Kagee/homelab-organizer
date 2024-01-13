@@ -1,5 +1,6 @@
 from . import CommonTreeModel
 
+
 class Category(CommonTreeModel):
     class Meta:
         verbose_name_plural = "categories"

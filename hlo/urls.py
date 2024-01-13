@@ -60,7 +60,7 @@ urlpatterns = [
     ),
     # path("order/list", OrderListView.as_view(), name="orders-list"),
     path(
-        "order/detail/<int:pk>", OrderDetailView.as_view(), name="order-detail"
+        "order/detail/<int:pk>", OrderDetailView.as_view(), name="order-detail",
     ),
     # Serve static content through Django
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,14 +1,16 @@
 import base64
+import hashlib
 import pprint
 from pathlib import Path
-import hashlib
+
 from django.contrib import admin
 from django.db import models
-from django.utils.html import escape, format_html, mark_safe
 from django.urls import reverse
+from django.utils.html import escape, format_html, mark_safe
 from djmoney.models.fields import MoneyField
 
-from . import Order, Attachement
+from . import Attachement, Order
+
 
 def thumnail_path(instance, filename):
     ext = Path(filename).suffix[1:]
@@ -17,13 +19,13 @@ def thumnail_path(instance, filename):
         f"{ instance.item_variation if instance.item_variation else '' }"
     )
     shopname_b64 = base64.urlsafe_b64encode(
-        instance.order.shop.branch_name.encode("utf-8")
+        instance.order.shop.branch_name.encode("utf-8"),
     ).decode("utf-8")
     order_b64 = base64.urlsafe_b64encode(
-        instance.order.order_id.encode("utf-8")
+        instance.order.order_id.encode("utf-8"),
     ).decode("utf-8")
     filename_b64 = base64.urlsafe_b64encode(
-        filename_str.encode("utf-8")
+        filename_str.encode("utf-8"),
     ).decode("utf-8")
     return f"thumbnails/{shopname_b64}/{order_b64}/{filename_b64}.{ext}"
 
@@ -35,7 +37,7 @@ class OrderItem(models.Model):
             models.UniqueConstraint(
                 fields=["item_id", "item_variation", "order"],
                 name="unique_id_sku_order",
-            )
+            ),
         ]
 
     name = models.CharField(max_length=255)
@@ -95,7 +97,7 @@ class OrderItem(models.Model):
     extra_data = models.JSONField(default=dict, blank=True)
 
     sha1 = models.CharField(
-        max_length=40, editable=False, default=None, null=True
+        max_length=40, editable=False, default=None, null=True,
     )
     # Weak FK for StockItem
     gen_id = models.CharField(max_length=1024, editable=False, unique=True)
@@ -106,7 +108,7 @@ class OrderItem(models.Model):
             f'<div style="height: {px}px;"><a href="{self.thumbnail.url}"'
             ' target="_blank"><img style="height: 100%; width: auto;"'
             f' src="{self.thumbnail.url}" width="{self.thumbnail.width}"'
-            f' height="{self.thumbnail.height}" /></a></div>'
+            f' height="{self.thumbnail.height}" /></a></div>',
         )
 
     image_tag.short_description = "Thumbnail"

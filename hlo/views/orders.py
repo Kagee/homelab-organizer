@@ -1,6 +1,8 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView, ListView
+
 # pylint: disable=wildcard-import,unused-wildcard-import
 from hlo.models import Order
+
 
 class OrderListView(ListView):
     model = Order

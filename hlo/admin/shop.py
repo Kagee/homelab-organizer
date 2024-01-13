@@ -3,6 +3,7 @@ from django.utils.html import format_html
 
 from ..models import Shop
 
+
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
     list_display = ["list_icon", "id", "order_list"]

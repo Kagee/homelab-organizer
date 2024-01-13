@@ -1,17 +1,18 @@
+import json
 import logging
 import os
-from pathlib import Path
-import json
 import zipfile
-from jsonschema import ValidationError, validate
+from pathlib import Path
+
 from django.conf import settings
 from django.core.files import File
+from jsonschema import ValidationError, validate
 
 # pylint: disable=relative-beyond-top-level
 from ....models import Shop
 
 
-class ShopMetaLoader(object):
+class ShopMetaLoader:
     @classmethod
     def load(cls):
         log = logging.getLogger(__name__)
@@ -52,7 +53,7 @@ class ShopMetaLoader(object):
                     logo_img = None
                     if logo_file.is_file():
                         logo_img = File(
-                            logo_file.open("rb"), f'{shop["name"]}.png'
+                            logo_file.open("rb"), f'{shop["name"]}.png',
                         )
                     else:
                         log.debug("No %s in %s", logo_file.name, zip_file.name)

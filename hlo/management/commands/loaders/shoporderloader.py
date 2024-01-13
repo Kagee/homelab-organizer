@@ -1,35 +1,33 @@
-import logging
-import sys
-from pathlib import Path
-import json
-import zipfile
-import pprint
 import hashlib
+import json
+import logging
+import pprint
+import sys
+import zipfile
+from pathlib import Path
 from typing import Any, Union
 
 import fitz
 import zipp
-
 from django.conf import settings
 from django.core.files import File
-
 from djmoney.money import Money
 
 # pylint: disable=relative-beyond-top-level
-from ....models import Shop, Order, OrderItem, Attachement
+from ....models import Attachement, Order, OrderItem, Shop
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
-class ShopOrderLoader(object):
+class ShopOrderLoader:
     def __init__(self, shop, options):
         self.log = logging.getLogger(__name__)
         self.options = options
         json_file: Path = settings.INPUT_FOLDER / f"{shop}.json"
         shop_dict = self.read(
-            json_file, from_json=True
+            json_file, from_json=True,
         )
-        
+
         zip_file = json_file.with_suffix(".zip")
 
         try:
@@ -39,14 +37,14 @@ class ShopOrderLoader(object):
             )
         except Shop.DoesNotExist:
             self.log.critical(
-                "Shop '%s' is not in database, did you run --init-shops?", shop
+                "Shop '%s' is not in database, did you run --init-shops?", shop,
             )
             sys.exit(1)
         self.log.debug("Working with .zip file %s", zip_file)
         with zipfile.ZipFile(zip_file) as zip_data:
             order = shop_dict["orders"][0]
             for order in shop_dict["orders"]:
-                if all ( [float(x["quantity"]) < 0 for x in order['items'] ]):
+                if all ( [float(x["quantity"]) < 0 for x in order["items"] ]):
                     self.log.debug("Skipping order id %s because all items have negative quantity")
                     continue
                 defaults = {
@@ -69,21 +67,21 @@ class ShopOrderLoader(object):
                 order_id = order["id"]
                 del order["id"]
                 (order_object, created) = Order.objects.update_or_create(
-                    shop=self.shop, order_id=order_id, defaults=defaults
+                    shop=self.shop, order_id=order_id, defaults=defaults,
                 )
 
                 if "attachements" in order:
-                    if not options['skip_attachements']:
+                    if not options["skip_attachements"]:
                         order_attachements = order["attachements"]
                         existing_sha1s = [x.sha1 for x in order_object.attachements.all()]
                         for attachement in order_attachements:
-                            attachement_path = Path(attachement['path']).as_posix()
+                            attachement_path = Path(attachement["path"]).as_posix()
                             attachement_file = None
                             order_attachement_zip_file = zipp.Path(zip_data, attachement_path)
                             if order_attachement_zip_file.is_file():
                                 self.log.debug("Is file %s", attachement_path)
                                 attachement_file = File(
-                                    order_attachement_zip_file.open("rb"), attachement_path
+                                    order_attachement_zip_file.open("rb"), attachement_path,
                                 )
                             else:
                                 raise AttributeError(f"Thumbnail {order_attachement_zip_file.name} not in {zip_file.name}")
@@ -98,12 +96,12 @@ class ShopOrderLoader(object):
 
                             if len(existing_sha1s) == 0 or sha1 not in existing_sha1s:
                                 defaults = {
-                                    'sha1': sha1,
+                                    "sha1": sha1,
                                 }
-                                if 'name' in attachement:
-                                    defaults['name'] = attachement['name']
-                                if 'comment' in attachement:
-                                    defaults['comment'] = attachement['comment']
+                                if "name" in attachement:
+                                    defaults["name"] = attachement["name"]
+                                if "comment" in attachement:
+                                    defaults["comment"] = attachement["comment"]
 
                                 self.log.debug("Creating Attachement.object for %s (%s)", attachement_file, defaults)
 
@@ -137,9 +135,9 @@ class ShopOrderLoader(object):
                     defaults = {
                         "name": item["name"],
                         "count": item["quantity"],
-                        'item_id': item_id,
-                        'item_variation': item_variation,
-                        'order': order_object,
+                        "item_id": item_id,
+                        "item_variation": item_variation,
+                        "order": order_object,
                     }
                     del item["name"]
                     del item["quantity"]
@@ -157,16 +155,16 @@ class ShopOrderLoader(object):
                                 money = "tax"
                             data = item[money]
                             defaults[money] = Money(
-                                amount=data["value"], currency=data["currency"]
+                                amount=data["value"], currency=data["currency"],
                             )
                             del item[money]
-                    item_thumbnail = None  
+                    item_thumbnail = None
                     if "thumbnail" in item:
                         item_thumbnail = item["thumbnail"]
                         del item["thumbnail"]
                     item_attachements = []
                     if "attachements" in item:
-                        if not options['skip_attachements']:
+                        if not options["skip_attachements"]:
                             item_attachements = item["attachements"]
                         del item["attachements"]
 
@@ -183,7 +181,7 @@ class ShopOrderLoader(object):
                         thumbnail_zip_file = zipp.Path(zip_data, Path(item_thumbnail).as_posix())
                         if thumbnail_zip_file.is_file():
                             thumbnail_file = File(
-                                thumbnail_zip_file.open("rb"), Path(item_thumbnail).as_posix()
+                                thumbnail_zip_file.open("rb"), Path(item_thumbnail).as_posix(),
                             )
                         else:
                             raise AttributeError(f"Thumbnail {thumbnail_zip_file.name} not in {zip_file.name}")
@@ -209,15 +207,15 @@ class ShopOrderLoader(object):
                     self.log.debug("Got existing sha1s: %s ", existing_sha1s)
 
                     for attachement in item_attachements:
-                        attachement_path = Path(attachement['path']).as_posix()
+                        attachement_path = Path(attachement["path"]).as_posix()
                         attachement_file = None
                         self.log.debug(
-                            "Looking for item attachement %s",attachement_path
+                            "Looking for item attachement %s",attachement_path,
                         )
                         attachement_zip_file = zipp.Path(zip_data, attachement_path)
                         if attachement_zip_file.is_file():
                             attachement_file = File(
-                                attachement_zip_file.open("rb"), attachement_path
+                                attachement_zip_file.open("rb"), attachement_path,
                             )
                         else:
                             raise AttributeError(f"Attachement {attachement_zip_file.name} not in {zip_file.name}")
@@ -230,12 +228,12 @@ class ShopOrderLoader(object):
                         sha1 = sha1hash.hexdigest()
                         if len(existing_sha1s) == 0 or sha1 not in existing_sha1s:
                             defaults = {
-                                'sha1': sha1,
+                                "sha1": sha1,
                             }
-                            if 'name' in attachement:
-                                defaults['name'] = attachement['name']
-                            if 'comment' in attachement:
-                                defaults['comment'] = attachement['comment']
+                            if "name" in attachement:
+                                defaults["name"] = attachement["name"]
+                            if "comment" in attachement:
+                                defaults["comment"] = attachement["comment"]
 
                             self.log.debug("Creating Attachement.object for %s (%s)", attachement_file, defaults)
 
@@ -244,10 +242,10 @@ class ShopOrderLoader(object):
 
                                 attachement_ziped_pdf_file = zipp.Path(zip_data, attachement_path)
                                 doc = fitz.open(stream=attachement_ziped_pdf_file.open("rb").read())
-                                text = ''
+                                text = ""
                                 for page in doc:
                                     text += page.get_text()
-                                defaults['text'] = text
+                                defaults["text"] = text
                             (attachement_object, created) = Attachement.objects.update_or_create(
                                 sha1=sha1,
                                 defaults=defaults,
@@ -260,7 +258,7 @@ class ShopOrderLoader(object):
                         else:
                             self.log.debug("Found hash %s for %s", sha1, attachement_path)
                     self.log.debug(
-                        "Item %s %s", item_object, "created" if created else "found"
+                        "Item %s %s", item_object, "created" if created else "found",
                     )
 
                 del order["items"]
@@ -275,15 +273,15 @@ class ShopOrderLoader(object):
         from_json=False,
         **kwargs,
     ) -> Any:
-        with open(path, "r", encoding="utf-8-sig") as file:
+        with open(path, encoding="utf-8-sig") as file:
             contents: str = file.read()
             if from_json:
                 try:
                     contents = json.loads(contents)
                 except json.decoder.JSONDecodeError as jde:
                     self.log.error("Encountered error when reading %s", path)
-                    raise IOError(
-                        f"Encountered error when reading {path}", jde
+                    raise OSError(
+                        f"Encountered error when reading {path}", jde,
                     ) from jde
             return contents
 

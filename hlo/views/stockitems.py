@@ -19,8 +19,7 @@ logger = logging.getLogger(__name__)
 
 class TagAutoResponseView(AutoResponseView):
     def get(self, request, *args, **kwargs):
-        """
-        This method is overriden for changing id to name instead of pk.
+        """This method is overriden for changing id to name instead of pk.
         """
         # pylint: disable=attribute-defined-outside-init
         self.widget = self.get_widget_or_404()
@@ -37,7 +36,7 @@ class TagAutoResponseView(AutoResponseView):
                     for obj in context["object_list"]
                 ],
                 "more": context["page_obj"].has_next(),
-            }
+            },
         )
 
 
@@ -52,8 +51,8 @@ class TagChoices(ModelSelect2TagWidget):
     def value_from_datadict(self, data, files, name):
         """Create objects for missing tags. Return comma separates string of tags."""
         values = set(super().value_from_datadict(data, files, name))
-        names = self.queryset.filter(**{"name__in": list(values)}).values_list(
-            "name", flat=True
+        names = self.queryset.filter(name__in=list(values)).values_list(
+            "name", flat=True,
         )
         names = set(map(str, names))
         cleaned_values = list(names)
@@ -82,11 +81,11 @@ class StockItemCreate(CreateView):
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
         form.helper = FormHelper()
         form.helper.add_input(
-            Submit("submit", "Create", css_class="btn-primary")
+            Submit("submit", "Create", css_class="btn-primary"),
         )
         # We override the widget for tags for autocomplete
         form.fields["tags"].widget = TagChoices(
-            data_view="stockitem-tag-auto-json"
+            data_view="stockitem-tag-auto-json",
         )
 
         # if get paramenter fromitems is set, lock down orderitem list
@@ -94,11 +93,11 @@ class StockItemCreate(CreateView):
             form.fields["orderitems"].label = "Order items"
             form.fields["orderitems"].disabled = True
             form.fields["orderitems"].queryset = OrderItem.objects.filter(
-                pk__in=[int(x) for x in self.kwargs["fromitems"].split(",")]
+                pk__in=[int(x) for x in self.kwargs["fromitems"].split(",")],
             )
             # Grow/shrink the html list size as required
             form.fields["orderitems"].widget.attrs["size"] = min(
-                form.fields["orderitems"].queryset.all().count(), 5
+                form.fields["orderitems"].queryset.all().count(), 5,
             )
             #
             logger.error(dir(form.fields["name"]))  # .value = "Order items"
@@ -112,7 +111,7 @@ class StockItemCreate(CreateView):
         # if get paramenter fromitems is set, preselect these items
         if "fromitems" in self.kwargs:
             qs = OrderItem.objects.filter(
-                pk__in=[int(x) for x in self.kwargs["fromitems"].split(",")]
+                pk__in=[int(x) for x in self.kwargs["fromitems"].split(",")],
             )
             initial["orderitems"] = qs
             initial["name"] = qs.first().name
@@ -158,7 +157,7 @@ class StockItemUpdate(UpdateView):
         return form
 
 
-def stockitem_list(request) -> HttpResponse:
+def stockitem_list(request):
     qs_orderitems = StockItem.objects.all()
     f = StockItemFilter(request.GET, queryset=qs_orderitems)
     paginator = Paginator(f.qs, 10)

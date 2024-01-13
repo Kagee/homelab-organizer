@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.html import mark_safe
+
 from . import CommonTreeModel
 
 
@@ -51,7 +52,7 @@ class Storage(CommonTreeModel):
 
     def get_html_box(self):
         return mark_safe(
-            (self.parent.get_html_box() + '&nbsp;' if self.parent else "")
+            (self.parent.get_html_box() + "&nbsp;" if self.parent else "")
             + '<span style="'
             + "display: inline-block; "
             + "width: 1.2em; "
@@ -62,17 +63,17 @@ class Storage(CommonTreeModel):
             + self.get_hex()
             + ';"></span>'
             if self.color
-            else ""
+            else "",
         )
 
     def html_rep(self):
         return mark_safe(
             (self.parent.name + "&nbsp;" if self.parent else "")
             + str(self.name)
-            + str("&nbsp;&nbsp;&nbsp;" + self.get_html_box())
+            + str("&nbsp;&nbsp;&nbsp;" + self.get_html_box()),
         )
 
     def __str__(self):
         return str(self.name) + str(
-            self.VALUE_TO_HEX[self.color] if self.color else ""
+            self.VALUE_TO_HEX[self.color] if self.color else "",
         )

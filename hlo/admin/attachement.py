@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from ..models import Attachement
 
+
 @admin.register(Attachement)
 class AttachementAdmin(admin.ModelAdmin):
     search_fields = ["name", "comment", "file"]
@@ -18,7 +19,7 @@ class AttachementAdmin(admin.ModelAdmin):
                 "sha1",
                 "used_by",
                 "text_ornot",
-                "text"
+                "text",
             ]
         else:
             return [
@@ -27,13 +28,13 @@ class AttachementAdmin(admin.ModelAdmin):
                 "type",
                 "file",
                 "used_by",
-                "text" 
+                "text",
             ]
 
 
 class AttachementInlineAdmin(admin.TabularInline):
     model = Attachement
-    verbose_name_plural = 'Attachements'
+    verbose_name_plural = "Attachements"
     extra = 1
-    fields = ['attachements',]
+    fields = ["attachements"]
     #autocomplete_fields = ['orderitem',]

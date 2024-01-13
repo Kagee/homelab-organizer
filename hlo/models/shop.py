@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib import admin
+from django.db import models
 from django.utils.html import format_html
 
 
@@ -20,7 +20,7 @@ class Shop(models.Model):
         blank=True,
     )
     icon: models.ImageField = models.ImageField(
-        upload_to="shop/icons", blank=True
+        upload_to="shop/icons", blank=True,
     )
 
     def longname(self):
@@ -37,7 +37,7 @@ class Shop(models.Model):
             return format_html(
                 # pylint: disable=no-member
                 f'<img src="{self.icon.url}" width="25"'
-                f" />&nbsp;{self.longname()}"
+                f" />&nbsp;{self.longname()}",
             )
         else:
             return f"{self.longname()}"
@@ -49,7 +49,7 @@ class Shop(models.Model):
             return format_html(
                 # pylint: disable=no-member
                 f'<img src="{self.icon.url}" style="min-height: 2em; min-width:'
-                ' 1em; max-height: 2em;">'
+                ' 1em; max-height: 2em;">',
             )
         else:
             return f"{self.longname()[0]}"
@@ -80,7 +80,7 @@ class Shop(models.Model):
             models.UniqueConstraint(
                 fields=["name", "branch_name"],
                 name="unique_shop_name_branch_name",
-            )
+            ),
         ]
 
     def save(self, *args, **kwargs):

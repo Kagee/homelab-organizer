@@ -12,7 +12,7 @@ class StockItem(models.Model):
     count = models.PositiveIntegerField("number of items used", default=0)
     tags = TaggableManager(blank=True)
     category = TreeManyToManyField(
-        "Category", blank=True, related_name="stockitems"
+        "Category", blank=True, related_name="stockitems",
     )
     project = TreeManyToManyField(
         "Project",
@@ -20,7 +20,7 @@ class StockItem(models.Model):
         related_name="stockitems",
     )
     storage = TreeManyToManyField(
-        "Storage", blank=True, related_name="stockitems"
+        "Storage", blank=True, related_name="stockitems",
     )
     orderitems = models.ManyToManyField(
         "OrderItem",
@@ -47,7 +47,7 @@ class StockItem(models.Model):
     def get_absolute_url(self) -> str:
         return reverse("stockitem-detail", kwargs={"pk": self.pk})
 
-   
+
     def orderitems_names(self):
         names = []
         if self.orderitems:
@@ -90,7 +90,7 @@ class OrderStockItemLink(models.Model):
             UniqueConstraint(
                 fields=["orderitem", "stockitem"],
                 name="unique_orderitem_stockitem",
-            )
+            ),
         ]
 
     def __str__(self):

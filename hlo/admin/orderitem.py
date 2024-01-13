@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.db import models
-from django.forms import TextInput, Textarea
+from django.forms import Textarea, TextInput
 
 from ..models import OrderItem
+
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
@@ -26,16 +27,16 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "item_ref",
                 "attachements",
                 "attachements_tag",
-                "indent_extra_data"
+                "indent_extra_data",
             ]
         else:
             return []
 
-    filter_horizontal = ['attachements',]
+    filter_horizontal = ["attachements"]
     formfield_overrides = {
         models.CharField: {"widget": TextInput(attrs={"size": "80"})},
         models.JSONField: {
-            "widget": Textarea(attrs={"rows": "10", "cols": "60"})
+            "widget": Textarea(attrs={"rows": "10", "cols": "60"}),
         },
     }
 
