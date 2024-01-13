@@ -1,28 +1,23 @@
 from django.conf import settings
-
-from django.urls import path  # , include
-from django.conf.urls import include
 from django.conf.urls.static import static
-from django.http import HttpResponse
 from django.contrib import admin
+from django.http import HttpResponse
+from django.urls import include, path
 
 from . import views
 from .views import (
+    AttachementSearchView,
+    OrderDetailView,
+    OrderItemDetailView,
     StockItemCreate,
     StockItemDetail,
     StockItemUpdate,
     TagAutoResponseView,
-    AttachementSearchView,
-    OrderItemDetailView,
-    OrderDetailView,
 )
-
-#from .admin import hlo_admin
 
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
-    #path("admin/", hlo_admin.urls, name="admin"),
-    
+    # path("admin/", hlo_admin.urls, name="admin"),
     # django-debug-toolbar
     path("__debug__/", include("debug_toolbar.urls")),
     # django-select2
@@ -63,7 +58,7 @@ urlpatterns = [
         OrderItemDetailView.as_view(),
         name="orderitem",
     ),
-    #path("order/list", OrderListView.as_view(), name="orders-list"),
+    # path("order/list", OrderListView.as_view(), name="orders-list"),
     path(
         "order/detail/<int:pk>", OrderDetailView.as_view(), name="order-detail"
     ),

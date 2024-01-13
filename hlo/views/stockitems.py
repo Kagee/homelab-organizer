@@ -1,17 +1,18 @@
-from django.shortcuts import render
-from django.views.generic import DetailView, CreateView, UpdateView
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import JsonResponse
+import logging
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from django import forms
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.views.generic import CreateView, DetailView, UpdateView
 from django_select2.forms import ModelSelect2TagWidget
 from django_select2.views import AutoResponseView
-
 from taggit.models import Tag
 
-from hlo.models import StockItem, OrderItem
 from hlo.filters import StockItemFilter
-
-import logging
+from hlo.models import OrderItem, StockItem
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class TagChoices(ModelSelect2TagWidget):
     search_fields = ["name__icontains"]
     empty_label = "Start typing to search or create tags..."
 
-    def get_model_field_values(self, value):
+    def get_model_field_values(self, value) -> dict:
         return {"name": value}
 
     def value_from_datadict(self, data, files, name):
@@ -61,11 +62,6 @@ class TagChoices(ModelSelect2TagWidget):
             cleaned_values.append(self.queryset.create(name=val).name)
         # django-taggit expects a comma-separated list
         return ",".join(cleaned_values)
-
-
-from django import forms
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
 
 
 class ExampleForm(forms.Form):
@@ -133,11 +129,26 @@ class StockItemDetail(DetailView):
     context_object_name = "stockitem"
 
 
+class CommonTreeWidget(s2forms.ModelSelect2MultipleWidget):
+    search_fields = [
+        "name__icontains",
+    ]
+
+
 class StockItemUpdate(UpdateView):
     model = StockItem
     template_name = "stockitem/form.html"
     context_object_name = "stock_item"
-    fields = ["name", "count", "tags", "orderitems"]
+    fields = [
+        "name",
+        "count",
+        "tags",
+        "orderitems",
+        "attachements",
+        "category",
+        "project",
+        "storage",
+    ]
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -147,7 +158,7 @@ class StockItemUpdate(UpdateView):
         return form
 
 
-def stockitem_list(request):
+def stockitem_list(request) -> HttpResponse:
     qs_orderitems = StockItem.objects.all()
     f = StockItemFilter(request.GET, queryset=qs_orderitems)
     paginator = Paginator(f.qs, 10)
@@ -160,5 +171,5 @@ def stockitem_list(request):
     except EmptyPage:
         response = paginator.page(paginator.num_pages)
     return render(
-        request, "stockitem/filter.html", {"stockitems": response, "filter": f}
+        request, "stockitem/filter.html", {"stockitems": response, "filter": f},
     )

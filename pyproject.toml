@@ -56,6 +56,29 @@ django-settings-module = "hlo.settings"
 
 [tool.black]
 line-length = 80
-target-version = ['py39']
+target-version = ['py310']
 experimental-string-processing = true
 preview = true
+
+[tool.ruff]
+line-length = 80
+indent-width = 4
+target-version = "py310"
+#select = ["E4", "E7", "E9", "F"]
+#select = ["E", "F", "W", "I", "B"]
+select = ["ALL"]
+ignore = [
+  "D100", # Missing docstring in public module
+  "D101", # Missing docstring in public class
+  "D102", # Missing docstring in public method
+  "D106", # Missing docstring in public nested class
+  "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+  ]
+
+fixable = ["ALL"]
+
+#[tool.ruff.lint]
+#select = ["D"]
+
+#[tool.ruff.lint.pydocstyle]
+#convention = "google"

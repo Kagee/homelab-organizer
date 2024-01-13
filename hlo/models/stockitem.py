@@ -1,27 +1,14 @@
 from django.db import models
-from django.urls import reverse
 from django.db.models import UniqueConstraint
-
-from taggit.managers import TaggableManager
+from django.urls import reverse
 from mptt.fields import TreeManyToManyField
+from taggit.managers import TaggableManager
 
 from . import Attachement
 
 
 class StockItem(models.Model):
-    def get_absolute_url(self):
-        return reverse("stockitem-detail", kwargs={"pk": self.pk})
-
-    class Meta:
-        ordering = ["name"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["name"],
-                name="unique_name",
-            )
-        ]
-
-    name = models.CharField(max_length=255, null=True, blank=True)
+    name = models.CharField(max_length=255, blank=True)
     count = models.PositiveIntegerField("number of items used", default=0)
     tags = TaggableManager(blank=True)
     category = TreeManyToManyField(
@@ -47,6 +34,20 @@ class StockItem(models.Model):
         blank=True,
     )
 
+
+    class Meta:
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name"],
+                name="unique_name",
+            ),
+        ]
+
+    def get_absolute_url(self) -> str:
+        return reverse("stockitem-detail", kwargs={"pk": self.pk})
+
+   
     def orderitems_names(self):
         names = []
         if self.orderitems:
