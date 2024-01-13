@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import logging
 import pprint
 from pathlib import Path
 
@@ -11,6 +12,7 @@ from djmoney.models.fields import MoneyField
 
 from . import Attachement, Order
 
+logger = logging.getLogger(__name__)
 
 def thumnail_path(instance, filename):
     ext = Path(filename).suffix[1:]
@@ -110,7 +112,7 @@ class OrderItem(models.Model):
             # pylint: disable=no-member
             f"{self.order.shop.branch_name} item"
             f" #{self.item_id}"
-            f"/{self.item_variation}" if len(self.item_variation) else ""
+            f"/{self.item_variation if len(self.item_variation) else ''}"
             f": {self.name}"
         )
 
@@ -128,13 +130,17 @@ class OrderItem(models.Model):
 
                 super().save(*args, **kwargs)
         else:
-            self.sha1 = None
+            self.sha1 = ""
+
+        item_variation = "novariation"
+        if len(self.item_variation):
+            item_variation = self.item_variation
+
         self.gen_id = (
             f"{self.order.shop.branch_name}-{self.order.order_id}-"
-            f"{self.item_id}-"
-            f"{self.item_variation}"
-            if len(self.item_variation) else "novariation"
+            f"{self.item_id}-{item_variation}"
         )
+        logger.debug("Gen id is %s", self.gen_id)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
