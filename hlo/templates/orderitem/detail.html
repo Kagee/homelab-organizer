@@ -18,12 +18,12 @@
                     </a></span>
             </p>
         </div>
-         if order_item.attachements.all %}
+        {% if order_item.attachements.all %}
         <h4>Attachements</h4>
         {% for attachement in order_item.attachements.all %}
         Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a><br>
         {% endfor %}
-         endif %}
+        {% endif %}
     </div>
     <div class="col-6">
         {% if order_item.thumbnail %}
