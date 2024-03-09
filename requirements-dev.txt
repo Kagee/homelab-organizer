@@ -11,3 +11,4 @@ types-jsonschema
 pydotplus # graph
 daphne # asgi webserver
 ruff
+djlint

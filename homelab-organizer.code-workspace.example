@@ -9,6 +9,9 @@
 		"[python]": {
 			"editor.defaultFormatter": "charliermarsh.ruff"
 		},
+		"[html][django-html][handlebars][hbs][mustache][jinja][jinja-html][nj][njk][nunjucks][twig]": {
+			"editor.defaultFormatter": "monosans.djlint"
+		}
 		"ruff.organizeImports": true,
 		"files.exclude": {
 			"venv": true,
@@ -30,6 +33,7 @@
 			"update.py": true,
 			"requirements-dev.txt": true,
 			"*.code-workspace": true,
+			"*.code-workspace.example": true,
 			"pyproject.toml": true,
 			"*.swp": true,
 			"**/migrations/": true,
@@ -39,8 +43,7 @@
 		"betterStatusBar.defaultColor": "statusBar.foreground",
 		"betterStatusBar.loadNpmCommands": false,
 		"betterStatusBar.reloadButton": "🗘",
-		"editor.defaultFormatter": "charliermarsh.ruff",
-		"python.languageServer": "Pylance",
+		"python.languageServer": "Jedi",
 		"python.analysis.indexing": true,
 		"python.analysis.autoImportCompletions": true,
 	}
