@@ -1,0 +1,47 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+                "python.envFile": "${workspaceFolder}/.autoload/env",
+		"[python]": {
+			"editor.defaultFormatter": "charliermarsh.ruff"
+		},
+		"ruff.organizeImports": true,
+		"files.exclude": {
+			"venv": true,
+			"**/__pycache__": true,
+			".ruff_cache": true,
+			"whoosh_index": true,
+			".mypy_cache": true,
+			"*~": true,
+			"LICENSE": true,
+			"manage.py": true,
+			"input-ignore": true,
+			"schema": true,
+			"media_root": true,
+			"README.md": true,
+			"ATTRIBUTION.md": true,
+			"scraper.log": true,
+			"bootstrap.py": true,
+			"sudo-nuke-db.py": true,
+			"update.py": true,
+			"requirements-dev.txt": true,
+			"*.code-workspace": true,
+			"pyproject.toml": true,
+			"*.swp": true,
+			"**/migrations/": true,
+			".gitignore": true,
+			"hlo_model_graph.png": true,
+		},
+		"betterStatusBar.defaultColor": "statusBar.foreground",
+		"betterStatusBar.loadNpmCommands": false,
+		"betterStatusBar.reloadButton": "🗘",
+		"editor.defaultFormatter": "charliermarsh.ruff",
+		"python.languageServer": "Pylance",
+		"python.analysis.indexing": true,
+		"python.analysis.autoImportCompletions": true,
+	}
+}
