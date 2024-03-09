@@ -1,8 +1,8 @@
 from django.db import models
 from django.db.models import UniqueConstraint
 from django.urls import reverse
-from mptt.fields import TreeManyToManyField
-from taggit.managers import TaggableManager
+from mptt.fields import TreeManyToManyField  # type: ignore[import-untyped]
+from taggit.managers import TaggableManager  # type: ignore[import-untyped]
 
 from . import Attachement
 
@@ -12,7 +12,9 @@ class StockItem(models.Model):
     count = models.PositiveIntegerField("number of items used", default=0)
     tags = TaggableManager(blank=True)
     category = TreeManyToManyField(
-        "Category", blank=True, related_name="stockitems",
+        "Category",
+        blank=True,
+        related_name="stockitems",
     )
     project = TreeManyToManyField(
         "Project",
@@ -20,9 +22,11 @@ class StockItem(models.Model):
         related_name="stockitems",
     )
     storage = TreeManyToManyField(
-        "Storage", blank=True, related_name="stockitems",
+        "Storage",
+        blank=True,
+        related_name="stockitems",
     )
-    orderitems = models.ManyToManyField(
+    orderitems = models.ManyToManyField(  # type: ignore[var-annotated]
         "OrderItem",
         through="OrderStockItemLink",
         related_name="stockitems",
@@ -34,7 +38,6 @@ class StockItem(models.Model):
         blank=True,
     )
 
-
     class Meta:
         ordering = ["name"]
         constraints = [
@@ -44,16 +47,13 @@ class StockItem(models.Model):
             ),
         ]
 
-
     def __str__(self):
         if self.name:
             return str(self.name)
         return str(self.orderitems.all().first().name)
 
-
     def get_absolute_url(self) -> str:
         return reverse("stockitem-detail", kwargs={"pk": self.pk})
-
 
     def orderitems_names(self):
         names = []
