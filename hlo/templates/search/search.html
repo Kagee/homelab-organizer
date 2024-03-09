@@ -1,38 +1,135 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-    <h2>Search</h2>
-
-    <form method="get" action=".">
-        <table>
-            {{ form.as_table }}
-            <tr>
-                <td>&nbsp;</td>
-                <td>
-                    <input type="submit" value="Search">
-                </td>
-            </tr>
-        </table>
-
-        {% if query %}
-            <h3>Results: {{ page_obj.object_list | length }}</h3>
-            <ul>
-            {% for result in page_obj.object_list %}
-            <li>
-                    <a href="{{ result.object.get_parent.name }}">{{ result.object.get_parent.name }}</a> (<a href="{{ result.object.file.url }}">{{ result.object.name }}</a>)
-            </li>
-            {% empty %}
-                <li>No results found.</li>
-            {% endfor %}
-            </ul>
-            {% if page_obj.has_previous or page_obj.has_next %}
-                <div>
-                    {% if page_obj.has_previous %}<a href="?q={{ query }}&amp;page={{ page_obj.previous_page_number }}">{% endif %}&laquo; Previous{% if page_obj.has_previous %}</a>{% endif %}
-                    |
-                    {% if page_obj.has_next %}<a href="?q={{ query }}&amp;page={{ page_obj.next_page_number }}">{% endif %}Next &raquo;{% if page_obj.has_next %}</a>{% endif %}
-                </div>
-            {% endif %}
-        {% else %}
-            {# Show some example queries to run, maybe query syntax, something else? #}
-        {% endif %}
+  <div class="row">
+    <h2>
+      Search attachement contents
+      {% if query %}
+        ({{ page_obj.paginator.count }} results
+        {% if page_obj.paginator.count %}, page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}{% endif %}
+        )
+      {% endif %}
+    </h2>
+  </div>
+  <div class="row mb-4">
+    <form method="GET">
+      <div class="input-group">
+        <!--   order__shop name date_range order  -->
+        {% for field in form.visible_fields %}
+          <div class="form-outline" data-mdb-input-init>
+            <input id="id_{{ field.name }}"
+                   {% if field.value %}value="{{ field.value }}"{% endif %}
+                   name="{{ field.name }}"
+                   type="search"
+                   class="form-control rounded"
+                   placeholder="Search"
+                   aria-label="Search" />
+          </div>
+        {% endfor %}
+        <!-- modal body ends here, buttons im modal footer -->
+        {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+        <a href="{{ request.path }}" class="btn btn-secondary">Clear</a>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
     </form>
-    {% endblock content %}
+  </div>
+  <div class="row"></div>
+  {% if page_obj.paginator.count %}
+    <div class="row">
+      <div class="col">
+        <table class="table  table-sm table-bordered table-striped table-hover table-sm">
+          <thead>
+            <tr>
+              <th scope="col" style="min-width: 6em;"></th>
+              <th scope="col">Attachement</th>
+              <th scope="col">Item</th>
+              <th scope="col">Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for result in page_obj.object_list %}
+              {% with result.object.get_parent as orderitem %}
+                <tr>
+                  <td class="p-2"
+                      style="min-height: 12em;
+                             height: 6em;
+                             background-size: contain;
+                             background-repeat: no-repeat;
+                             {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>
+                </td>
+                <td>
+                  <a href="{{ result.object.file.url }}" target="_blank">View {{ result.object.name }}</a>
+                </td>
+                <td>{{ orderitem.name }}</td>
+                <td class="text-center">
+                  <a href="{{ orderitem.get_absolute_url }}">View item</a>
+                </td>
+              </tr>
+            {% endwith %}
+          {% empty %}
+            <tr>
+              <td>No results found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <hr>
+{% else %}
+  {% if query %}
+    No results were found for query "{{ query }}"
+  {% else %}
+   Enter a term to search for in the <label for="id_q">search box above.</label>
+  {% endif %}
+{% endif %}
+{% load hlo_tags %}
+<nav aria-label="Pagination"
+     class="navbar fixed-bottom navbar-light bg-light justify-content-center pb-0 pt-1 clearfix">
+  <ul class="pagination mb-1">
+    <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+      <a class="page-link"
+         {% if page_obj.has_previous %} href="?{% url_replace_parameter page=1 %}" {% endif %}
+         aria-label="First">
+        <span class="d-lg-none d-xl-none d-xxl-none">«</span>
+        <span class="d-none d-lg-block d-xl-block d-xxl-block">«&nbsp;First</span>
+      </a>
+    </li>
+    <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+      <a class="page-link"
+         {% if page_obj.has_previous %} href="?{% url_replace_parameter page=page_obj.previous_page_number %}" {% endif %}
+         aria-label="Previous">
+        <span class="d-lg-none d-xl-none d-xxl-none">‹</span>
+        <span class="d-none d-lg-block d-xl-block d-xxl-block">‹&nbsp;Previous</span>
+      </a>
+    </li>
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <li class="page-item">
+          <a class="page-link disabled">{{ page_obj.number }}</a>
+        </li>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <li class="page-item d-none d-lg-block d-xl-block d-xxl-block">
+          <a class="page-link" href="?{% url_replace_parameter page=num %}">{{ num }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+    <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
+      <a class="page-link"
+         {% if page_obj.has_next %} href="?{% url_replace_parameter page=page_obj.next_page_number %}" {% endif %}
+         aria-label="Next">
+        <span class="d-lg-none d-xl-none d-xxl-none">›</span>
+        <span class="d-none d-lg-block d-xl-block d-xxl-block">Next&nbsp;›</span>
+      </a>
+    </li>
+    <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
+      <a class="page-link"
+         {% if page_obj.has_next %} href="?{% url_replace_parameter page=page_obj.paginator.num_pages %}" {% endif %}
+         aria-label="Last">
+        <span class="d-lg-none d-xl-none d-xxl-none">»</span>
+        <span aria-hidden="true"><span class="d-none d-lg-block d-xl-block d-xxl-block">Last&nbsp;»</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+{% endblock content %}

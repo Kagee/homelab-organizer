@@ -17,7 +17,7 @@ class AttachementIndex(indexes.SearchIndex, indexes.Indexable):
     def get_model(self):
         return Attachement
 
-    def index_queryset(self, _using=None):
+    def index_queryset(self, using=None):  # noqa: ARG002
         """Used when the entire index for model is updated."""
         return (
             self.get_model().objects
