@@ -52,7 +52,7 @@ class Storage(CommonTreeModel):
         return self.VALUE_TO_HEX[self.color] if self.color else ""
 
     def get_html_box(self):
-        return mark_safe(
+        return mark_safe(  # noqa: S308
             (self.parent.get_html_box() + "&nbsp;" if self.parent else "")
             + '<span style="'
             + "display: inline-block; "
@@ -68,7 +68,7 @@ class Storage(CommonTreeModel):
         )
 
     def html_rep(self):
-        return mark_safe(
+        return mark_safe(  # noqa: S308
             (self.parent.name + "&nbsp;" if self.parent else "")
             + str(self.name)
             + str("&nbsp;&nbsp;&nbsp;" + self.get_html_box()),

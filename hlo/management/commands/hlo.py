@@ -6,7 +6,7 @@ from django.core.management.base import (
     no_translations,
 )
 
-from .loaders import ShopMetaLoader, ShopOrderLoader, TreeLoader
+from .loaders import ShopMetaLoader, ShopOrderLoader
 
 
 class Command(BaseCommand):
@@ -75,7 +75,7 @@ class Command(BaseCommand):
 
         self.setup_logger(options)
         self.log.debug(options)
-        if "import_shop" in options and options["import_shop"]:
+        if options.get("import_shop"):
             if options["import_shop"] == "all":
                 for shop in [
                     x.stem for x in settings.INPUT_FOLDER.glob("*.json")
@@ -83,11 +83,11 @@ class Command(BaseCommand):
                     ShopOrderLoader(shop, options)
             else:
                 ShopOrderLoader(options["import_shop"], options)
-        if "init_shops" in options and options["init_shops"]:
+        if options.get("init_shops"):
             ShopMetaLoader.load()
-        if "init_categories" in options and options["init_categories"]:
-            TreeLoader.init_projects()
-        if "init_projects" in options and options["init_projects"]:
-            TreeLoader.init_categories()
-        if "init_storage" in options and options["init_storage"]:
-            TreeLoader.init_storage()
+        if options.get("init_categories"):
+            pass
+        if options.get("init_projects"):
+            pass
+        if options.get("init_storage"):
+            pass

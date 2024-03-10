@@ -1,14 +1,35 @@
+import import_export  # type: ignore[import-untyped]
 from django.contrib import admin
 from django.utils.html import format_html
-from mptt.admin import DraggableMPTTAdmin
+from mptt.admin import DraggableMPTTAdmin  # type: ignore[import-untyped]
 
 from hlo.models import Storage
 
 
+class StorageResource(import_export.resources.ModelResource):
+    class Meta:
+        model = Storage
+        skip_unchanged = True
+        report_skipped = True
+        import_id_fields = ("uuid",)
+        fields = ("name", "uuid", "parent")
+
+    # We base parent on UUID, as name may be duplicated
+    parent = import_export.fields.Field(
+        column_name="parent",
+        attribute="parent",
+        widget=import_export.widgets.ForeignKeyWidget(Storage, "uuid"),
+    )
+
+
 @admin.register(Storage)
-class StorageAdmin(DraggableMPTTAdmin):
+class StorageAdmin(
+    import_export.admin.ImportExportModelAdmin,
+    DraggableMPTTAdmin,
+):
     list_display = ("tree_actions", "indented_title_color")
     list_display_links = ("indented_title_color",)
+    resource_class = StorageResource
 
     def indented_title_color(self, instance):
         return format_html(

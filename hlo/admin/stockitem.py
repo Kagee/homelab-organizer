@@ -4,7 +4,9 @@ from import_export import (  # type: ignore[import-untyped]
     resources,
     widgets,
 )
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import (  # type: ignore[import-untyped]
+    ImportExportModelAdmin,
+)
 
 from hlo.models import Category, Project, StockItem, Storage
 
