@@ -18,8 +18,8 @@ with env.prefixed("UPDATE_HLO_"):
     SUPERUSER_EMAIL = env("SUPERUSER_EMAIL")
 
 
-def main():
-    if input("Upgrade pip? (Y/n): ").lower() != "n":
+def main(auto_answer: bool) -> None:
+    if auto_answer or input("Upgrade pip? (Y/n): ").lower() != "n":
         subprocess.run(
             [  # noqa: S603
                 sys.executable,
@@ -34,7 +34,7 @@ def main():
             check=False,
         )
 
-    if input("Pip install && upgrade? (Y/n): ").lower() != "n":
+    if auto_answer or input("Pip install && upgrade? (Y/n): ").lower() != "n":
         subprocess.run(
             [  # noqa: S603
                 sys.executable,
@@ -53,13 +53,17 @@ def main():
     db_deleted = False
     migrations_ran = False
 
-    if input("Delete DB? (y/N): ").lower() == "y":
+    if auto_answer or input("Delete DB? (y/N): ").lower() == "y":
         p = Path("db/db-dev.sqlite3")
         if p.is_file():
             p.unlink()
         db_deleted = True
 
-    if input("Delete, recreate and apply migrations? (y/N): ").lower() == "y":
+    if (
+        auto_answer
+        or input("Delete, recreate and apply migrations? (y/N): ").lower()
+        == "y"
+    ):
         shutil.rmtree(Path("hlo/migrations"))
         subprocess.run(
             [  # noqa: S603
@@ -97,7 +101,7 @@ def main():
             check=False,
         )
 
-    if input("Init shops? (Y/n): ").lower() != "n":
+    if auto_answer or input("Init shops? (Y/n): ").lower() != "n":
         subprocess.run(
             [  # noqa: S603
                 sys.executable,
@@ -109,7 +113,8 @@ def main():
         )
 
     if (
-        input("Init order metadata without attachements? (Y/n): ").lower()
+        auto_answer
+        or input("Init order metadata without attachements? (Y/n): ").lower()
         != "n"
     ):
         subprocess.run(
@@ -132,4 +137,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    do_it = False
+    if len(sys.argv) > 1:
+        do_it = sys.argv[1] == "-y"
+    main(auto_answer=do_it)
