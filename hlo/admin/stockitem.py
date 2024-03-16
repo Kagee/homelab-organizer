@@ -27,17 +27,29 @@ class StockItemResource(resources.ModelResource):
     category = fields.Field(
         column_name="category",
         attribute="category",
-        widget=widgets.ManyToManyWidget(Category, field="name", separator="$"),
+        widget=widgets.ManyToManyWidget(
+            Category,
+            field="name",
+            separator=chr(31),
+        ),
     )
     storage = fields.Field(
         column_name="storage",
         attribute="storage",
-        widget=widgets.ManyToManyWidget(Storage, field="name", separator="$"),
+        widget=widgets.ManyToManyWidget(
+            Storage,
+            field="name",
+            separator=chr(31),
+        ),
     )
     project = fields.Field(
         column_name="project",
         attribute="project",
-        widget=widgets.ManyToManyWidget(Project, field="name", separator="$"),
+        widget=widgets.ManyToManyWidget(
+            Project,
+            field="name",
+            separator=chr(31),
+        ),
     )
 
 
@@ -48,6 +60,6 @@ class StockItemAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
     def get_inlines(self, _request, obj=None):
         # We do this to not kill admin if OrderItem is deleted
-        if obj.orderitems.count():
+        if obj and obj.orderitems.count():
             return [OrderItemStockItemLinkInlineAdmin]
         return []
