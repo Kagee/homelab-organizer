@@ -94,7 +94,7 @@ class OrderItemFilter(django_filters.FilterSet):
     )
 
     date_range = OrderDateRangeFilter(
-        label="Time",
+        label="Timerange",
         empty_label="All time",
     )
 

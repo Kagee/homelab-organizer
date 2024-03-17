@@ -1,11 +1,23 @@
 import logging
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import (
+    HTML,
+    ButtonHolder,
+    Column,
+    Layout,
+    MultiWidgetField,
+    Row,
+    Submit,
+)
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 from django.views.generic import DetailView
 
 from hlo.filters import OrderItemFilter
 from hlo.models import OrderItem
+
+logger = logging.getLogger(__name__)
 
 
 def product_list(request):
@@ -18,13 +30,54 @@ def product_list(request):
     )
     f = OrderItemFilter(request.GET, queryset=qs_orderitems)
     paginator = Paginator(f.qs, 10)
-    logging.debug(dir(f))
-    logging.debug("")
-    logging.debug(dir(f.get_form_class()))
-    logging.debug("")
-    logging.debug(dir(f.get_form_class().declared_fields.items()))
-    logging.debug("")
-    logging.debug(f.get_form_class().declared_fields.items())
+
+    # Swap the name and render order for the name fields
+    f.form.fields["name"].widget.suffixes = ["lookup", None]
+    f.form.fields["name"].widget.widgets = (
+        f.form.fields["name"].widget.widgets[1],
+        f.form.fields["name"].widget.widgets[0],
+    )
+
+    f.form.helper = FormHelper()
+    f.form.helper.form_method = "get"
+    f.form.helper.form_class = "align-items-bottom"
+    f.form.helper.form_style = "inline"
+    f.form.helper.form_show_labels = True
+    f.form.helper.label_class = "fs-6"
+    layout = Layout(
+        Row(
+            Column(
+                MultiWidgetField(
+                    "name",
+                    attrs=(
+                        {"style": "width: 30%; display: inline-block;"},
+                        {"style": "width: 70%; display: inline-block;"},
+                    ),
+                    wrapper_class="hemmelig",
+                ),
+                css_class="col-4",
+            ),
+            *[
+                Column(field, css_class="col")
+                for field in f.form.fields
+                if field != "name"
+            ],
+            Column(
+                ButtonHolder(
+                    HTML(
+                        '<a href="{{ request.path }}" '
+                        'class="btn btn-secondary col ">Clear</a>',
+                    ),
+                    Submit("submit", "Submit", css_class="btn btn-primary col"),
+                    css_class="row align-items-end h-100 pb-3",
+                ),
+                css_class="col",
+            ),
+            css_class="pt-3",
+        ),
+    )
+    f.form.helper.add_layout(layout)
+
     page = request.GET.get("page")
     try:
         response = paginator.page(page)

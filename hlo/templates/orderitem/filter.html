@@ -39,12 +39,10 @@
               data-bs-target="#filterModal">Filter</button>
     </div>
     <div class="col-12 d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
-      <form method="get">
-        {% for field in filter.form.visible_fields %}<label>{{ field.label }}: {{ field }}</label>{% endfor %}
-        {% for field in filter.form.hidden_fields %}{{ field }}{% endfor %}
-        <a href="{{ request.path }}" class="btn btn-secondary">Clear</a>
-        <button type="submit" class="btn btn-primary">Apply</button>
-      </form>
+      <!-- CRISPY FORM START -->
+      {% load crispy_forms_tags %}
+        {% crispy filter.form %}
+      <!-- CRISPY FORM END -->
     </div>
   </div>
   <div class="row">
