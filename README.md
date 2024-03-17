@@ -4,9 +4,25 @@ Web app for organizing stuff in your homelab. Slow progress, primary focus is st
 
 This project used to contain [Webshop Scraper](https://gitlab.com/Kagee/webshop-order-scraper) before the code became to big.
 
+<!-- markdownlint-capture -->
+<!-- markdownlint-disable MD033 -->
+<table>
+<tr><td colspan="2">Mobile screenshots</td><tr>
+<tr><td>
+
+![alt text](docs/images/mobile_front_page_2024-03-18.png)
+
+</td>
+<td>
+
+![alt text](docs/images/mobile_orderitems_2024-03-18.png)
+</td></tr>
+</table>
+<!-- markdownlint-restore -->
+
 ## Requirements
 
-Python 3.9 or later. Should support  Linux/Mac OS X/Windows.
+Python 3.10 or later. Should support  Linux/Mac OS X/Windows.
 
 ## Linux 101
 
