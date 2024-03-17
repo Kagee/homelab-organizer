@@ -21,3 +21,4 @@ django-crispy-forms>=2.1
 crispy-bootstrap5>=2023.10
 django-import-export>=3.3.7
 environs>=11.0.0
+colored>=2.2.4

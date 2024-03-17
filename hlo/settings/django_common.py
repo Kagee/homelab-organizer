@@ -5,6 +5,8 @@ from typing import Any
 
 import environ
 
+from hlo.colored_logs import ColoredLogFormatter
+
 env = environ.FileAwareEnv(
     # set casting, default value
     HLO_DEBUG=(bool, False),
@@ -67,6 +69,12 @@ LOGGING = {
         "simple": {
             "format": "S: {levelname} {message}",
             "style": "{",
+        },
+        "coloredlogs": {
+            "()": lambda: ColoredLogFormatter(
+                fmt=("{asctime} [{levelname[0]}] {message} ({name})"),
+                style="{",
+            )
         },
     },
     "handlers": {
