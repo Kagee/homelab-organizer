@@ -1,9 +1,9 @@
-import django_filters
+import django_filters  # type: ignore[import-untyped]
 from django.db.models import Max, Min
 from django.db.utils import OperationalError
 from django.utils.timezone import now
 
-from .models import Order, OrderItem
+from .models import Order, OrderItem, Shop
 
 
 class OrderDateRangeFilter(django_filters.DateRangeFilter):
@@ -37,7 +37,8 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
         this_year = now().year
         try:
             order_years = Order.objects.aggregate(
-                Max("date__year"), Min("date__year"),
+                Max("date__year"),
+                Min("date__year"),
             )
         except OperationalError:
             order_years = {}
@@ -76,13 +77,14 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
             choices=self.order_choices,
             filters=self.order_filters,
             field_name="order__date",
-            *args, **kwargs,  # noqa: B026
+            *args,  # noqa: B026
+            **kwargs,
         )
 
 
 class OrderItemFilter(django_filters.FilterSet):
     name = django_filters.LookupChoiceFilter(
-        label="Order item name",
+        label="Name",
         lookup_choices=[
             ("icontains", "Contains"),
             ("istartswith", "Starts with"),
@@ -91,7 +93,10 @@ class OrderItemFilter(django_filters.FilterSet):
         empty_label=None,
     )
 
-    date_range = OrderDateRangeFilter(label="Order time")
+    date_range = OrderDateRangeFilter(
+        label="Time",
+        empty_label="All time",
+    )
 
     order = django_filters.OrderingFilter(
         label="Order by",
@@ -104,11 +109,16 @@ class OrderItemFilter(django_filters.FilterSet):
         ),
     )
 
+    order__shop = django_filters.ModelChoiceFilter(
+        queryset=Shop.objects.all(),
+        empty_label="All shops",
+        label="Shop",
+    )
+
     class Meta:
         model = OrderItem
-        fields = {
-            "order__shop": ["exact"],
-        }
+        fields: dict = {}
+
 
 class StockItemFilter(django_filters.FilterSet):
     name = django_filters.LookupChoiceFilter(
@@ -121,10 +131,9 @@ class StockItemFilter(django_filters.FilterSet):
         empty_label=None,
     )
 
-
     class Meta:
         model = OrderItem
         fields = {
-            "name", # not suire if correct, fields is required
+            "name",  # not suire if correct, fields is required
             # "order__shop": ["exact"],  # noqa: ERA001
         }

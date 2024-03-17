@@ -29,7 +29,7 @@ class Order(models.Model):
         blank=False,
     )
 
-    date: datetime = models.DateField(
+    date = models.DateField(
         "Order date",
     )
     attachements = models.ManyToManyField(
@@ -40,6 +40,8 @@ class Order(models.Model):
         max_digits=19,
         decimal_places=4,
         default_currency=None,
+        blank=True,
+        null=True,
     )
     subtotal = MoneyField(
         max_digits=19,
@@ -102,7 +104,7 @@ class Order(models.Model):
                 f' target="_blank">{attachement}</a></li>'
             )
         html += "</ul>"
-        return mark_safe(html)
+        return mark_safe(html)  # noqa: S308
 
     attachements_tag.short_description = "Attachements"
 

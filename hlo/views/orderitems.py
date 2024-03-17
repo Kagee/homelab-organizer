@@ -1,3 +1,5 @@
+import logging
+
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 from django.views.generic import DetailView
@@ -14,10 +16,15 @@ def product_list(request):
         .prefetch_related("stockitems")
         .order_by("-order__date")
     )
-    # .values('id', 'name', 'thumbnail', 'order')
     f = OrderItemFilter(request.GET, queryset=qs_orderitems)
     paginator = Paginator(f.qs, 10)
-
+    logging.debug(dir(f))
+    logging.debug("")
+    logging.debug(dir(f.get_form_class()))
+    logging.debug("")
+    logging.debug(dir(f.get_form_class().declared_fields.items()))
+    logging.debug("")
+    logging.debug(f.get_form_class().declared_fields.items())
     page = request.GET.get("page")
     try:
         response = paginator.page(page)

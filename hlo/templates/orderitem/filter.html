@@ -1,120 +1,142 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
-{% block title %}Find order items{% endblock title %}
+{% block title %}
+  Find order items
+{% endblock title %}
 {% block content %}
-
-<div class="modal" tabindex="-1" id="filterModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Filter results</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form method="GET">
-          <!--   order__shop name date_range order  -->
-          {% for field in filter.form.visible_fields %}
-          {{ field }}
-          {% endfor %}
-          <!-- modal body ends here, buttons im modal footer -->
-      </div>
-      <div class="modal-footer">
-        {% for field in filter.form.hidden_fields %}
-          {{ field }}
-          {% endfor %}
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
-        <a href="{{ request.path }}" class="btn btn-secondary">Clear</a>
-        <button type="submit" class="btn btn-primary">Apply</button>
-        </form>
+  <div class="modal" tabindex="-1" id="filterModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Filter results</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="get">
+            <!--   order__shop name date_range order  -->
+            {% for field in filter.form.visible_fields %}{{ field }}{% endfor %}
+            <!-- modal body ends here, buttons im modal footer -->
+          </div>
+          <div class="modal-footer">
+            {% for field in filter.form.hidden_fields %}{{ field }}{% endfor %}
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+            <a href="{{ request.path }}" class="btn btn-secondary">Clear</a>
+            <button type="submit" class="btn btn-primary">Apply</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
-<div class="row">
-  <div class="col-12 text-end">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button>
+  <div class="row">
+    <div class="col-12 d-lg-none d-xl-none d-xxl-none">
+      <button type="button"
+              class="btn btn-primary w-100"
+              data-bs-toggle="modal"
+              data-bs-target="#filterModal">Filter</button>
+    </div>
+    <div class="col-12 d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
+      <form method="get">
+        {% for field in filter.form.visible_fields %}<label>{{ field.label }}: {{ field }}</label>{% endfor %}
+        {% for field in filter.form.hidden_fields %}{{ field }}{% endfor %}
+        <a href="{{ request.path }}" class="btn btn-secondary">Clear</a>
+        <button type="submit" class="btn btn-primary">Apply</button>
+      </form>
+    </div>
   </div>
-</div>
-
-<div class="row">
-  <div class="col">
-    <table class="table  table-sm table-bordered table-striped table-hover table-sm">
-      <thead>
-        <tr>
-          <th scope="col" style="min-width: 6em;"></th>
-          <th scope="col">Name</th>
-          <!-- Hide shop col on small screens -->
-          <th scope="col" class="d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell">Shop</th>
-          <th scope="col">Stock</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for orderitem in page_obj %}
-        <tr>
-          <td 
-            class="p-2" 
-            style="min-height: 12em; height: 6em; background-size: contain; background-repeat: no-repeat;{% if orderitem.thumbnail %} background-image: url({{ orderitem.thumbnail.url }});{% endif %}">          </td>
-          <td><a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a></td>
-          <!-- Hide shop col on small screens -->
-          <td class="text-center d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell">
-            {{ orderitem.order.shop.img_icon }}</td><!-- {{ orderitem.order.date | slice:"0:7" }} -->
-          <td class="text-center">
-            {% if not orderitem.stockitems.count %}
-                <a href="{% url 'stockitem-create-from' orderitem.id %}"
-            class="btn btn-primary btn-sm">{% bs_icon 'box-arrow-in-right' %}</a>
-            {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="row">
+    <div class="col">
+      <table class="table  table-sm table-bordered table-striped table-hover table-sm">
+        <thead>
+          <tr>
+            <th scope="col" style="min-width: 6em;"></th>
+            <th scope="col">Name</th>
+            <!-- Hide shop col on small screens -->
+            <th scope="col"
+                class="d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell">Shop</th>
+            <th scope="col">Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for orderitem in page_obj %}
+            <tr>
+              <td class="p-2"
+                  style="min-height: 12em;
+                         height: 6em;
+                         background-size: contain;
+                         background-repeat: no-repeat;
+                         {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>
+              <td>
+                <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
+              </td>
+              <!-- Hide shop col on small screens -->
+              <td class="text-center d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell">
+                {{ orderitem.order.shop.img_icon }}
+              </td>
+              <!-- {{ orderitem.order.date | slice:"0:7" }} -->
+              <td class="text-center">
+                {% if not orderitem.stockitems.count %}
+                  <a href="{% url 'stockitem-create-from' orderitem.id %}"
+                     class="btn btn-primary btn-sm">{% bs_icon 'box-arrow-in-right' %}</a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
-<hr>
-
-
-{% load hlo_tags %}
-<nav aria-label="Pagination" class="navbar fixed-bottom navbar-light bg-light justify-content-center pb-0 pt-1 clearfix">
-  <ul class="pagination mb-1">
-    <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
-      <a class="page-link" {% if page_obj.has_previous %} href="?{% url_replace_parameter page=1 %}" {% endif %}
-        aria-label="First">
-        <span class="d-lg-none d-xl-none d-xxl-none">«</span>
-        <span class="d-none d-lg-block d-xl-block d-xxl-block">«&nbsp;First</span>
-      </a>
-    </li>
-    <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
-      <a class="page-link" {% if page_obj.has_previous %}
-        href="?{% url_replace_parameter page=page_obj.previous_page_number %}" {% endif %} aria-label="Previous">
-        <span class="d-lg-none d-xl-none d-xxl-none">‹</span>
-        <span class="d-none d-lg-block d-xl-block d-xxl-block">‹&nbsp;Previous</span>
-      </a>
-    </li>
-    {% for num in page_obj.paginator.page_range %}
-    {% if page_obj.number == num %}
-    <li class="page-item"><a class="page-link disabled">{{ page_obj.number }}</a></li>
-    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <li
-      class="page-item d-none d-lg-block d-xl-block d-xxl-block"><a class="page-link"
-        href="?{% url_replace_parameter page=num %}">{{ num }}</a></li>
-      {% endif %}
+  <hr>
+  {% load hlo_tags %}
+  <nav aria-label="Pagination"
+       class="navbar fixed-bottom navbar-light bg-light justify-content-center pb-0 pt-1 clearfix">
+    <ul class="pagination mb-1">
+      <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+        <a class="page-link"
+           {% if page_obj.has_previous %} href="?{% url_replace_parameter page=1 %}" {% endif %}
+           aria-label="First">
+          <span class="d-lg-none d-xl-none d-xxl-none">«</span>
+          <span class="d-none d-lg-block d-xl-block d-xxl-block">«&nbsp;First</span>
+        </a>
+      </li>
+      <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+        <a class="page-link"
+           {% if page_obj.has_previous %} href="?{% url_replace_parameter page=page_obj.previous_page_number %}" {% endif %}
+           aria-label="Previous">
+          <span class="d-lg-none d-xl-none d-xxl-none">‹</span>
+          <span class="d-none d-lg-block d-xl-block d-xxl-block">‹&nbsp;Previous</span>
+        </a>
+      </li>
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li class="page-item">
+            <a class="page-link disabled">{{ page_obj.number }}</a>
+          </li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <li class="page-item d-none d-lg-block d-xl-block d-xxl-block">
+            <a class="page-link" href="?{% url_replace_parameter page=num %}">{{ num }}</a>
+          </li>
+        {% endif %}
       {% endfor %}
       <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
-        <a class="page-link" {% if page_obj.has_next %}
-          href="?{% url_replace_parameter page=page_obj.next_page_number %}" {% endif %} aria-label="Next">
+        <a class="page-link"
+           {% if page_obj.has_next %} href="?{% url_replace_parameter page=page_obj.next_page_number %}" {% endif %}
+           aria-label="Next">
           <span class="d-lg-none d-xl-none d-xxl-none">›</span>
           <span class="d-none d-lg-block d-xl-block d-xxl-block">Next&nbsp;›</span>
         </a>
       </li>
       <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
-        <a class="page-link" {% if page_obj.has_next %}
-          href="?{% url_replace_parameter page=page_obj.paginator.num_pages %}" {% endif %} aria-label="Last">
+        <a class="page-link"
+           {% if page_obj.has_next %} href="?{% url_replace_parameter page=page_obj.paginator.num_pages %}" {% endif %}
+           aria-label="Last">
           <span class="d-lg-none d-xl-none d-xxl-none">»</span>
-          <span aria-hidden="true"><span class="d-none d-lg-block d-xl-block d-xxl-block">Last&nbsp;»</span>
+          <span class="d-none d-lg-block d-xl-block d-xxl-block">Last&nbsp;»</span>
         </a>
       </li>
-  </ul>
-</nav>
-
+    </ul>
+  </nav>
 {% endblock %}
