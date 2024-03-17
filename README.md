@@ -7,15 +7,23 @@ This project used to contain [Webshop Scraper](https://gitlab.com/Kagee/webshop-
 <!-- markdownlint-capture -->
 <!-- markdownlint-disable MD033 -->
 <table>
+<tr><td colspan="2">Desktop screenshots</td><tr>
+<tr><td colspan="2">
+
+![alt text](docs/images/desktop_orderitems_2024-03-18.png)
+Listing order items with "esp" in their item name, bought on Aliexpress in 2022
+</td>
+
 <tr><td colspan="2">Mobile screenshots</td><tr>
-<tr><td>
+<tr><td style="width: 50%">
 
 ![alt text](docs/images/mobile_front_page_2024-03-18.png)
-
+<p>Front page, before adding any stock items or attachements</p>
 </td>
-<td>
+<td style="width: 50%">
 
 ![alt text](docs/images/mobile_orderitems_2024-03-18.png)
+<p>Listing all items purchased on Tindie</p>
 </td></tr>
 </table>
 <!-- markdownlint-restore -->
