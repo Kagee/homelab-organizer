@@ -1,5 +1,5 @@
-"""Django settings for hlo project.
-"""
+"""Django settings for hlo project."""
+
 from pathlib import Path
 from typing import Any
 
@@ -55,17 +55,17 @@ DATABASES = {
     "default": env.db(),
 }
 
-
+# Override this in logging.py
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "{asctime} [{levelname}] {module}: {message}",
+            "format": "V: {asctime} [{levelname}] {message} ({name}:{module})",
             "style": "{",
         },
         "simple": {
-            "format": "{levelname} {message}",
+            "format": "S: {levelname} {message}",
             "style": "{",
         },
     },
@@ -74,38 +74,16 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
-        # ruff: noqa: ERA001
-        #"file": {
-        #    "class": "logging.FileHandler",
-        #    "filename": "scraper.log",
-        #    "formatter": "verbose",
-        #    "encoding": "utf-8",
-        #},
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "hlo.log",
+            "formatter": "verbose",
+            "encoding": "utf-8",
+        },
     },
     "root": {
         "handlers": ["console"],
         "level": "DEBUG",
-    },
-    "loggers": {
-        #'order_scraper.management.commands.scrapers.......'
-        #'order_scraper.management.commands....'
-        #"hlo.management.commands": {
-            #"handlers": ["console", "file"],
-        #    "handlers": ["console"],
-        #    "level": "DEBUG",  # Will be overriden by --verbosity
-        #},
-        "hlo.management.commands.loaders.shopmetaloader": {
-            #"handlers": ["console", "file"],
-            "handlers": ["console"],
-            "level": "INFO",  # Will be overriden by --verbosity
-        },
-        # Prod level server
-        #'daphne': {
-        #    'handlers': [
-        #        'console',
-        #    ],
-        #    'level': 'DEBUG'
-        #},
     },
 }
 
@@ -119,7 +97,7 @@ STATICFILES_DIRS = [
 ]
 
 INSTALLED_APPS: list[str] = [
-    "hlo.admin_app.HLOAdminConfig", #"django.contrib.admin",
+    "hlo.admin_app.HLOAdminConfig",  # "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -210,7 +188,7 @@ AUTH_PASSWORD_VALIDATORS: list[dict[str, Any]] = [
 
 DEFAULT_AUTO_FIELD: str = "django.db.models.BigAutoField"
 
-BOOTSTRAP5 = { # We need bootstrap >= 5.3 for dark mode
+BOOTSTRAP5 = {  # We need bootstrap >= 5.3 for dark mode
     "css_url": {
         "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css",
         "integrity": "sha384-T3c6CoIi6uLrA9TneNEoa7R"
@@ -227,21 +205,21 @@ BOOTSTRAP5 = { # We need bootstrap >= 5.3 for dark mode
 
 # run `python ./manage.py graph_models` to update hlo_model_graph.png
 GRAPH_MODELS = {
-  "group_models": True,
-  "app_labels": ["hlo"],
-  "exclude_models": ["ColorTagBase","GenericTaggedItemBase","TagBase"],
-  "output": "hlo_model_graph.png",
-  "color_code_deletions": True,
-  "arrow_shape": "normal",
-  "rankdir": "TB",
-  "theme": "django2018",
+    "group_models": True,
+    "app_labels": ["hlo"],
+    "exclude_models": ["ColorTagBase", "GenericTaggedItemBase", "TagBase"],
+    "output": "hlo_model_graph.png",
+    "color_code_deletions": True,
+    "arrow_shape": "normal",
+    "rankdir": "TB",
+    "theme": "django2018",
 }
 
-#DEBUG_TOOLBAR_CONFIG = {
+# DEBUG_TOOLBAR_CONFIG = {
 #    'DISABLE_PANELS': {
 #         'debug_toolbar.panels.staticfiles.StaticFilesPanel'
 #    }
-#}
+# }
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
