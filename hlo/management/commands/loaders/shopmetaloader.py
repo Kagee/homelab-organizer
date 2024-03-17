@@ -14,7 +14,7 @@ from hlo.models import Shop
 
 class ShopMetaLoader:
     @classmethod
-    def load(cls):
+    def load(cls) -> None:
         log = logging.getLogger(__name__)
         log.debug("Initializing database with shops")
         log.debug("Input folder is %s", settings.INPUT_FOLDER)
@@ -53,7 +53,8 @@ class ShopMetaLoader:
                     logo_img = None
                     if logo_file.is_file():
                         logo_img = File(
-                            logo_file.open("rb"), f'{shop["name"]}.png',
+                            logo_file.open("rb"),
+                            f'{shop["name"]}.png',
                         )
                     else:
                         log.debug("No %s in %s", logo_file.name, zip_file.name)

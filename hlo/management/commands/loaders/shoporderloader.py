@@ -72,6 +72,8 @@ class ShopOrderLoader:
                 # self.log.debug("Defaults are: %s", defaults)i
                 order_id = order["id"]
                 del order["id"]
+                self.log.warning("Processing order id %s", order_id)
+                self.log.warning("%s", pprint.pformat(defaults))
                 (order_object, created) = Order.objects.update_or_create(
                     shop=self.shop,
                     order_id=order_id,
