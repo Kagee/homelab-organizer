@@ -18,8 +18,11 @@ with env.prefixed("UPDATE_HLO_"):
     SUPERUSER_EMAIL = env("SUPERUSER_EMAIL")
 
 
-def main(auto_answer: bool) -> None:
-    if auto_answer or input("Upgrade pip? (Y/n): ").lower() != "n":
+def main(*, auto_answer: bool, only_input: bool) -> None:
+    print(f"{auto_answer=}, {only_input=}")  # noqa: T201
+    if not only_input and (
+        auto_answer or input("Upgrade pip? (Y/n): ").lower() != "n"
+    ):
         subprocess.run(
             [  # noqa: S603
                 sys.executable,
@@ -34,7 +37,9 @@ def main(auto_answer: bool) -> None:
             check=False,
         )
 
-    if auto_answer or input("Pip install && upgrade? (Y/n): ").lower() != "n":
+    if not only_input and (
+        auto_answer or input("Pip install && upgrade? (Y/n): ").lower() != "n"
+    ):
         subprocess.run(
             [  # noqa: S603
                 sys.executable,
@@ -53,13 +58,15 @@ def main(auto_answer: bool) -> None:
     db_deleted = False
     migrations_ran = False
 
-    if auto_answer or input("Delete DB? (y/N): ").lower() == "y":
+    if not only_input and (
+        auto_answer or input("Delete DB? (y/N): ").lower() == "y"
+    ):
         p = Path("db/db-dev.sqlite3")
         if p.is_file():
             p.unlink()
         db_deleted = True
 
-    if (
+    if not only_input and (
         auto_answer
         or input("Delete, recreate and apply migrations? (y/N): ").lower()
         == "y"
@@ -101,7 +108,7 @@ def main(auto_answer: bool) -> None:
             check=False,
         )
 
-    if auto_answer or input("Init shops? (Y/n): ").lower() != "n":
+    if only_input or auto_answer or input("Init shops? (Y/n): ").lower() != "n":
         subprocess.run(
             [  # noqa: S603
                 sys.executable,
@@ -113,7 +120,8 @@ def main(auto_answer: bool) -> None:
         )
 
     if (
-        auto_answer
+        only_input
+        or auto_answer
         or input("Init order metadata without attachements? (Y/n): ").lower()
         != "n"
     ):
@@ -137,7 +145,8 @@ def main(auto_answer: bool) -> None:
 
 
 if __name__ == "__main__":
-    do_it = False
+    do_it = only_input = False
     if len(sys.argv) > 1:
-        do_it = sys.argv[1] == "-y"
-    main(auto_answer=do_it)
+        auto_answer = "-y" in sys.argv
+        only_input = "-i" in sys.argv
+    main(auto_answer=auto_answer, only_input=only_input)
