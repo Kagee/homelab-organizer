@@ -8,15 +8,18 @@ import shutil  # noqa: E402
 import subprocess  # noqa: E402
 import sys  # noqa: E402
 from pathlib import Path  # noqa: E402
+environs_loaded = False
+try:
+    from environs import Env  # noqa: E402
 
-from environs import Env  # noqa: E402
-
-env = Env()
-with env.prefixed("UPDATE_HLO_"):
-    env.read_env(".env", recurse=False, verbose=True)
-    SUPERUSER_NAME = env("SUPERUSER_NAME")
-    SUPERUSER_EMAIL = env("SUPERUSER_EMAIL")
-
+    env = Env()
+    with env.prefixed("UPDATE_HLO_"):
+        env.read_env(".env", recurse=False, verbose=True)
+        SUPERUSER_NAME = env("SUPERUSER_NAME")
+        SUPERUSER_EMAIL = env("SUPERUSER_EMAIL")
+    environs_loaded = True
+except ModuleNotFoundError:
+    pass
 
 def main(*, auto_answer: bool, only_input: bool) -> None:
     print(f"{auto_answer=}, {only_input=}")  # noqa: T201
@@ -55,6 +58,9 @@ def main(*, auto_answer: bool, only_input: bool) -> None:
             check=False,
         )
 
+    if not environs_loaded:
+        print("Restart script to load environs module")
+        sys.exit(0)
     db_deleted = False
     migrations_ran = False
 
@@ -145,8 +151,6 @@ def main(*, auto_answer: bool, only_input: bool) -> None:
 
 
 if __name__ == "__main__":
-    do_it = only_input = False
-    if len(sys.argv) > 1:
-        auto_answer = "-y" in sys.argv
-        only_input = "-i" in sys.argv
+    auto_answer = "-y" in sys.argv
+    only_input = "-i" in sys.argv
     main(auto_answer=auto_answer, only_input=only_input)
