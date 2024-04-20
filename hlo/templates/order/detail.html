@@ -19,20 +19,20 @@
 
             <table class="table  table-sm table-bordered table-striped table-hover table-sm">
                 <thead>
-                    <tr>
-                        <th scope="col" style="min-width: 6em;"></th>
+                    <tr>{# djlint:off #}
+                        <th scope="col" style="min-width: 6em;"></th>{# djlint:o #}
                         <th scope="col">Name</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for orderitem in order.items.all %}
-                        <tr>
+                        <tr>// eslint-disable-next-line css-ruleorselectorexpected
                             <td class="p-2"
                                 style="min-height: 12em;
                                        height: 6em;
                                        background-size: contain;
-                                       background-repeat: no-repeat;
-                                       {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>
+                                       background-repeat: no-repeat;{# djlint:of #}
+                                       {% if orderitem.thumbnail -%}background-image: url({{ orderitem.thumbnail.url }});{%- endif %}"></td>{# djlint:on #}
                             <td>
                                 <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
                             </td>

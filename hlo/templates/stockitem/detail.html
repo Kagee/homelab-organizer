@@ -23,7 +23,9 @@
         <div class="col">
           <!-- Render image on top for <  lg -->
           {% for orderitem in stockitem.orderitems.all %}
-            <img src="{{ orderitem.thumbnail.url }}" class="img-fluid" />
+          {# djlint:off #}
+            <img alt="Item thumbnail" src="{{ orderitem.thumbnail.url }}" class="img-fluid" />
+          {# djlint:on #}
           {% empty %}
           <!-- No missing image for small screens -->
           {% endfor %}
@@ -133,7 +135,9 @@
     <div class="col-5 d-none d-lg-block d-xl-block d-xxl-block">
       <!-- Render image to the side for >= lg -->
       {% for orderitem in stockitem.orderitems.all %}
-        <img src="{{ orderitem.thumbnail.url }}" class="img-fluid" />
+      {# djlint:off #}
+        <img alt="Image thumbnail" src="{{ orderitem.thumbnail.url }}" class="img-fluid" />
+      {# djlint:on #}
       {% empty %}
         {% md_icon 'image-off' color='grey' size='100%' %}
       {% endfor %}

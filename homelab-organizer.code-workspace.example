@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
+        "css.validate": false,
 		"python.envFile": "${workspaceFolder}/.autoload/env",
 		"[python]": {
 			"editor.formatOnSave": true,
@@ -15,7 +16,7 @@
 		},
 		"[html][django-html][handlebars][hbs][mustache][jinja][jinja-html][nj][njk][nunjucks][twig]": {
 			"editor.defaultFormatter": "monosans.djlint"
-		}
+		},
 		"ruff.organizeImports": true,
 		"files.exclude": {
 			"venv": true,
@@ -44,9 +45,6 @@
 			".gitignore": true,
 			"hlo_model_graph.png": true,
 		},
-		"betterStatusBar.defaultColor": "statusBar.foreground",
-		"betterStatusBar.loadNpmCommands": false,
-		"betterStatusBar.reloadButton": "🗘",
 		"python.languageServer": "Jedi",
 		"python.analysis.indexing": true,
 		"python.analysis.autoImportCompletions": true,
