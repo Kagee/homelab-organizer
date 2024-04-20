@@ -72,8 +72,8 @@ class ShopOrderLoader:
                 # self.log.debug("Defaults are: %s", defaults)i
                 order_id = order["id"]
                 del order["id"]
-                self.log.warning("Processing order id %s", order_id)
-                self.log.warning("%s", pprint.pformat(defaults))
+                #self.log.warning("Processing order id %s", order_id)
+                #self.log.warning("%s", pprint.pformat(defaults))
                 (order_object, created) = Order.objects.update_or_create(
                     shop=self.shop,
                     order_id=order_id,
@@ -273,7 +273,9 @@ class ShopOrderLoader:
                     self.log.debug("Got existing sha1s: %s ", existing_sha1s)
 
                     for attachement in item_attachements:
-                        attachement_path = Path(attachement["path"]).as_posix()
+                        attachement_path = Path(
+                            attachement["path"],
+                        ).as_posix()
                         attachement_file = None
                         self.log.debug(
                             "Looking for item attachement %s",
@@ -284,16 +286,21 @@ class ShopOrderLoader:
                             attachement_path,
                         )
                         if attachement_zip_file.is_file():
+                            self.log.debug("Is file %s", attachement_path)
                             attachement_file = File(
                                 attachement_zip_file.open("rb"),
                                 attachement_path,
                             )
                         else:
+                            # orders\76061\item-voron-0-2-s1-kit-fra-ldo.pdf << in file
+                            # orders\76061\item-voron-0-2-s1-kit-fra-ldo.pdf
                             msg = (
-                                f"Attachement {attachement_zip_file.name}"
+                                f"Attachement {attachement_zip_file.name} ({attachement_path} / {attachement['path']})"
                                 f" not in {zip_file.name}"
                             )
-                            raise AttributeError(msg)
+                            self.log.error(msg)
+                            continue
+                            #raise AttributeError(msg)
                         sha1hash = hashlib.sha1()  # noqa: S324
                         if attachement_file.multiple_chunks():
                             for chunk in attachement_file.chunks():
