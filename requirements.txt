@@ -12,6 +12,9 @@ Whoosh>=2.7.4
 Django-haystack>=3.2.1
 djangorestframework>=3.14.0
 django-filter>=23.3
+# https://pypi.org/project/django-bootstrap-icons/
+# https://pictogrammers.com/library/mdi/
+# https://icons.getbootstrap.com/
 django-bootstrap-icons>=0.8.6
 zipp>=3.17.0
 django-select2>=8.1.2

@@ -232,3 +232,5 @@ GRAPH_MODELS = {
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+BS_ICONS_CACHE: Path = (MEDIA_ROOT / Path("icon_cache")).resolve()
