@@ -15,7 +15,7 @@ def attachement_file_path(instance, filename):
         msg = f"Attachement {instance.id} has more than one order"
         raise ValueError(msg)
     if instance.orderitem.count() > 1:
-        msg = f"Attachement {instance.id} has more than one orderitem"
+        msg = f"Attachement {instance.id} has more than one orderitem: {instance.orderitem.first()}"
         raise ValueError(msg)
     if instance.order.count():
         order = instance.order.first()
