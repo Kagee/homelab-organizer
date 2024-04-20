@@ -1,23 +1,54 @@
 {% extends "base.html" %}
-{% block title %}Details for {{ order_item.name }}{% endblock title %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
+{% block title %}
+    Details for {{ order.shop }} #{{ order.order_id }}
+{% endblock title %}
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h1>{{ order.items.count }} items from {{ order.shop.branch_name }} on {{ order.date }}</h1>
-        <div class="product-main-info-partnumber-store">
-            <p>
-            <span>Order number/date:</span>
-            <span><a href="{{ order.get_order_url }}" title="View original order details">{{ order.order_id }}
-            </a></span>
-            </p>
-        </div>
+    <div class="row">
+        <div class="col-12 pt-2">
+            <div class="row">
+                <div class="col-1 d-none d-lg-block d-xl-block d-xxl-block">
+                    <h4>{{ order.shop.img_icon }}</h4>
+                </div>
+                <div class="col">
+                    <h1>{{ order.shop.branch_name }} <a href="{{ order.get_order_url }}" title="View original order details" class="text-muted">#{{ order.order_id }}</a></h1>
+                    <h3 class="text-muted">{{ order.items.count }} items, {{ order.date }}</h3>
+                </div>
+            </div>
 
-        </a><br>
-<br>
-<h4>  </h4>
-{% for attachement in order.attachements.all %}
-Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a><br>
-{% endfor %}
+            <table class="table  table-sm table-bordered table-striped table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col" style="min-width: 6em;"></th>
+                        <th scope="col">Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for orderitem in order.items.all %}
+                        <tr>
+                            <td class="p-2"
+                                style="min-height: 12em;
+                                       height: 6em;
+                                       background-size: contain;
+                                       background-repeat: no-repeat;
+                                       {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>
+                            <td>
+                                <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% for attachement in order.attachements.all %}
+            Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a>
+            <br>
+        {% endfor %}
     </div>
-  </div>                    
+</div>
 {% endblock %}
+<div class="row">
+    <div class="col">
+        
+    </div>
+</div>

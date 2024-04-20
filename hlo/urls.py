@@ -52,9 +52,9 @@ urlpatterns = [*[
         StockItemCreate.as_view(),
         name="stockitem-create-from",
     ),
-    path("orderitems/list", views.product_list, name="orderitems-list"),
+    path("orderitem/list", views.product_list, name="orderitem-list"),
     path(
-        "orderitems/detail/<int:pk>",
+        "orderitem/detail/<int:pk>",
         OrderItemDetailView.as_view(),
         name="orderitem",
     ),
