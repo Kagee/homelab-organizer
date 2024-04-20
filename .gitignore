@@ -21,3 +21,4 @@ whoosh_index
 scraper-cache
 input
 schema
+.mypy_cache
