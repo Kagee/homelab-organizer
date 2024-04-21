@@ -15,7 +15,10 @@ def attachement_file_path(instance, filename):
         msg = f"Attachement {instance.id} has more than one order"
         raise ValueError(msg)
     if instance.orderitem.count() > 1:
-        msg = f"Attachement {instance.id} has more than one orderitem: {instance.orderitem.first()}"
+        msg = (
+            f"Attachement {instance.id} has more than "
+            f"one orderitem: {instance.orderitem.first()}"
+        )
         raise ValueError(msg)
     if instance.order.count():
         order = instance.order.first()
@@ -37,8 +40,7 @@ def attachement_file_path(instance, filename):
         order_item_b64 = base64.urlsafe_b64encode(
             f"{orderitem.item_id}"
             f"{'-' if len(orderitem.item_variation) else ''}"
-            f"{orderitem.item_variation}"
-            .encode(),
+            f"{orderitem.item_variation}".encode(),
         ).decode("utf-8")
         return (
             f"attachements/{shopname_b64}/"
@@ -69,17 +71,15 @@ class Attachement(models.Model):
 
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#filefield
     file = models.FileField(
-        upload_to=attachement_file_path, max_length=255, blank=True,
+        upload_to=attachement_file_path,
+        max_length=255,
+        blank=True,
     )
 
     sha1 = models.CharField(max_length=40, editable=True)
 
-
     def __str__(self):
-        return (
-            f"{self.name} ({self.type})"
-            f" ({Path(self.file.name).name})"
-        )
+        return f"{self.name} ({self.type}) ({Path(self.file.name).name})"
 
     def save(self, *args, **kwargs):
         # pylint: disable=no-member
@@ -96,7 +96,6 @@ class Attachement(models.Model):
         else:
             self.sha1 = self.sha1 if self.sha1 else None
         super().save(*args, **kwargs)
-
 
     def text_ornot(self):
         if len(self.text):

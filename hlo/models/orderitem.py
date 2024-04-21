@@ -14,6 +14,7 @@ from . import Attachement, Order
 
 logger = logging.getLogger(__name__)
 
+
 def thumnail_path(instance, filename):
     ext = Path(filename).suffix[1:]
     filename_str = (
@@ -148,7 +149,7 @@ class OrderItem(models.Model):
 
     def image_tag(self, px=150):
         # pylint: disable=no-member
-        return mark_safe(
+        return mark_safe(  # noqa: S308
             f'<div style="height: {px}px;"><a href="{self.thumbnail.url}"'
             ' target="_blank"><img style="height: 100%; width: auto;"'
             f' src="{self.thumbnail.url}" width="{self.thumbnail.width}"'
@@ -168,7 +169,7 @@ class OrderItem(models.Model):
                 f' target="_blank">{attachement}</a></li>'
             )
         html += "</ul>"
-        return mark_safe(html)
+        return mark_safe(html)  # noqa: S308
 
     attachements_tag.short_description = "Attachements"
 
