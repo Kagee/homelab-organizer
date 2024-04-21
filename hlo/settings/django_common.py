@@ -200,15 +200,17 @@ DEFAULT_AUTO_FIELD: str = "django.db.models.BigAutoField"
 
 BOOTSTRAP5 = {  # We need bootstrap >= 5.3 for dark mode
     "css_url": {
-        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css",
-        "integrity": "sha384-T3c6CoIi6uLrA9TneNEoa7R"
-        "xnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN",
+        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/css/bootstrap.min.css",
+        # We can not add integrity, as it would break if a
+        # new patch release comes. Should be static for production.
+        # "integrity": "...",  # noqa: ERA001
         "crossorigin": "anonymous",
     },
     "javascript_url": {
-        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js",
-        "integrity": "sha384-C6RzsynM9kWDrMNeT87bh95O"
-        "GNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL",
+        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js",
+        # We can not add integrity, as it would break if a
+        # new patch release comes. Should be static for production.
+        # "integrity": "...",  # noqa: ERA001
         "crossorigin": "anonymous",
     },
 }
