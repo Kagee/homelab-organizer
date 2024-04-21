@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
+    # This is basicly a suboptimal implementation of a (currently non-exsisting)
+    # cache.get_or_set_many with callable support
     keys: dict = {
         "orderitem_count": OrderItem.objects.count,
         "stockitem_count": StockItem.objects.count,
