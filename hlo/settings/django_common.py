@@ -76,7 +76,7 @@ LOGGING = {
             "()": lambda: ColoredLogFormatter(
                 fmt=("{asctime} [{levelname[0]}] {message} ({name})"),
                 style="{",
-            )
+            ),
         },
     },
     "handlers": {
@@ -215,6 +215,13 @@ BOOTSTRAP5 = {  # We need bootstrap >= 5.3 for dark mode
     },
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "/var/tmp/django_cache",  # noqa: S108
+    },
+}
+
 # run `python ./manage.py graph_models` to update hlo_model_graph.png
 GRAPH_MODELS = {
     "group_models": True,
@@ -227,11 +234,9 @@ GRAPH_MODELS = {
     "theme": "django2018",
 }
 
-# DEBUG_TOOLBAR_CONFIG = {
-#    'DISABLE_PANELS': {
-#         'debug_toolbar.panels.staticfiles.StaticFilesPanel'
-#    }
-# }
+DEBUG_TOOLBAR_CONFIG = {
+    # "DISABLE_PANELS": {"debug_toolbar.panels.staticfiles.StaticFilesPanel"}
+}
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
