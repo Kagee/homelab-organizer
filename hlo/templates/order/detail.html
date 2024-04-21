@@ -26,13 +26,13 @@
                 </thead>
                 <tbody>
                     {% for orderitem in order.items.all %}
-                        <tr>// eslint-disable-next-line css-ruleorselectorexpected
+                        <tr>
                             <td class="p-2"
                                 style="min-height: 12em;
                                        height: 6em;
                                        background-size: contain;
                                        background-repeat: no-repeat;{# djlint:of #}
-                                       {% if orderitem.thumbnail -%}background-image: url({{ orderitem.thumbnail.url }});{%- endif %}"></td>{# djlint:on #}
+                                       {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>{# djlint:on #}
                             <td>
                                 <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
                             </td>
@@ -46,9 +46,4 @@
         {% endfor %}
     </div>
 </div>
-{% endblock %}
-<div class="row">
-    <div class="col">
-        
-    </div>
-</div>
+{% endblock content %}

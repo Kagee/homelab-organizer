@@ -9,18 +9,17 @@
         <div class="col-12 d-flex flex-column flex-lg-row flex-xl-row flex-xxl-row flex-wrap justify-content-evenly">
             <div class="card text-center flex-fill">
                 <a href="{% url 'orderitem-list' %}"
-                   class="text-body link-underline link-underline-opacity-0"
-                   style="height: 100%">
+                   class="text-body link-underline link-underline-opacity-0 h-100">
                     <div class="card-body">
                         <h5 class="card-title">{% bs_icon 'bag' size='1em' %} Order items</h5>
                         <h6 class="card-subtitle mb-2 text-muted">Unprocessed</h6>
                         <h1 class="card-text display-1">{{ orderitem_count }}</h1>
                         <div class="row">
                             <div class="col-6">
-                                <p class="card-text text-muted">0 processed</p>
+                                <p class="card-text text-muted">N processed</p>
                             </div>
                             <div class="col-6">
-                                <p class="card-text text-muted">0 hidden</p>
+                                <p class="card-text text-muted">N hidden</p>
                             </div>
                         </div>
                     </div>
@@ -28,8 +27,7 @@
             </div>
             <div class="card text-center flex-fill">
                 <a href="{% url 'stockitem-list' %}"
-                   class="text-body link-underline link-underline-opacity-0"
-                   style="height: 100%;">
+                   class="text-body link-underline link-underline-opacity-0 h-100">
                     <div class="card-body">
                         <h5 class="card-title">{% bs_icon 'bank' size='1em' %} Stock items</h5>
                         <h1 class="card-text display-1">{{ stockitem_count }}</h1>
@@ -38,7 +36,7 @@
             </div>
             <div class="card text-center flex-fill">
                 <a href="{% url 'attachementsearch' %}"
-                   class="text-body link-underline link-underline-opacity-0" style="height: 100%;">
+                   class="text-body link-underline link-underline-opacity-0 h-100">
                     <div class="card-body">
                         <h5 class="card-title">{% bs_icon 'file-earmark-richtext' size='1em' %} Attachements</h5>
                         <h1 class="card-text display-1">{{ attachement_count }}</h1>
@@ -47,7 +45,7 @@
                                 <p class="card-text text-muted">{{ attachement_pdf }} PDF</p>
                             </div>
                             <div class="col-6">
-                                <p class="card-text text-muted">{{ attachement_pdf }} HTML</p>
+                                <p class="card-text text-muted">{{ attachement_html }} HTML</p>
                             </div>
                         </div>
                     </div>
@@ -55,4 +53,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
