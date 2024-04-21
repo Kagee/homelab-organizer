@@ -38,6 +38,8 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+INTERNAL_IPS += env.list("INTERNAL_IPS", default=[])
+
 LANGUAGE_CODE: str = env("LANGUAGE_CODE")
 TIME_ZONE: str = env("TIME_ZONE")
 USE_I18N: bool = env("USE_I18N")
