@@ -1,3 +1,4 @@
+import import_export
 from django.contrib import admin
 from import_export import (  # type: ignore[import-untyped]
     fields,
@@ -20,35 +21,44 @@ class OrderItemStockItemLinkInlineAdmin(admin.TabularInline):
     autocomplete_fields = ["orderitem"]
 
 
-class StockItemResource(resources.ModelResource):
+class ProjectResource2(import_export.resources.ModelResource):
+    # We base parent on UUID, as name may be duplicated
+    parent = import_export.fields.Field(
+        column_name="parent",
+        attribute="parent",
+        widget=import_export.widgets.ForeignKeyWidget(Project, "uuid"),
+    )
+
+
+class StockItemResource(import_export.resources.ModelResource):
     class Meta:
         model = StockItem
 
-    category = fields.Field(
+    category = import_export.fields.Field(
         column_name="category",
         attribute="category",
-        widget=widgets.ManyToManyWidget(
+        widget=import_export.widgets.ManyToManyWidget(
             Category,
-            field="name",
-            separator=chr(31),
+            field="uuid",
+            # separator=chr(31),
         ),
     )
-    storage = fields.Field(
+    storage = import_export.fields.Field(
         column_name="storage",
         attribute="storage",
-        widget=widgets.ManyToManyWidget(
+        widget=import_export.widgets.ManyToManyWidget(
             Storage,
-            field="name",
-            separator=chr(31),
+            field="uuid",
+            # separator=chr(31),
         ),
     )
-    project = fields.Field(
+    project = import_export.fields.Field(
         column_name="project",
         attribute="project",
-        widget=widgets.ManyToManyWidget(
+        widget=import_export.widgets.ManyToManyWidget(
             Project,
-            field="name",
-            separator=chr(31),
+            field="uuid",
+            # separator=chr(31),
         ),
     )
 

@@ -1,7 +1,9 @@
 import logging
 
+from django.contrib import messages
 from django.core.cache import cache
-from django.shortcuts import render
+from django.http import HttpResponseNotFound
+from django.shortcuts import redirect, render
 
 from hlo.models import Attachement, OrderItem, StockItem
 
@@ -46,6 +48,21 @@ def index(request):
         "index.html",
         cached_keys,
     )
+
+
+def barcode(request, barcode: str):
+    oi: OrderItem = OrderItem.objects.filter(gen_id=barcode).first()
+    if not oi:
+        messages.add_message(
+            request,
+            messages.WARNING,
+            f"Could not find item with barcode {barcode}.",
+        )
+        return redirect("index")
+
+    if oi.stockitem.count():
+        return redirect("stockitem-detail", pk=oi.stockitem.first().pk)
+    return redirect("orderitem", pk=oi.pk)
 
 
 def render404(request, _exception):

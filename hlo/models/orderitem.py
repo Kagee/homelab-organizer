@@ -97,7 +97,7 @@ class OrderItem(models.Model):
         blank=True,
     )
     # Weak FK for StockItem
-    gen_id = models.CharField(max_length=1024, editable=False, unique=True)
+    gen_id = models.CharField(max_length=128, editable=False, unique=True)
 
     class Meta:
         ordering = ["order__date", "name"]
@@ -146,6 +146,16 @@ class OrderItem(models.Model):
 
     def get_absolute_url(self):
         return reverse("orderitem", kwargs={"pk": self.pk})
+
+    @admin.display(description="Barcode URL")
+    def barcode_url(self):
+        # pylint: disable=no-member
+        # replace with http://bc.h2x.no/<gen_id> later
+        return format_html(
+            '<a href="{}" target="_blank">{}</a>',
+            reverse("barcode", args=[self.gen_id]),
+            self.gen_id,
+        )
 
     def image_tag(self, px=150):
         # pylint: disable=no-member

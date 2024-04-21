@@ -12,7 +12,8 @@ class OrderItemAdmin(admin.ModelAdmin):
         "item_id",
         "item_variation",
         "order__shop__branch_name",
-        ]
+    ]
+
     def get_readonly_fields(self, _request, obj=None):
         if (
             obj
@@ -33,6 +34,7 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "attachements",
                 "attachements_tag",
                 "indent_extra_data",
+                "barcode_url",
             ]
         return []
 
@@ -60,6 +62,7 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "subtotal",
                 "tax",
                 "indent_extra_data",
+                "barcode_url",
             ]
         return [
             "name",

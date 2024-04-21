@@ -1,19 +1,24 @@
-{% load django_bootstrap5 %}{% load static %}
-<!doctype html>
+{% load django_bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>HLO - {% block title %}Untitled page{% endblock title %}</title>
+    <title>HLO -
+      {% block title %}
+        Untitled page
+      {% endblock title %}
+    </title>
     {% bootstrap_css %}
     {% bootstrap_javascript %}
-    <link rel="stylesheet" href="{% static 'bootstrap_icons/css/bootstrap_icons.css' %}">
-    <script
-			  src="https://code.jquery.com/jquery-3.7.1.js"
-			  integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-			  crossorigin="anonymous"></script>
-        {{ form.media.css }}
+    <link rel="stylesheet"
+          href="{% static 'bootstrap_icons/css/bootstrap_icons.css' %}">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            crossorigin="anonymous"></script>
+    {{ form.media.css }}
     <style>
         .select2 input, select.django-select2 { width: 20em; }
         {% block css %}
@@ -27,11 +32,47 @@
     </script>
   </head>
   <body>
+    {% if messages %}
+      <div class="toast-container top-50 start-50 translate-middle">
+        {% for message in messages %}
+          <div class="toast toast-top-full-width" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+              <!-- <img src="..." class="rounded me-2" alt="..."> -->
+              <strong class="me-auto">Unknown barcode</strong>
+              <small class="text-muted">just now</small>
+              <button type="button"
+                      class="btn-close"
+                      data-bs-dismiss="toast"
+                      aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+              {% if message.tags %}{{ message.tags }}{% endif %}
+              :{{ message }}
+              <div class="mt-2 pt-2 border-top">
+                <button type="button"
+                        class="btn btn-secondary btn-sm"
+                        data-bs-dismiss="toast">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
     {% include "navbar.html" %}
     <main role="main" class="container">
       {% block content %}
-      <p>No content.</p>
+        <p>No content.</p>
       {% endblock content %}
     </main>
+    {% if messages %}
+      <script type="text/javascript">
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+        var toastList = toastElList.map(function(toastEl) {
+          // No need for options; use the default options
+          return new bootstrap.Toast(toastEl) 
+        });
+       toastList.forEach(toast => toast.show()); // This show them
+      </script>
+    {% endif %}
   </body>
 </html>
