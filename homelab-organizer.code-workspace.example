@@ -18,6 +18,9 @@
 			"editor.defaultFormatter": "monosans.djlint"
 		},
 		"ruff.organizeImports": true,
+        "ruff.args": [
+            "--extend-exclude=.vscode-server",
+        ],
 		"files.exclude": {
 			"venv": true,
 			"**/__pycache__": true,
