@@ -3,7 +3,7 @@ from django.db.models import Max, Min
 from django.db.utils import OperationalError
 from django.utils.timezone import now
 
-from .models import Order, OrderItem, Shop
+from .models import Order, OrderItem, Shop, StockItem
 
 
 class OrderDateRangeFilter(django_filters.DateRangeFilter):
@@ -76,7 +76,9 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
         super().__init__(
             choices=self.order_choices,
             filters=self.order_filters,
-            field_name="order__date",
+            # take this from constructor, thus we
+            # can use it both for orderitem and stockitem
+            # field_name="order__date",
             *args,  # noqa: B026
             **kwargs,
         )
@@ -96,9 +98,17 @@ class OrderItemFilter(django_filters.FilterSet):
     date_range = OrderDateRangeFilter(
         label="Timerange",
         empty_label="All time",
+        field_name="order__date",
     )
 
-    order = django_filters.OrderingFilter(
+    shop = django_filters.ModelChoiceFilter(
+        queryset=Shop.objects.all(),
+        field_name="order__shop",
+        empty_label="All shops",
+        label="Shop",
+    )
+
+    ordering = django_filters.OrderingFilter(
         label="Order by",
         empty_label=None,
         null_label=None,
@@ -107,12 +117,6 @@ class OrderItemFilter(django_filters.FilterSet):
             ("name", "name"),
             ("order__date", "order__date"),
         ),
-    )
-
-    order__shop = django_filters.ModelChoiceFilter(
-        queryset=Shop.objects.all(),
-        empty_label="All shops",
-        label="Shop",
     )
 
     class Meta:
@@ -131,14 +135,32 @@ class StockItemFilter(django_filters.FilterSet):
         empty_label=None,
     )
 
-    orderitem__order__shop = django_filters.ModelChoiceFilter(
+    date_range = OrderDateRangeFilter(
+        label="Timerange",
+        empty_label="All time",
+        field_name="orderitem__order__date",
+    )
+
+    shop = django_filters.ModelChoiceFilter(
         queryset=Shop.objects.all(),
+        field_name="orderitem__order__shop",
         empty_label="All shops",
         label="Shop",
     )
 
+    ordering = django_filters.OrderingFilter(
+        label="Order by",
+        empty_label=None,
+        null_label=None,
+        # tuple-mapping retains order
+        fields=(
+            ("name", "name"),
+            ("orderitem__order__date", "orderitem__order__date"),
+        ),
+    )
+
     class Meta:
-        model = OrderItem
+        model = StockItem
         fields = {
             "name",  # not suire if correct, fields is required
             # "order__shop": ["exact"],  # noqa: ERA001
