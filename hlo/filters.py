@@ -122,13 +122,19 @@ class OrderItemFilter(django_filters.FilterSet):
 
 class StockItemFilter(django_filters.FilterSet):
     name = django_filters.LookupChoiceFilter(
-        label="Stock item name",
+        label="Name",
         lookup_choices=[
             ("icontains", "Contains"),
             ("istartswith", "Starts with"),
             ("iexact", "Equals"),
         ],
         empty_label=None,
+    )
+
+    orderitem__order__shop = django_filters.ModelChoiceFilter(
+        queryset=Shop.objects.all(),
+        empty_label="All shops",
+        label="Shop",
     )
 
     class Meta:

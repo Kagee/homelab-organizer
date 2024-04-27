@@ -8,6 +8,7 @@ from django.shortcuts import redirect, render
 from hlo.models import Attachement, OrderItem, StockItem
 
 from .category import *
+from .combined_search import *
 from .orderitems import *
 from .orders import *
 from .project import *

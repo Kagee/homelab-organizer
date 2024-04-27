@@ -38,7 +38,14 @@ urlpatterns = [
         ),
         path("barcode/<str:barcode>", views.barcode, name="barcode"),
         path(
-            "search/", AttachementSearchView.as_view(), name="attachementsearch"
+            "search/attachements",
+            AttachementSearchView.as_view(),
+            name="attachement-search",
+        ),
+        path(
+            "search/items",
+            views.item_search,
+            name="item-search",
         ),
         path("stockitem/list", views.stockitem_list, name="stockitem-list"),
         path(
