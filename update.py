@@ -2,7 +2,7 @@
 from bootstrap import python_checks
 
 python_checks()
-
+# ruff: noqa: T201  # This is a simple script, we use print
 # pylint: disable=wrong-import-position,wrong-import-order
 import shutil  # noqa: E402
 import subprocess  # noqa: E402
@@ -11,7 +11,7 @@ from pathlib import Path  # noqa: E402
 
 environs_loaded = False
 try:
-    from environs import Env  # noqa: E402
+    from environs import Env
 
     env = Env()
     with env.prefixed("UPDATE_HLO_"):
@@ -114,9 +114,9 @@ def _05_superuser(db_deleted=None, migrations_ran=None):
         db_delete, migrations_ran = _04_migrations()
 
     if db_deleted and migrations_ran:
-        print("Database deleted, must recreate superuser.V")  # noqa: T201
-        print(f"Username: {SUPERUSER_NAME}")  # noqa: T201
-        print(f"Email: {SUPERUSER_EMAIL}")  # noqa: T201
+        print("Database deleted, must recreate superuser.V")
+        print(f"Username: {SUPERUSER_NAME}")
+        print(f"Email: {SUPERUSER_EMAIL}")
         subprocess.run(
             [  # noqa: S603
                 sys.executable,
@@ -178,22 +178,23 @@ def _08_order_attachements():
 
 
 def main() -> None:
-    print(f"{auto_answer=}, {only_input=}")  # noqa: T201
+    print(f"{auto_answer=}, {only_input=}")
     _01_upgrade_pip()
     _02_pip_install_upgrade()
-    #_03_delete_db
-    #_04_migrations
+    # _03_delete_db
+    # _04_migrations
     _05_superuser(_04_migrations(_03_delete_db()))
     _06_init_shops()
     _07_order_metadata()
     _08_order_attachements()
+
 
 if __name__ == "__main__":
     # YES I KNOW; SUE ME!!
     print_help = "-h" in sys.argv or "--help" in sys.argv
     auto_answer = "-y" in sys.argv or "--yes" in sys.argv
     only_input = "-i" in sys.argv or "--import" in sys.argv
-    l = []
+
     import inspect
     import types
 
@@ -211,7 +212,7 @@ if __name__ == "__main__":
         print("-i\t\tOnly run nondestructive import functions")
         print("")
         print("Call functions directly (may use multiple)")
-        for fname, func in funcs:
+        for fname, _ in funcs:
             print(f"\t--{fname}")
     else:
         for fname, func in funcs:

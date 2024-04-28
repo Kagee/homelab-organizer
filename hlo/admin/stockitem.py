@@ -1,10 +1,5 @@
 import import_export
 from django.contrib import admin
-from import_export import (  # type: ignore[import-untyped]
-    fields,
-    resources,
-    widgets,
-)
 from import_export.admin import (  # type: ignore[import-untyped]
     ImportExportModelAdmin,
 )
@@ -40,7 +35,6 @@ class StockItemResource(import_export.resources.ModelResource):
         widget=import_export.widgets.ManyToManyWidget(
             Category,
             field="uuid",
-            # separator=chr(31),
         ),
     )
     storage = import_export.fields.Field(
@@ -49,7 +43,6 @@ class StockItemResource(import_export.resources.ModelResource):
         widget=import_export.widgets.ManyToManyWidget(
             Storage,
             field="uuid",
-            # separator=chr(31),
         ),
     )
     project = import_export.fields.Field(
@@ -58,7 +51,6 @@ class StockItemResource(import_export.resources.ModelResource):
         widget=import_export.widgets.ManyToManyWidget(
             Project,
             field="uuid",
-            # separator=chr(31),
         ),
     )
 

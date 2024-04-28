@@ -3,7 +3,7 @@ from django.db.models import Max, Min
 from django.db.utils import OperationalError
 from django.utils.timezone import now
 
-from hlo.models import Order, OrderItem, Shop, StockItem
+from hlo.models import Order, OrderItem, Shop
 
 
 class OrderDateRangeFilter(django_filters.DateRangeFilter):
@@ -78,7 +78,7 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
             filters=self.order_filters,
             # take this from constructor, thus we
             # can use it both for orderitem and stockitem
-            # field_name="order__date",
+            # field_name
             *args,  # noqa: B026
             **kwargs,
         )
@@ -122,46 +122,3 @@ class OrderItemFilter(django_filters.FilterSet):
     class Meta:
         model = OrderItem
         fields: dict = {}
-
-
-class StockItemFilter(django_filters.FilterSet):
-    name = django_filters.LookupChoiceFilter(
-        label="Name",
-        lookup_choices=[
-            ("icontains", "Contains"),
-            ("istartswith", "Starts with"),
-            ("iexact", "Equals"),
-        ],
-        empty_label=None,
-    )
-
-    date_range = OrderDateRangeFilter(
-        label="Timerange",
-        empty_label="All time",
-        field_name="orderitem__order__date",
-    )
-
-    shop = django_filters.ModelChoiceFilter(
-        queryset=Shop.objects.all(),
-        field_name="orderitem__order__shop",
-        empty_label="All shops",
-        label="Shop",
-    )
-
-    ordering = django_filters.OrderingFilter(
-        label="Order by",
-        empty_label=None,
-        null_label=None,
-        # tuple-mapping retains order
-        fields=(
-            ("name", "name"),
-            ("orderitem__order__date", "orderitem__order__date"),
-        ),
-    )
-
-    class Meta:
-        model = StockItem
-        fields = {
-            "name",  # not suire if correct, fields is required
-            # "order__shop": ["exact"],  # noqa: ERA001
-        }

@@ -1,5 +1,4 @@
 import pprint
-from datetime import datetime
 
 from django.contrib import admin
 from django.db import models

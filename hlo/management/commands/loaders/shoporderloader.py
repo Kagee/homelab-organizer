@@ -69,11 +69,9 @@ class ShopOrderLoader:
                         )
                         del order[money]
 
-                # self.log.debug("Defaults are: %s", defaults)i
                 order_id = order["id"]
                 del order["id"]
-                #self.log.warning("Processing order id %s", order_id)
-                #self.log.warning("%s", pprint.pformat(defaults))
+
                 (order_object, created) = Order.objects.update_or_create(
                     shop=self.shop,
                     order_id=order_id,
@@ -292,15 +290,17 @@ class ShopOrderLoader:
                                 attachement_path,
                             )
                         else:
-                            # orders\76061\item-voron-0-2-s1-kit-fra-ldo.pdf << in file
+                            # Can' understand why it can not find this file
+                            # it IS in the file
+                            # orders\76061\item-voron-0-2-s1-kit-fra-ldo.pdf
                             # orders\76061\item-voron-0-2-s1-kit-fra-ldo.pdf
                             msg = (
-                                f"Attachement {attachement_zip_file.name} ({attachement_path} / {attachement['path']})"
+                                f"Attachement {attachement_zip_file.name} "
+                                f"({attachement_path} / {attachement['path']})"
                                 f" not in {zip_file.name}"
                             )
                             self.log.error(msg)
                             continue
-                            #raise AttributeError(msg)
                         sha1hash = hashlib.sha1()  # noqa: S324
                         if attachement_file.multiple_chunks():
                             for chunk in attachement_file.chunks():

@@ -1,16 +1,5 @@
 import logging
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (
-    HTML,
-    ButtonHolder,
-    Column,
-    Layout,
-    MultiWidgetField,
-    Row,
-    Submit,
-)
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Count, F
 from django.shortcuts import render
 
@@ -30,7 +19,8 @@ def item_search(request):
         .order_by()
     )
     f_orderitems = NonOrderingOrderItemFilter(
-        request.GET, queryset=qs_orderitems
+        request.GET,
+        queryset=qs_orderitems,
     )
 
     qs_stockitems = (
@@ -41,7 +31,8 @@ def item_search(request):
         .order_by()
     )
     f_stockitems = NonOrderingStockItemFilter(
-        request.GET, queryset=qs_stockitems
+        request.GET,
+        queryset=qs_stockitems,
     )
 
     orderitems_from_stockitems = (

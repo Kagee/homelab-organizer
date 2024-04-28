@@ -2,7 +2,6 @@ import logging
 
 from django.contrib import messages
 from django.core.cache import cache
-from django.http import HttpResponseNotFound
 from django.shortcuts import redirect, render
 
 from hlo.models import Attachement, OrderItem, StockItem
