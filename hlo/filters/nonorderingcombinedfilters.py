@@ -1,7 +1,7 @@
 import django_filters  # type: ignore[import-untyped]
-from orderitemfilter import OrderDateRangeFilter
 
-from .models import OrderItem, Shop, StockItem
+from hlo.filters.orderitemfilter import OrderDateRangeFilter
+from hlo.models import OrderItem, Shop, StockItem
 
 
 class NonOrderingOrderItemFilter(django_filters.FilterSet):

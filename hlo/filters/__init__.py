@@ -8,5 +8,5 @@ from .nonorderingcombinedfilters import (
     NonOrderingOrderItemFilter,
     NonOrderingStockItemFilter,
 )
-from .orderitemfiler import OrderItemFilter
+from .orderitemfilter import OrderItemFilter
 from .stockitemfilter import StockItemFilter

@@ -3,7 +3,7 @@ from django.db.models import Max, Min
 from django.db.utils import OperationalError
 from django.utils.timezone import now
 
-from .models import Order, OrderItem, Shop, StockItem
+from hlo.models import Order, OrderItem, Shop, StockItem
 
 
 class OrderDateRangeFilter(django_filters.DateRangeFilter):
