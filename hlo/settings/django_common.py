@@ -5,7 +5,7 @@ from typing import Any
 
 import environ
 
-from hlo.colored_logs import ColoredLogFormatter
+from hlo.utils.colored_logs import ColoredLogFormatter
 
 env = environ.FileAwareEnv(
     # set casting, default value
@@ -107,7 +107,7 @@ STATICFILES_DIRS = [
 ]
 
 INSTALLED_APPS: list[str] = [
-    "hlo.admin_app.HLOAdminConfig",  # "django.contrib.admin",
+    "hlo.utils.admin_app.HLOAdminConfig",  # "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
