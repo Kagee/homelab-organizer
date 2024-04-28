@@ -1,0 +1,2 @@
+#! /bin/bash
+grep --color=always --exclude-dir=venv --exclude-dir=input --exclude-dir=__pycache__ --exclude-dir=.mypy_cache --exclude-dir=media_root "$@"
