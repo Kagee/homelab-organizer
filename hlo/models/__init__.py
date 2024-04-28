@@ -9,6 +9,7 @@ __all__ = [
     "Shop",
     "StockItem",
     "Storage",
+    "OrderStockItemLink",
 ]
 from .attachement import Attachement
 from .category import Category
@@ -16,6 +17,7 @@ from .commontree import CommonTreeModel
 from .order import Order
 from .orderitem import OrderItem
 from .orderitemmeta import OrderItemMeta
+from .orderstockitemlink import OrderStockItemLink
 from .project import Project
 from .shop import Shop
 from .stockitem import StockItem

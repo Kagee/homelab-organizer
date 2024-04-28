@@ -6,7 +6,7 @@ from . import OrderItem
 class OrderItemMeta(models.Model):
     parent = models.OneToOneField(
         OrderItem,
-        to_field="gen_id",
+        to_field="sha1_id",
         on_delete=models.DO_NOTHING,
         db_constraint=False,
         related_name="meta",

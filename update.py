@@ -87,7 +87,9 @@ def _04_migrations(db_deleted=None):
         or input("Delete, recreate and apply migrations? (y/N): ").lower()
         == "y"
     ):
-        shutil.rmtree(Path("hlo/migrations"))
+        migrations = Path("hlo/migrations")
+        if migrations.is_dir():
+            shutil.rmtree(migrations)
         subprocess.run(
             [  # noqa: S603
                 sys.executable,
@@ -110,25 +112,25 @@ def _04_migrations(db_deleted=None):
 
 
 def _05_superuser(db_deleted=None, migrations_ran=None):
-    if db_deleted is None and migrations_ran is None:
-        db_delete, migrations_ran = _04_migrations()
+    # if db_deleted is None and migrations_ran is None:
+    #    db_delete, migrations_ran = _04_migrations()
 
-    if db_deleted and migrations_ran:
-        print("Database deleted, must recreate superuser.V")
-        print(f"Username: {SUPERUSER_NAME}")
-        print(f"Email: {SUPERUSER_EMAIL}")
-        subprocess.run(
-            [  # noqa: S603
-                sys.executable,
-                "manage.py",
-                "createsuperuser",
-                "--username",
-                SUPERUSER_NAME,
-                "--email",
-                SUPERUSER_EMAIL,
-            ],
-            check=True,
-        )
+    # if db_deleted and migrations_ran:
+    print("Database deleted, must recreate superuser.V")
+    print(f"Username: {SUPERUSER_NAME}")
+    print(f"Email: {SUPERUSER_EMAIL}")
+    subprocess.run(
+        [  # noqa: S603
+            sys.executable,
+            "manage.py",
+            "createsuperuser",
+            "--username",
+            SUPERUSER_NAME,
+            "--email",
+            SUPERUSER_EMAIL,
+        ],
+        check=True,
+    )
 
 
 def _06_init_shops():

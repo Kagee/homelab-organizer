@@ -90,14 +90,17 @@ class OrderItem(models.Model):
     # Extra data that we do not import into model
     extra_data = models.JSONField(default=dict, blank=True)
 
-    sha1 = models.CharField(
+    thumnail_sha1 = models.CharField(
         max_length=40,
         editable=False,
         default="",
         blank=True,
     )
-    # Weak FK for StockItem
-    gen_id = models.CharField(max_length=128, editable=False, unique=True)
+    # Weak, *static* FK for StockItem
+    sha1_id = models.CharField(
+        max_length=40,
+        unique=True,
+    )
 
     class Meta:
         ordering = ["order__date", "name"]
@@ -127,21 +130,27 @@ class OrderItem(models.Model):
                         tbhash.update(chunk)
                 else:
                     tbhash.update(f.read())
-                self.sha1 = tbhash.hexdigest()
+                self.thumnail_sha1 = tbhash.hexdigest()
 
                 super().save(*args, **kwargs)
         else:
-            self.sha1 = ""
+            self.thumnail_sha1 = ""
 
         item_variation = "novariation"
         if len(self.item_variation):
             item_variation = self.item_variation
 
-        self.gen_id = (
-            f"{self.order.shop.branch_name}-{self.order.order_id}-"
-            f"{self.item_id}-{item_variation}"
+        orderitem_hash = hashlib.sha1()  # noqa: S324
+        orderitem_hash.update(
+            (
+                f"{self.order.shop.branch_name}-{self.order.order_id}-"
+                f"{self.item_id}-{item_variation}"
+            ).encode(),  # defaults to utf-8
         )
-        logger.debug("Gen id is %s", self.gen_id)
+        self.sha1_id = orderitem_hash.hexdigest()
+
+        logger.debug("Orderitem sha1 is %s", self.sha1_id)
+
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -153,8 +162,8 @@ class OrderItem(models.Model):
         # replace with http://bc.h2x.no/<gen_id> later
         return format_html(
             '<a href="{}" target="_blank">{}</a>',
-            reverse("barcode", args=[self.gen_id]),
-            self.gen_id,
+            reverse("barcode", args=[self.sha1_id]),
+            self.sha1_id,
         )
 
     def image_tag(self, px=150):

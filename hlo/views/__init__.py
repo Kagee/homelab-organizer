@@ -6,14 +6,14 @@ from django.shortcuts import redirect, render
 
 from hlo.models import Attachement, OrderItem, StockItem
 
-from .category import *
-from .combined_search import *
-from .orderitems import *
-from .orders import *
-from .project import *
-from .search import *
-from .stockitems import *
-from .storage import *
+from .category import *  # noqa: F403
+from .combined_search import *  # noqa: F403
+from .orderitems import *  # noqa: F403
+from .orders import *  # noqa: F403
+from .project import *  # noqa: F403
+from .search import *  # noqa: F403
+from .stockitems import *  # noqa: F403
+from .storage import *  # noqa: F403
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ def index(request):
 
 
 def barcode(request, barcode: str):
-    oi: OrderItem = OrderItem.objects.filter(gen_id=barcode).first()
+    oi: OrderItem = OrderItem.objects.filter(sha1_id=barcode).first()
     if not oi:
         messages.add_message(
             request,

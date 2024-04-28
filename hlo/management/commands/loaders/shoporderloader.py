@@ -10,6 +10,7 @@ from typing import Any
 import fitz
 import zipp
 from django.conf import settings
+from django.core.cache import cache
 from django.core.files import File
 from djmoney.money import Money
 
@@ -146,6 +147,12 @@ class ShopOrderLoader:
                                 order_object.save()
                                 attachement_object.file = attachement_file
                                 attachement_object.save()
+                                for key in [
+                                    "attachement_count",
+                                    "attachement_pdf",
+                                    "attachement_html",
+                                ]:
+                                    cache.delete(key)
                             else:
                                 self.log.debug(
                                     "Found hash %s for %s",
@@ -245,7 +252,7 @@ class ShopOrderLoader:
                             )
                             raise AttributeError(msg)
                         sha1 = ""
-                        if item_object.sha1:
+                        if item_object.thumnail_sha1:
                             sha1hash = hashlib.sha1()  # noqa: S324
                             if thumbnail_file.multiple_chunks():
                                 for chunk in thumbnail_file.chunks():
@@ -253,16 +260,20 @@ class ShopOrderLoader:
                             else:
                                 sha1hash.update(thumbnail_file.read())
                             sha1 = sha1hash.hexdigest()
-                        if not item_object.sha1 or item_object.sha1 != sha1:
+                        if (
+                            not item_object.thumnail_sha1
+                            or item_object.thumnail_sha1 != sha1
+                        ):
                             self.log.debug(
                                 "No sha1 or not matching: %s %s",
-                                item_object.sha1,
+                                item_object.thumnail_sha1,
                                 sha1,
                             )
                             if item_object.thumbnail:
                                 item_object.thumbnail.delete()
                             item_object.thumbnail = thumbnail_file
                             item_object.save()
+                            cache.delete("orderitem_count")
 
                     self.log.debug("Getting existing sha1s")
                     existing_sha1s = [
@@ -355,6 +366,13 @@ class ShopOrderLoader:
                             item_object.save()
                             attachement_object.file = attachement_file
                             attachement_object.save()
+                            for key in [
+                                "orderitem_count",
+                                "attachement_count",
+                                "attachement_pdf",
+                                "attachement_html",
+                            ]:
+                                cache.delete(key)
                         else:
                             self.log.debug(
                                 "Found hash %s for %s",
