@@ -14,24 +14,10 @@
                 </form>
             </td>
         </tr>
-        <!-- <tr style="border: 1px solid">
-            <td>{{ filter_si.form.as_p }}</td>
-        </tr> -->
         <tr style="bo>rder: 1px solid">
-            <td>{{ get_values }}</td>
-        </tr><!--
-        <tr style="border: 1px solid">
-            <td>{{ get_values_copy }}</td>
-        </tr>-->
-        <tr style="bo>rder: 1px solid">
-            <td>Stockitems found: {{ filter_si.qs.count }}<br>
-            {% for item in filter_si.qs %} {{ item }}<br> {% endfor %}</td>
+            <td>Stockitems found: {{ orderitems.count }}<br>
+            {% for item in orderitems %} {{ item }}<br> {% endfor %}</td>
         </tr>
-        <tr style="bo>rder: 1px solid">
-            <td>Orderitems found: {{ filter_oi.qs.count }}<br>
-                {% for item in filter_oi.qs %} {% if item in filter_si.qs.all %}<b>ALREADY DISPLAYED!</b>{% endif %} {{ item }}<br> {% endfor %}</td></td>
-        </tr>
-
     </table>
     {% if 1 == 0 %}
         <div class="modal" tabindex="-1" id="filterModal">
