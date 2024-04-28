@@ -80,7 +80,15 @@ lint.ignore = [
   "D", # docstrings?
   ]
 lint.fixable = ["ALL"]
-
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".vscode",
+    ".vscode-server",
+    "venv",
+]
 # 4. Ignore `E402` (import violations) in all `__init__.py` files
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["E402", "F403"]
+#[tool.ruff.lint.per-file-ignores]
+#"__init__.py" = ["E402", "F403"]

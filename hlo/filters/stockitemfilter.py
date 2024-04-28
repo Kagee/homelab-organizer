@@ -1,11 +1,10 @@
-import django_filters  # type: ignore[import-untyped]
+import django_filters  # type: ignore[import-untyped]  # type: ignore[import-untyped]
 
+from hlo.filters.orderdaterangefilter import OrderDateRangeFilter
 from hlo.models import Shop, StockItem
 
-from .orderitemfilter import OrderDateRangeFilter
 
-
-class StockItemFilter(django_filters.FilterSet):
+class NonOrderingStockItemFilter(django_filters.FilterSet):
     name = django_filters.LookupChoiceFilter(
         label="Name",
         lookup_choices=[
@@ -29,6 +28,12 @@ class StockItemFilter(django_filters.FilterSet):
         label="Shop",
     )
 
+    class Meta:
+        model = StockItem
+        fields: dict = {}
+
+
+class StockItemFilter(NonOrderingStockItemFilter):
     ordering = django_filters.OrderingFilter(
         label="Order by",
         empty_label=None,
@@ -39,10 +44,3 @@ class StockItemFilter(django_filters.FilterSet):
             ("orderitem__order__date", "orderitem__order__date"),
         ),
     )
-
-    class Meta:
-        model = StockItem
-        fields = {
-            "name",  # not suire if correct, fields is required
-            # "order__shop": ["exact"],  # noqa: ERA001
-        }
