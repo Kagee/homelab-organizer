@@ -1,4 +1,3 @@
-import base64
 import hashlib
 import logging
 from pathlib import Path
@@ -7,49 +6,21 @@ from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 
+from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
+
 logger = logging.getLogger(__name__)
 
 
 def attachement_file_path(instance, filename):
-    if instance.order.count() > 1:
-        msg = f"Attachement {instance.id} has more than one order"
+    if len(instance.sha1) != 40:  # noqa: PLR2004
+        msg = f"SHA1 sum is not 40 chars: {instance.sha1}"
         raise ValueError(msg)
-    if instance.orderitem.count() > 1:
-        msg = (
-            f"Attachement {instance.id} has more than "
-            f"one orderitem: {instance.orderitem.first()}"
-        )
-        raise ValueError(msg)
-    if instance.order.count():
-        order = instance.order.first()
-        shopname_b64 = base64.urlsafe_b64encode(
-            order.shop.branch_name.encode("utf-8"),
-        ).decode("utf-8")
-        order_b64 = base64.urlsafe_b64encode(
-            order.order_id.encode("utf-8"),
-        ).decode("utf-8")
-        return f"attachements/{shopname_b64}/{order_b64}/{filename}"
-    if instance.orderitem.count():
-        orderitem = instance.orderitem.first()
-        shopname_b64 = base64.urlsafe_b64encode(
-            orderitem.order.shop.branch_name.encode("utf-8"),
-        ).decode("utf-8")
-        order_b64 = base64.urlsafe_b64encode(
-            orderitem.order.order_id.encode("utf-8"),
-        ).decode("utf-8")
-        order_item_b64 = base64.urlsafe_b64encode(
-            f"{orderitem.item_id}"
-            f"{'-' if len(orderitem.item_variation) else ''}"
-            f"{orderitem.item_variation}".encode(),
-        ).decode("utf-8")
-        return (
-            f"attachements/{shopname_b64}/"
-            f"{order_b64}/{order_item_b64}/{filename}"
-        )
-    msg = "Attachement used on something not order or orderitem"
-    raise ValueError(
-        msg,
-    )
+    suffix = Path(filename).suffix
+    prefix = instance.sha1[:2]
+    filename = instance.sha1[2:]
+    path = f"attachements/hashed/{prefix}/{filename}{suffix}"
+    logger.error("In upload_to: Path: %s", path)
+    return path
 
 
 class Attachement(models.Model):
@@ -72,6 +43,7 @@ class Attachement(models.Model):
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#filefield
     file = models.FileField(
         upload_to=attachement_file_path,
+        storage=OverwritingFileSystemStorage(),
         max_length=255,
         blank=True,
     )
@@ -92,6 +64,7 @@ class Attachement(models.Model):
                 else:
                     sha1hash.update(f.read())
                 self.sha1 = sha1hash.hexdigest()
+                logger.debug("In save: Attachement SHA1 is %s", self.sha1)
                 super().save(*args, **kwargs)
         else:
             self.sha1 = self.sha1 if self.sha1 else None

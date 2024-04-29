@@ -1,4 +1,3 @@
-import base64
 import hashlib
 import logging
 import pprint
@@ -10,27 +9,21 @@ from django.urls import reverse
 from django.utils.html import escape, format_html, mark_safe
 from djmoney.models.fields import MoneyField
 
+from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
+
 from . import Attachement, Order
 
 logger = logging.getLogger(__name__)
 
 
 def thumnail_path(instance, filename):
-    ext = Path(filename).suffix[1:]
-    filename_str = (
-        f"{instance.item_id}-"
-        f"{ instance.item_variation if instance.item_variation else '' }"
-    )
-    shopname_b64 = base64.urlsafe_b64encode(
-        instance.order.shop.branch_name.encode("utf-8"),
-    ).decode("utf-8")
-    order_b64 = base64.urlsafe_b64encode(
-        instance.order.order_id.encode("utf-8"),
-    ).decode("utf-8")
-    filename_b64 = base64.urlsafe_b64encode(
-        filename_str.encode("utf-8"),
-    ).decode("utf-8")
-    return f"thumbnails/{shopname_b64}/{order_b64}/{filename_b64}.{ext}"
+    if len(instance.sha1) != 40:  # noqa: PLR2004
+        msg = f"SHA1 sum is not 40 chars: {instance.sha1}"
+        raise ValueError(msg)
+    suffix = Path(filename).suffix
+    prefix = instance.sha1[:2]
+    filename = instance.sha1[2:]
+    return f"thumbnails/hashed/{prefix}/{filename}{suffix}"
 
 
 class OrderItem(models.Model):
@@ -86,7 +79,12 @@ class OrderItem(models.Model):
         Attachement,
         related_name="orderitem",
     )
-    thumbnail = models.ImageField(upload_to=thumnail_path, blank=True)
+
+    thumbnail = models.ImageField(
+        upload_to=thumnail_path,
+        storage=OverwritingFileSystemStorage(),
+        blank=True,
+    )
     # Extra data that we do not import into model
     extra_data = models.JSONField(default=dict, blank=True)
 
@@ -148,9 +146,6 @@ class OrderItem(models.Model):
             ).encode(),  # defaults to utf-8
         )
         self.sha1_id = orderitem_hash.hexdigest()
-
-        logger.debug("Orderitem sha1 is %s", self.sha1_id)
-
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

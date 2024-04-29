@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.db import models
 from django.utils.html import format_html
 
+from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
+
 
 class Shop(models.Model):
     name = models.CharField(
@@ -21,6 +23,7 @@ class Shop(models.Model):
     )
     icon: models.ImageField = models.ImageField(
         upload_to="shop/icons",
+        storage=OverwritingFileSystemStorage(),
         blank=True,
     )
 
