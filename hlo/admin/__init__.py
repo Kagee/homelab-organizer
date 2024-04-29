@@ -1,5 +1,10 @@
 import logging
 
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+
+from hlo.models import User
+
 from .attachement import AttachementAdmin
 from .category import CategoryAdmin, CategoryResource
 from .order import OrderAdmin
@@ -24,4 +29,7 @@ __all__ = [
     "StockItemAdmin",
     "StockItemResource",
     "StorageAdmin",
+    "User",
 ]
+
+admin.site.register(User, UserAdmin)

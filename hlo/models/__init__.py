@@ -10,7 +10,10 @@ __all__ = [
     "StockItem",
     "Storage",
     "OrderStockItemLink",
+    "User",
 ]
+from django.contrib.auth.models import AbstractUser
+
 from .attachement import Attachement
 from .category import Category
 from .commontree import CommonTreeModel
@@ -22,3 +25,7 @@ from .project import Project
 from .shop import Shop
 from .stockitem import StockItem
 from .storage import Storage
+
+
+class User(AbstractUser):
+    pass

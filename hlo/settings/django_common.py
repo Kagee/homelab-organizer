@@ -130,6 +130,8 @@ INSTALLED_APPS: list[str] = [
     "hlo",
 ]
 
+AUTH_USER_MODEL = "hlo.User"
+
 INSTALLED_APPS += env.list("INSTALLED_APPS", default=[])
 
 MIDDLEWARE: list[str] = [
