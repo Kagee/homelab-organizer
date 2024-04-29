@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.http import HttpResponse
 from django.urls import include, path
+from django.views.generic.base import RedirectView
 
 from . import views
 from .views import (
@@ -30,7 +30,13 @@ urlpatterns = [
             name="stockitem-tag-auto-json",
         ),
         # Return empty for favicon
-        path("favicon.ico", lambda _request: HttpResponse()),
+        path(
+            "favicon.ico",
+            RedirectView.as_view(
+                url="/static/images/logo/hlo-cc0-logo-favicon.ico",
+                permanent=True,
+            ),
+        ),
         path(
             "",
             views.index,
