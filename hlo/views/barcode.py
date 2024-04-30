@@ -29,6 +29,34 @@ def barcode_render(_request, pk: int, img_format: str):
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=0,
+    )
+
+    logger.debug("Url is %s", url)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(
+        fill_color="black",
+        back_color="white",
+    )
+
+    response = HttpResponse(content_type="image/png")
+    img.save(response)
+
+    return response
+
+
+def barcode_print(_request, pk: int, img_format: str):
+    img_format = img_format.lower()
+    if img_format not in ["png"]:
+        return HttpResponse(status=415)
+    orderitem = get_object_or_404(OrderItem, pk=pk)
+    url = f"https://bc.h2x.no/{str(orderitem.sha1_id).upper()}"
+
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=1,
         border=0,
     )

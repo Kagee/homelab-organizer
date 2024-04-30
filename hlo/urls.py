@@ -30,6 +30,11 @@ urlpatterns = [
             name="barcode-redirect",
         ),
         path(
+            "barcode/print/<int:pk>.<str:img_format>",
+            barcode_render,
+            name="barcode-redirect",
+        ),
+        path(
             "barcode/go/<str:barcode>",
             barcode_redirect,
             name="barcode-redirect",
