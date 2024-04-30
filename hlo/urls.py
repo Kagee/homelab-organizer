@@ -14,6 +14,7 @@ from .views import (
     StockItemDetail,
     StockItemUpdate,
     TagAutoResponseView,
+    barcode_print,
     barcode_redirect,
     barcode_render,
     index,
@@ -25,13 +26,13 @@ from .views import (
 urlpatterns = [
     *[  # This is where dev happens
         path(
-            "barcode/render/<int:pk>.<str:img_format>",
+            "barcode/render/<int:pk>.png",
             barcode_render,
             name="barcode-redirect",
         ),
         path(
-            "barcode/print/<int:pk>.<str:img_format>",
-            barcode_render,
+            "barcode/print/<int:pk>.png",
+            barcode_print,
             name="barcode-redirect",
         ),
         path(

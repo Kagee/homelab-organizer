@@ -7,7 +7,7 @@ from hlo.views.storage import (
     StorageUpdateView,
 )
 
-from .barcode import barcode_redirect, barcode_render
+from .barcode import barcode_print, barcode_redirect, barcode_render
 from .category import (
     CategoryCreateView,
     CategoryDetailView,
@@ -39,6 +39,7 @@ __all__ = [
     "index",
     "barcode_redirect",
     "barcode_render",
+    "barcode_print",
     "AttachementSearchView",
     "StockItemCreate",
     "StockItemDetail",
