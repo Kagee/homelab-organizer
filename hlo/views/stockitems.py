@@ -20,8 +20,7 @@ logger = logging.getLogger(__name__)
 
 class TagAutoResponseView(AutoResponseView):
     def get(self, request, *_args, **kwargs):
-        """This method is overriden for changing id to name instead of pk.
-        """
+        """This method is overriden for changing id to name instead of pk."""
         # pylint: disable=attribute-defined-outside-init
         self.widget = self.get_widget_or_404()
         self.term = kwargs.get("term", request.GET.get("term", ""))
@@ -64,17 +63,16 @@ class TagChoices(ModelSelect2TagWidget):
         # if a value is not in names (tag with name does
         # not exists), it has to be created
         cleaned_values += [
-            self.queryset.create(name=val).name
-            for val in (values - names)
-            ]
+            self.queryset.create(name=val).name for val in (values - names)
+        ]
         # django-taggit expects a comma-separated list
         return ",".join(cleaned_values)
 
 
-class ExampleForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
+# class ExampleForm(forms.Form):
+#    def __init__(self, *args, **kwargs):
+#        super().__init__(*args, **kwargs)
+#        self.helper = FormHelper(self)
 
 
 class StockItemCreate(CreateView):

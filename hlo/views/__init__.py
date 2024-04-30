@@ -1,69 +1,70 @@
 import logging
 
-from django.contrib import messages
-from django.core.cache import cache
-from django.shortcuts import redirect, render
+from hlo.views.storage import (
+    StorageCreateView,
+    StorageDetailView,
+    StorageListView,
+    StorageUpdateView,
+)
 
-from hlo.models import Attachement, OrderItem, StockItem
+from .barcode import barcode_redirect, barcode_render
+from .category import (
+    CategoryCreateView,
+    CategoryDetailView,
+    CategoryListView,
+    CategoryUpdateView,
+)
+from .combined_search import item_search
+from .index_and_utils import index, render404
+from .orderitems import OrderItemDetailView, OrderItemFilter, product_list
+from .orders import OrderDetailView, OrderListView
+from .project import (
+    ProjectCreateView,
+    ProjectDetailView,
+    ProjectListView,
+    ProjectUpdateView,
+)
+from .search import AttachementSearchView
+from .stockitems import (
+    StockItemCreate,
+    StockItemDetail,
+    StockItemFilter,
+    StockItemUpdate,
+    TagAutoResponseView,
+    stockitem_list,
+)
 
-from .category import *  # noqa: F403
-from .combined_search import *  # noqa: F403
-from .orderitems import *  # noqa: F403
-from .orders import *  # noqa: F403
-from .project import *  # noqa: F403
-from .search import *  # noqa: F403
-from .stockitems import *  # noqa: F403
-from .storage import *  # noqa: F403
+__all__ = [
+    "render404",
+    "index",
+    "barcode_redirect",
+    "barcode_render",
+    "AttachementSearchView",
+    "StockItemCreate",
+    "StockItemDetail",
+    "StockItemFilter",
+    "StockItemUpdate",
+    "TagAutoResponseView",
+    "stockitem_list",
+    "ProjectCreateView",
+    "ProjectDetailView",
+    "ProjectListView",
+    "ProjectUpdateView",
+    "CategoryCreateView",
+    "CategoryDetailView",
+    "CategoryListView",
+    "CategoryUpdateView",
+    "StorageCreateView",
+    "StorageDetailView",
+    "StorageListView",
+    "StorageUpdateView",
+    "item_search",
+    "OrderItemDetailView",
+    "OrderItemFilter",
+    "product_list",
+    "OrderDetailView",
+    "OrderListView",
+]
+
 
 logger = logging.getLogger(__name__)
-
-
-def index(request):
-    # This is basicly a suboptimal implementation of a (currently non-exsisting)
-    # cache.get_or_set_many with callable support
-    keys: dict = {
-        "orderitem_count": OrderItem.objects.count,
-        "stockitem_count": StockItem.objects.count,
-        "stockitem_with_location": lambda: 0,
-        "stockitem_without_location": lambda: 0,
-        "attachement_count": Attachement.objects.count,
-        "attachement_pdf": Attachement.objects.filter(
-            file__endswith=".pdf",
-        ).count,
-        "attachement_html": Attachement.objects.filter(
-            file__endswith=".html",
-        ).count,
-    }
-
-    cached_keys = cache.get_many(keys.keys())
-
-    for key in keys:
-        if key not in cached_keys:
-            value = keys[key]()
-            cache.set(key, value, timeout=None)
-            cached_keys[key] = value
-
-    return render(
-        request,
-        "index.html",
-        cached_keys,
-    )
-
-
-def barcode(request, barcode: str):
-    oi: OrderItem = OrderItem.objects.filter(sha1_id=barcode).first()
-    if not oi:
-        messages.add_message(
-            request,
-            messages.WARNING,
-            f"Could not find item with barcode {barcode}.",
-        )
-        return redirect("index")
-
-    if oi.stockitem.count():
-        return redirect("stockitem-detail", pk=oi.stockitem.first().pk)
-    return redirect("orderitem", pk=oi.pk)
-
-
-def render404(request, _exception):
-    return render(request, "404.html")
