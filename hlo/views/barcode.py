@@ -1,10 +1,13 @@
 import logging
 
-from barcode import EAN13
+import qrcode
+from barcode import Code128
 from barcode.writer import ImageWriter
 from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.http import FileResponse, HttpResponse
+from django.shortcuts import get_object_or_404, redirect
+from PIL import Image
+from qrcode.image.pure import PyPNGImage
 
 from hlo.models import OrderItem
 
@@ -16,20 +19,36 @@ __all__ = [
 ]
 
 
-def barcode_render(request, orderitem):
-    # img = Image.new("RGB", (300, 300), "#FFFFFF")
-    # data = [(i, randint(100, 200)) for i in range(0, 300, 10)]
-    # draw = ImageDraw.Draw(img)
-    # draw.polygon(data, fill="#000000")
-    response = HttpResponse(mimetype="image/png")
-    EAN13(str(orderitem), writer=ImageWriter()).write(response)
-    # img.save(response, "PNG")
+def barcode_render(_request, pk: int, img_format: str):
+    img_format = img_format.lower()
+    if img_format not in ["png"]:
+        return HttpResponse(status=415)
+    orderitem = get_object_or_404(OrderItem, pk=pk)
+    url = f"https://bc.h2x.no/{str(orderitem.sha1_id).upper()}"
+
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=1,
+        border=0,
+    )
+
+    logger.debug("Url is %s", url)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(
+        fill_color="black",
+        back_color="white",
+    )
+
+    response = HttpResponse(content_type="image/png")
+    img.save(response)
 
     return response
 
 
 def barcode_redirect(request, barcode: str):
-    oi: OrderItem = OrderItem.objects.filter(sha1_id=barcode).first()
+    oi: OrderItem = OrderItem.objects.filter(sha1_id=barcode.lower()).first()
     if not oi:
         messages.add_message(
             request,

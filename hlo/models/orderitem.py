@@ -145,7 +145,7 @@ class OrderItem(models.Model):
                 f"{self.item_id}-{item_variation}"
             ).encode(),  # defaults to utf-8
         )
-        self.sha1_id = orderitem_hash.hexdigest()
+        self.sha1_id = orderitem_hash.hexdigest().upper()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

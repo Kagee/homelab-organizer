@@ -1,10 +1,11 @@
+from pathlib import Path
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import FileResponse
 from django.urls import include, path
-from django.views.generic.base import RedirectView
 
-from . import views
 from .views import (
     AttachementSearchView,
     OrderDetailView,
@@ -13,28 +14,34 @@ from .views import (
     StockItemDetail,
     StockItemUpdate,
     TagAutoResponseView,
+    barcode_redirect,
+    barcode_render,
+    index,
+    item_search,
+    product_list,
+    stockitem_list,
 )
 
 urlpatterns = [
     *[  # This is where dev happens
         path(
-            "barcode/render/<int:pk>.<str:format>",
-            views.barcode_render,
+            "barcode/render/<int:pk>.<str:img_format>",
+            barcode_render,
             name="barcode-redirect",
         ),
         path(
             "barcode/go/<str:barcode>",
-            views.barcode_redirect,
+            barcode_redirect,
             name="barcode-redirect",
         ),
         path(
             "search/items",
-            views.item_search,
+            item_search,
             name="item-search",
         ),
     ],
     *[  # Item stuff
-        path("stockitem/list", views.stockitem_list, name="stockitem-list"),
+        path("stockitem/list", stockitem_list, name="stockitem-list"),
         path(
             "stockitem/detail/<int:pk>",
             StockItemDetail.as_view(),
@@ -50,7 +57,7 @@ urlpatterns = [
             StockItemCreate.as_view(),
             name="stockitem-create-from",
         ),
-        path("orderitem/list", views.product_list, name="orderitem-list"),
+        path("orderitem/list", product_list, name="orderitem-list"),
         path(
             "orderitem/detail/<int:pk>",
             OrderItemDetailView.as_view(),
@@ -69,14 +76,13 @@ urlpatterns = [
         path("__debug__/", include("debug_toolbar.urls")),
         path(
             "favicon.ico",
-            RedirectView.as_view(
-                url="/static/images/logo/hlo-cc0-logo-favicon.ico",
-                permanent=True,
+            lambda _: FileResponse(
+                Path("static/images/logo/hlo-cc0-logo-favicon.ico").open("rb"),  # noqa: SIM115
             ),
         ),
         path(
             "",
-            views.index,
+            index,
             name="index",
         ),
         path(

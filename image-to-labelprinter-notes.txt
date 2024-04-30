@@ -1,0 +1,42 @@
+this fork: https://github.com/dersimn/brother_ql_web/
+
+http://docker-host:8013/api/print
+POST
+Content-Type: multipart/form-data; boundary=---------------------------200782426026746995384013551557
+Content-Disposition: form-data; name="image_bw_threshold"\r\n\r\n70
+-----------------------------200782426026746995384013551557\r\n
+Content-Disposition: form-data; name="image_mode"\r\n\r\nblack_and_white
+-----------------------------200782426026746995384013551557\r\n
+Content-Disposition: form-data; name="print_color"\r\n\r\nundefined
+-----------------------------200782426026746995384013551557\r\n
+Content-Disposition: form-data; name="cut_mode"\r\n\r\ncut
+-----------------------------200782426026746995384013551557\r\n
+Content-Disposition: form-data; name="image"; filename="99.png"
+Content-Type: image/png
+
+-----------------------------200782426026746995384013551557--
+
+
+http://docker-host:8013/api/print
+POST
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8"
+
+text=a
+&font_family=Bitstream+Vera+Sans
+&font_style=Roman
+&font_size=70
+&label_size=62
+&align=center
+&orientation=standard
+&margin_top=0
+&margin_bottom=0
+&margin_left=0
+&margin_right=75
+&print_type=text
+&qrcode_size=10
+&qrcode_correction=L
+&print_count=1
+&image_bw_threshold=70
+&image_mode=black_and_white
+&line_spacing=100
+&cut_mode=cut

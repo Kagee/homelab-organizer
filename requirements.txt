@@ -26,3 +26,4 @@ django-import-export>=3.3.7
 environs>=11.0.0
 colored>=2.2.4
 python-barcode[images]>=0.15.1
+qrcode[pil]>=7.4.2
