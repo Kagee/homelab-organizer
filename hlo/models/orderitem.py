@@ -17,12 +17,13 @@ logger = logging.getLogger(__name__)
 
 
 def thumnail_path(instance, filename):
-    if len(instance.sha1) != 40:  # noqa: PLR2004
-        msg = f"SHA1 sum is not 40 chars: {instance.sha1}"
+    logger.warning("In thumnail_path!")
+    if len(instance.thumnail_sha1) != 40:  # noqa: PLR2004
+        msg = f"SHA1 sum is not 40 chars: {instance.thumnail_sha1}"
         raise ValueError(msg)
     suffix = Path(filename).suffix
-    prefix = instance.sha1[:2]
-    filename = instance.sha1[2:]
+    prefix = instance.thumnail_sha1[:2]
+    filename = instance.thumnail_sha1[2:]
     return f"thumbnails/hashed/{prefix}/{filename}{suffix}"
 
 
@@ -119,6 +120,7 @@ class OrderItem(models.Model):
         )
 
     def save(self, *args, **kwargs):
+        logger.warning("In save!")
         # pylint: disable=no-member
         if self.thumbnail:
             with self.thumbnail.open("rb") as f:
@@ -146,6 +148,7 @@ class OrderItem(models.Model):
             ).encode(),  # defaults to utf-8
         )
         self.sha1_id = orderitem_hash.hexdigest().upper()
+        logger.warning("Just before super save!")
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
