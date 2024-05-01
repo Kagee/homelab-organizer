@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib.auth.decorators import user_passes_test
 from django.core.cache import cache
 from django.shortcuts import render
 
@@ -8,6 +9,11 @@ from hlo.models import Attachement, OrderItem, StockItem
 logger = logging.getLogger(__name__)
 
 
+# @user_passes_test(
+#    lambda u: u.is_staff,
+#    login_url="/do_not_have_access",
+#    redirect_field_name=None,
+# )
 def index(request):
     # This is basicly a suboptimal implementation of a (currently non-exsisting)
     # cache.get_or_set_many with callable support
@@ -38,6 +44,10 @@ def index(request):
         "index.html",
         cached_keys,
     )
+
+
+def no_access(request):
+    return render(request, "no_access.html")
 
 
 def render404(request, _exception):

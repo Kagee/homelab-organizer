@@ -19,6 +19,7 @@ from .views import (
     barcode_render,
     index,
     item_search,
+    no_access,
     product_list,
     stockitem_list,
 )
@@ -90,6 +91,11 @@ urlpatterns = [
             "",
             index,
             name="index",
+        ),
+        path(
+            "no_access",
+            no_access,
+            name="no_access",
         ),
         path(
             "search/attachements",

@@ -15,7 +15,7 @@ from .category import (
     CategoryUpdateView,
 )
 from .combined_search import item_search
-from .index_and_utils import index, render404
+from .index_and_utils import index, no_access, render404
 from .orderitems import OrderItemDetailView, OrderItemFilter, product_list
 from .orders import OrderDetailView, OrderListView
 from .project import (
@@ -37,6 +37,7 @@ from .stockitems import (
 __all__ = [
     "render404",
     "index",
+    "no_access",
     "barcode_redirect",
     "barcode_render",
     "barcode_print",

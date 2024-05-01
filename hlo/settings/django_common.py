@@ -141,6 +141,7 @@ MIDDLEWARE: list[str] = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "hlo.utils.custompersistentremoteusermiddleware.CustomPersistentRemoteUserMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -247,3 +248,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 BS_ICONS_CACHE: Path = (MEDIA_ROOT / Path("icon_cache")).resolve()
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.RemoteUserBackend",
+]
