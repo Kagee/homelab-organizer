@@ -1,13 +1,25 @@
 #! /usr/bin/env python3
+import logging
+
 from bootstrap import python_checks
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    style="{",
+    format="{asctime} [{levelname}] {message} ({name}:{module})",
+    handlers=[logging.StreamHandler()],
+)
+
+logger = logging.getLogger(__name__)
+
 python_checks()
-# ruff: noqa: T201  # This is a simple script, we use print
+# ruff: noqa: T201,E402  # This is a simple script, we use print
 # pylint: disable=wrong-import-position,wrong-import-order
-import shutil  # noqa: E402
-import subprocess  # noqa: E402
-import sys  # noqa: E402
-from pathlib import Path  # noqa: E402
+import argparse
+import shutil
+import subprocess
+import sys
+from pathlib import Path
 
 environs_loaded = False
 try:
@@ -23,10 +35,8 @@ except ModuleNotFoundError:
     pass
 
 
-def _01_upgrade_pip():
-    if not only_input and (
-        auto_answer or input("Upgrade pip? (Y/n): ").lower() != "n"
-    ):
+def upgrade_pip(args: argparse.Namespace) -> None:
+    if args.yes or input("Upgrade pip? (Y/n): ").lower() != "n":
         subprocess.run(
             [  # noqa: S603
                 sys.executable,
@@ -42,10 +52,8 @@ def _01_upgrade_pip():
         )
 
 
-def _02_pip_install_upgrade():
-    if not only_input and (
-        auto_answer or input("Pip install && upgrade? (Y/n): ").lower() != "n"
-    ):
+def install_upgrade_packages(args: argparse.Namespace) -> None:
+    if args.yes or input("Pip install && upgrade? (Y/n): ").lower() != "n":
         subprocess.run(
             [  # noqa: S603
                 sys.executable,
@@ -66,56 +74,46 @@ def _02_pip_install_upgrade():
         sys.exit(0)
 
 
-def _03_delete_db():
-    db_deleted = False
-    if not only_input and (
-        auto_answer or input("Delete DB? (y/N): ").lower() == "y"
-    ):
+def delete_db(args: argparse.Namespace) -> None:
+    if args.yes or input("Delete DB? (y/N): ").lower() == "y":
         p = Path("db/db-dev.sqlite3")
         if p.is_file():
             p.unlink()
-        db_deleted = True
-    return db_deleted
 
 
-def _04_migrations(db_deleted=None):
-    if db_deleted is None:
-        db_deleted = _03_delete_db()
-    migrations_ran = False
-    if not only_input and (
-        auto_answer
+def recreate_run_migrations(args: argparse.Namespace) -> None:
+    if (
+        args.yes
         or input("Delete, recreate and apply migrations? (y/N): ").lower()
         == "y"
     ):
         migrations = Path("hlo/migrations")
         if migrations.is_dir():
             shutil.rmtree(migrations)
-        subprocess.run(
-            [  # noqa: S603
-                sys.executable,
-                "manage.py",
-                "makemigrations",
-                "hlo",
-            ],
-            check=True,
-        )
-        subprocess.run(
-            [  # noqa: S603
-                sys.executable,
-                "manage.py",
-                "migrate",
-            ],
-            check=True,
-        )
-        migrations_ran = True
-    return (db_deleted, migrations_ran)
+        try:
+            subprocess.run(
+                [  # noqa: S603
+                    sys.executable,
+                    "manage.py",
+                    "makemigrations",
+                    "hlo",
+                ],
+                check=True,
+            )
+            subprocess.run(
+                [  # noqa: S603
+                    sys.executable,
+                    "manage.py",
+                    "migrate",
+                ],
+                check=True,
+            )
+        except subprocess.CalledProcessError as cpe:
+            logger.error("Error when running %s", "".join(cpe.cmd))  # noqa: TRY400
+            sys.exit(1)
 
 
-def _05_superuser(db_deleted=None, migrations_ran=None):
-    # if db_deleted is None and migrations_ran is None:
-    #    db_delete, migrations_ran = _04_migrations()
-
-    # if db_deleted and migrations_ran:
+def create_superuser(_args: argparse.Namespace) -> None:
     print("Database deleted, must recreate superuser.V")
     print(f"Username: {SUPERUSER_NAME}")
     print(f"Email: {SUPERUSER_EMAIL}")
@@ -128,13 +126,15 @@ def _05_superuser(db_deleted=None, migrations_ran=None):
             SUPERUSER_NAME,
             "--email",
             SUPERUSER_EMAIL,
+            # We are using Apache for auth, don't need password
+            "--noinput",
         ],
         check=True,
     )
 
 
-def _06_init_shops():
-    if only_input or auto_answer or input("Init shops? (Y/n): ").lower() != "n":
+def import_shops(args: argparse.Namespace) -> None:
+    if args.yes or input("Init shops? (Y/n): ").lower() != "n":
         subprocess.run(
             [  # noqa: S603
                 sys.executable,
@@ -146,10 +146,9 @@ def _06_init_shops():
         )
 
 
-def _07_order_metadata():
+def import_orders(args: argparse.Namespace) -> None:
     if (
-        only_input
-        or auto_answer
+        args.yes
         or input("Init order metadata without attachements? (Y/n): ").lower()
         != "n"
     ):
@@ -166,10 +165,9 @@ def _07_order_metadata():
         )
 
 
-def _08_order_attachements():
+def import_attachements(args: argparse.Namespace) -> None:
     if (
-        only_input
-        or auto_answer
+        args.yes
         or input("Init order metadata with attachements ?  (Y/n): ").lower()
         != "n"
     ):
@@ -179,48 +177,115 @@ def _08_order_attachements():
         )
 
 
-def main() -> None:
-    print(f"{auto_answer=}, {only_input=}")
-    _01_upgrade_pip()
-    _02_pip_install_upgrade()
-    # _03_delete_db
-    # _04_migrations
-    _05_superuser(_04_migrations(_03_delete_db()))
-    _06_init_shops()
-    _07_order_metadata()
-    _08_order_attachements()
+def _argparse() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    default_loglevel = "WARNING"
+    parser.add_argument(
+        "--loglevel",
+        dest="loglevel",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        help="Set the logging level",
+        type=str.upper,
+        default=default_loglevel,
+    )
+    # logging.getLevelNamesMapping is 3.12
+    default_loglevel = logging.getLevelName(default_loglevel)
+    func_args = [
+        "upgrade-pip",
+        "install-upgrade_packages",
+        "delete-db",
+        "recreate-run-migrations",
+        "create-superuser",
+        "import-shops",
+        "import-orders",
+        "import-attachements",
+    ]
+
+    for arg in func_args:
+        parser.add_argument(
+            f"--{arg}",
+            action="store_true",
+            help=f"Run function {arg}()",
+        )
+
+    parser.add_argument(
+        "--import-all",
+        action="store_true",
+        help="Run all import-functions.",
+    )
+
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Run *all* functions.",
+    )
+
+    parser.add_argument(
+        "-y",
+        "--yes",
+        action="store_true",
+        help="Answer yes to all (most?) questions",
+    )
+
+    args = parser.parse_args()
+
+    logger.setLevel(args.loglevel)
+
+    if logger.getEffectiveLevel() != default_loglevel:
+        logger.debug(
+            "Loglevel changed from %s to %s",
+            logging.getLevelName(default_loglevel),
+            logging.getLevelName(logger.getEffectiveLevel()),
+        )
+
+    if args.all:
+        for _arg in func_args:
+            arg = _arg.replace("-", "_")
+            logger.debug("Setting %s to True", arg)
+            setattr(args, arg, True)
+
+    if args.import_all:
+        for _arg in [x for x in func_args if "import" in x]:
+            arg = _arg.replace("-", "_")
+            logger.debug("Setting %s to True", arg)
+            setattr(args, arg, True)
+
+    return args
+
+
+def main() -> None:  # noqa: C901
+    args = _argparse()
+
+    logger.debug("Command line args: %s", args)
+
+    if args.upgrade_pip:
+        upgrade_pip(args)
+    if args.install_upgrade_packages:
+        install_upgrade_packages(args)
+    if args.delete_db:
+        delete_db(args)
+    if args.recreate_run_migrations:
+        if not args.delete_db:
+            if (
+                input(
+                    "You have not deleted the DB. "
+                    "Still recreate and rerun migrations? (Y/n): ",
+                ).lower()
+                != "n"  # only pressing n/N will bail out
+            ):
+                recreate_run_migrations(args)
+        else:
+            recreate_run_migrations(args)
+
+    if args.create_superuser:
+        create_superuser(args)
+    if args.import_shops:
+        import_shops(args)
+    if args.import_orders:
+        import_orders(args)
+    if args.import_attachements:
+        import_attachements(args)
 
 
 if __name__ == "__main__":
-    # YES I KNOW; SUE ME!!
-    print_help = "-h" in sys.argv or "--help" in sys.argv
-    auto_answer = "-y" in sys.argv or "--yes" in sys.argv
-    only_input = "-i" in sys.argv or "--import" in sys.argv
-
-    import inspect
-    import types
-
-    funcs = inspect.getmembers(
-        sys.modules[__name__],
-        predicate=lambda x: isinstance(x, types.FunctionType)
-        and x.__module__ == __name__
-        and x.__name__.startswith("_0"),
-    )
-    funcs = [(x[4:], y) for (x, y) in funcs]
-    any_func_called = False
-    if print_help:
-        any_func_called = True
-        print("-y\t\tAuto answer yes to every question")
-        print("-i\t\tOnly run nondestructive import functions")
-        print("")
-        print("Call functions directly (may use multiple)")
-        for fname, _ in funcs:
-            print(f"\t--{fname}")
-    else:
-        for fname, func in funcs:
-            if f"--{fname}" in sys.argv:
-                any_func_called = True
-                func()
-
-    if not any_func_called:
-        main()
+    main()
