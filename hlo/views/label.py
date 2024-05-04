@@ -3,7 +3,6 @@ import io
 import logging
 import textwrap
 from pathlib import Path
-from typing import tuple
 
 import qrcode
 import requests
@@ -79,7 +78,7 @@ def sha1_redirect(request: WSGIRequest, sha1: str) -> HttpResponseRedirect:
     return redirect("orderitem", pk=oi.pk)
 
 
-def _orderitem_get_label_data(pk: int) -> tuple(str, str):
+def _orderitem_get_label_data(pk: int) -> tuple[str, str]:
     qs = OrderItem.objects.annotate(
         stockitem_count=Count("stockitem"),
     )
@@ -97,7 +96,7 @@ def _orderitem_get_label_data(pk: int) -> tuple(str, str):
     return qr_text, label_text
 
 
-def _storage_get_label_data(pk: int) -> tuple(str, str):
+def _storage_get_label_data(pk: int) -> [str, str]:
     # TODO: Implement
     """
     qs = OrderItem.objects.annotate(
