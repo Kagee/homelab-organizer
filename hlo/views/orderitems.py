@@ -10,7 +10,9 @@ from crispy_forms.layout import (
     Row,
     Submit,
 )
+from django.core.handlers.wsgi import WSGIRequest
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import DetailView
 
@@ -20,7 +22,9 @@ from hlo.models import OrderItem
 logger = logging.getLogger(__name__)
 
 
-def product_list(request):
+def orderitem_filtered_list(
+    request: WSGIRequest,
+) -> HttpResponse:
     qs_orderitems = (
         OrderItem.objects.exclude(meta__hidden=True)  # Items with meta = hidden
         .select_related("order")
@@ -99,6 +103,6 @@ class OrderItemDetailView(DetailView):
 
 
 __all__ = [
-    "product_list",
+    "orderitem_filtered_list",
     "OrderItemDetailView",
 ]

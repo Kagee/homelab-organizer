@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import hashlib
 import logging
 import pprint
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from django.contrib import admin
 from django.db import models
@@ -13,11 +16,13 @@ from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
 
 from . import Attachement, Order
 
+if TYPE_CHECKING:
+    from django.utils.safestring import SafeString
+
 logger = logging.getLogger(__name__)
 
 
-def thumnail_path(instance, filename):
-    logger.warning("In thumnail_path!")
+def thumnail_path(instance: OrderItem, filename: str) -> str:
     if len(instance.thumnail_sha1) != 40:  # noqa: PLR2004
         msg = f"SHA1 sum is not 40 chars: {instance.thumnail_sha1}"
         raise ValueError(msg)
@@ -110,7 +115,7 @@ class OrderItem(models.Model):
             ),
         ]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             # pylint: disable=no-member
             f"{self.order.shop.branch_name} item"
@@ -119,8 +124,7 @@ class OrderItem(models.Model):
             f": {self.name}"
         )
 
-    def save(self, *args, **kwargs):
-        logger.warning("In save!")
+    def save(self, *args, **kwargs) -> None:
         # pylint: disable=no-member
         if self.thumbnail:
             with self.thumbnail.open("rb") as f:
@@ -148,14 +152,13 @@ class OrderItem(models.Model):
             ).encode(),  # defaults to utf-8
         )
         self.sha1_id = orderitem_hash.hexdigest().upper()
-        logger.warning("Just before super save!")
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse("orderitem", kwargs={"pk": self.pk})
 
     @admin.display(description="Barcode URL")
-    def barcode_url(self):
+    def barcode_url(self) -> SafeString:
         # pylint: disable=no-member
         # replace with http://bc.h2x.no/<gen_id> later
         return format_html(
@@ -164,7 +167,7 @@ class OrderItem(models.Model):
             self.sha1_id,
         )
 
-    def image_tag(self, px=150):
+    def image_tag(self, px: int = 150) -> SafeString:
         # pylint: disable=no-member
         return mark_safe(  # noqa: S308
             f'<div style="height: {px}px;"><a href="{self.thumbnail.url}"'
@@ -175,7 +178,7 @@ class OrderItem(models.Model):
 
     image_tag.short_description = "Thumbnail"
 
-    def attachements_tag(self):
+    def attachements_tag(self) -> SafeString:
         # pylint: disable=no-member
         if self.attachements.count() == 0:
             return "No attachements"
@@ -190,7 +193,7 @@ class OrderItem(models.Model):
 
     attachements_tag.short_description = "Attachements"
 
-    def item_ref(self):
+    def item_ref(self) -> str:
         return (
             f"{self.item_id}"
             f"{' / ' if len(self.item_variation) else ''}"
@@ -199,11 +202,11 @@ class OrderItem(models.Model):
 
     item_ref.short_description = "Item ID / SKU"
 
-    def get_orderitem_url(self):
+    def get_orderitem_url(self) -> str:
         return self.order.shop.item_url_template.format(item_id=self.item_id)
 
     @admin.display(description="Order ID")
-    def item_url(self):
+    def item_url(self) -> SafeString:
         return format_html(
             '{} (<a href="{}" target="_blank">Open item page on {}}</a>)',
             self.order_id,
@@ -213,7 +216,7 @@ class OrderItem(models.Model):
         )
 
     @admin.display(description="Extra data (indented)")
-    def indent_extra_data(self):
+    def indent_extra_data(self) -> SafeString:
         return format_html(
             "<pre>{}</pre>",
             escape(pprint.PrettyPrinter(indent=2).pformat(self.extra_data)),
