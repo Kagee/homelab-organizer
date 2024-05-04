@@ -76,8 +76,12 @@ lint.ignore = [
   "D106", # Missing docstring in public nested class
   "D107", # Missing docstring in `__init__`
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
-  "ANN", # Annotations
+  #"ANN", # Annotations
+  "ANN002",
+  "ANN003",
+  "ANN101",
   "D", # docstrings?
+  "TD", # TODOs
   ]
 lint.fixable = ["ALL"]
 # Exclude a variety of commonly ignored directories.
@@ -86,6 +90,8 @@ exclude = [
     ".mypy_cache",
     ".ruff_cache",
     ".vscode",
+    "~/.vscode-server",
+    "/.vscode-server",
     ".vscode-server",
     "venv",
 ]
