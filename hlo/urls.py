@@ -14,32 +14,32 @@ from .views import (
     StockItemDetail,
     StockItemUpdate,
     TagAutoResponseView,
-    barcode_print,
-    barcode_redirect,
-    barcode_render,
     index,
     item_search,
+    label_print_orderitem,
+    label_render_orderitem,
     no_access,
-    product_list,
+    orderitem_filtered_list,
+    sha1_redirect,
     stockitem_list,
 )
 
 urlpatterns = [
     *[  # This is where dev happens
         path(
-            "barcode/render/<int:pk>.png",
-            barcode_render,
+            "label/render/orderitem/<int:pk>.png",
+            label_render_orderitem,
             name="barcode-redirect",
         ),
         path(
-            "barcode/print/<int:pk>.png",
-            barcode_print,
-            name="barcode-redirect",
+            "label/print/orderitem/<int:pk>",
+            label_print_orderitem,
+            name="label_print_orderitem",
         ),
         path(
-            "barcode/go/<str:barcode>",
-            barcode_redirect,
-            name="barcode-redirect",
+            "sha1/<str:sha1>",
+            sha1_redirect,
+            name="sha1_redirect",
         ),
         path(
             "search/items",
@@ -64,7 +64,7 @@ urlpatterns = [
             StockItemCreate.as_view(),
             name="stockitem-create-from",
         ),
-        path("orderitem/list", product_list, name="orderitem-list"),
+        path("orderitem/list", orderitem_filtered_list, name="orderitem-list"),
         path(
             "orderitem/detail/<int:pk>",
             OrderItemDetailView.as_view(),

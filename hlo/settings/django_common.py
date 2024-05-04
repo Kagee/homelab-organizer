@@ -97,8 +97,9 @@ LOGGING = {
     },
 }
 
-
 ALLOWED_HOSTS: list[str] = env.list("ALLOWED_HOSTS")
+
+CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS")
 
 STATIC_URL: str = env("STATIC_URL")
 
@@ -246,6 +247,12 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 BS_ICONS_CACHE: Path = (MEDIA_ROOT / Path("icon_cache")).resolve()
+if not BS_ICONS_CACHE.is_dir():
+    BS_ICONS_CACHE.mkdir(exist_ok=True)
+
+BARCODE_CACHE: Path = (MEDIA_ROOT / Path("barcode_cache")).resolve()
+if not BARCODE_CACHE.is_dir():
+    BARCODE_CACHE.mkdir(exist_ok=True)
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 

@@ -7,7 +7,6 @@ from hlo.views.storage import (
     StorageUpdateView,
 )
 
-from .barcode import barcode_print, barcode_redirect, barcode_render
 from .category import (
     CategoryCreateView,
     CategoryDetailView,
@@ -16,7 +15,12 @@ from .category import (
 )
 from .combined_search import item_search
 from .index_and_utils import index, no_access, render404
-from .orderitems import OrderItemDetailView, OrderItemFilter, product_list
+from .label import label_print_orderitem, label_render_orderitem, sha1_redirect
+from .orderitems import (
+    OrderItemDetailView,
+    OrderItemFilter,
+    orderitem_filtered_list,
+)
 from .orders import OrderDetailView, OrderListView
 from .project import (
     ProjectCreateView,
@@ -38,9 +42,9 @@ __all__ = [
     "render404",
     "index",
     "no_access",
-    "barcode_redirect",
-    "barcode_render",
-    "barcode_print",
+    "label_render_orderitem",
+    "label_print_orderitem",
+    "sha1_redirect",
     "AttachementSearchView",
     "StockItemCreate",
     "StockItemDetail",
@@ -63,7 +67,7 @@ __all__ = [
     "item_search",
     "OrderItemDetailView",
     "OrderItemFilter",
-    "product_list",
+    "orderitem_filtered_list",
     "OrderDetailView",
     "OrderListView",
 ]
