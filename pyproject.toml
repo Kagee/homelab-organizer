@@ -76,7 +76,7 @@ lint.ignore = [
   "D106", # Missing docstring in public nested class
   "D107", # Missing docstring in `__init__`
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
-  #"ANN", # Annotations
+  "ANN", # Annotations
   "ANN002",
   "ANN003",
   "ANN101",
