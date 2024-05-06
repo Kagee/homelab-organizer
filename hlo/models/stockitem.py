@@ -8,7 +8,7 @@ from . import Attachement
 
 class StockItem(models.Model):
     name = models.CharField(max_length=255, blank=True, default="")
-    count = models.PositiveIntegerField("number of items used", default=0)
+    count = models.PositiveIntegerField("Count", default=0)
     tags = TaggableManager(blank=True)
     category = TreeManyToManyField(
         "Category",
