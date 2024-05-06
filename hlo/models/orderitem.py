@@ -167,13 +167,24 @@ class OrderItem(models.Model):
             self.sha1_id,
         )
 
-    def image_tag(self, px: int = 150) -> SafeString:
+    def image_tag(self, px: int = 150, max_width: int = 0) -> SafeString:
         # pylint: disable=no-member
+        max_width = (
+            min(self.thumbnail.width, max_width)
+            if max_width
+            else self.thumbnail.width
+        )
+        if px:
+            return mark_safe(  # noqa: S308
+                f'<div style="height: {px}px;"><a href="{self.thumbnail.url}"'
+                ' target="_blank"><img style="height: auto; width: auto;"'
+                f' src="{self.thumbnail.url}" width="{self.thumbnail.width}"'
+                f' height="{self.thumbnail.height}" /></a></div>',
+            )
         return mark_safe(  # noqa: S308
-            f'<div style="height: {px}px;"><a href="{self.thumbnail.url}"'
-            ' target="_blank"><img style="height: 100%; width: auto;"'
-            f' src="{self.thumbnail.url}" width="{self.thumbnail.width}"'
-            f' height="{self.thumbnail.height}" /></a></div>',
+            f'<img style="max-height: 100%; '
+            f'width: { f"{max_width} px" if max_width else "auto" };"'
+            f' src="{self.thumbnail.url}" />',
         )
 
     image_tag.short_description = "Thumbnail"
