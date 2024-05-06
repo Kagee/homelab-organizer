@@ -1,19 +1,23 @@
 import logging
+from typing import Any
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
+from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, DetailView, UpdateView
 from django_select2 import forms as s2forms
 from django_select2.forms import ModelSelect2TagWidget
 from django_select2.views import AutoResponseView
+from openai import OpenAI
 from taggit.models import Tag
 
 from hlo.filters import StockItemFilter
-from hlo.models import OrderItem, StockItem
+from hlo.forms import StockItemForm
+from hlo.models import OrderItem, OrderItemMeta, StockItem
 
 logger = logging.getLogger(__name__)
 
@@ -40,58 +44,89 @@ class TagAutoResponseView(AutoResponseView):
         )
 
 
-class TagChoices(ModelSelect2TagWidget):
-    queryset = Tag.objects.all().order_by("name")
-    search_fields = ["name__icontains"]
-    empty_label = "Start typing to search or create tags..."
-
-    def get_model_field_values(self, value) -> dict:
-        return {"name": value}
-
-    def value_from_datadict(self, data, files, name):
-        """Create objects for missing tags.
-
-        Return comma separates string of tags.
-        """
-        values = set(super().value_from_datadict(data, files, name))
-        names = self.queryset.filter(name__in=list(values)).values_list(
-            "name",
-            flat=True,
-        )
-        names = set(map(str, names))
-        cleaned_values = list(names)
-        # if a value is not in names (tag with name does
-        # not exists), it has to be created
-        cleaned_values += [
-            self.queryset.create(name=val).name for val in (values - names)
-        ]
-        # django-taggit expects a comma-separated list
-        return ",".join(cleaned_values)
-
-
-# class ExampleForm(forms.Form):
-#    def __init__(self, *args, **kwargs):
-#        super().__init__(*args, **kwargs)
-#        self.helper = FormHelper(self)
-
-
 class StockItemCreate(CreateView):
     model = StockItem
     template_name = "stockitem/form.html"
-    fields = ["name", "count", "tags", "orderitems"]
+    """
+    fields = [
+        "name",
+        "count",
+        "tags",
+        "orderitems",
+        "category",
+        "project",
+        "storage",
+    ]
+    """
+    form_class = StockItemForm
+
+    def get_ai_name_from_orderitem(self, oi: OrderItem) -> str | None:
+        if not settings.OPENAPI_PROJECT_API_KEY:
+            return None
+        if oi.meta.ai_title:
+            return oi.meta.ai_title
+
+        query = settings.OPENAPI_TITLE_CLEANUP_QUERY.format(
+            title=oi.name,
+        )
+        client = OpenAI(
+            api_key=settings.OPENAPI_PROJECT_API_KEY,
+        )
+        result = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": query,
+                }
+            ],
+            model=settings.OPENAPI_TITLE_CLEANUP_MODEL,
+        )
+        ai_title = result.choices[0].message.content.strip('"')
+        meta: OrderItemMeta = oi.meta
+        meta.ai_title = ai_title
+        meta.save()
+        return ai_title
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        ctx = super().get_context_data(**kwargs)
+
+        if "fromitems" in self.kwargs:
+            oi = get_object_or_404(
+                OrderItem.objects.prefetch_related("meta"),
+                pk=int(self.kwargs["fromitems"].split(",")[0]),
+            )
+            ai_name = oi.name
+            name_help = "Original name from order"
+            if title := self.get_ai_name_from_orderitem(oi):
+                ai_name = title
+                name_help = (
+                    f"Title as suggested by OpenAIs "
+                    f"{settings.OPENAPI_TITLE_CLEANUP_MODEL}"
+                )
+
+            ctx["original_name"] = oi.name
+            ctx["ai_name"] = ai_name
+            ctx["image_tag"] = oi.image_tag(0, 300)
+            form = ctx["form"]
+            form.fields["name"].initial = ai_name
+            form.fields["name"].help_text = name_help
+
+        return ctx
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         # django-crispy-form formhelper
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
+        # form.helper = FormHelper()
+        # form.helper.add_input(
+        #    Submit("submit", "Create", css_class="btn-primary"),
+        # )
+
         form.helper = FormHelper()
-        form.helper.add_input(
-            Submit("submit", "Create", css_class="btn-primary"),
-        )
-        # We override the widget for tags for autocomplete
-        form.fields["tags"].widget = TagChoices(
-            data_view="stockitem-tag-auto-json",
-        )
+        form.helper.form_method = "post"
+        form.helper.form_class = "form-horizontal"
+        form.helper.label_class = "col-2"
+        form.helper.field_class = "col-10"
 
         # if get paramenter fromitems is set, lock down orderitem list
         if "fromitems" in self.kwargs:
@@ -105,8 +140,6 @@ class StockItemCreate(CreateView):
                 form.fields["orderitems"].queryset.all().count(),
                 5,
             )
-            #
-            logger.error(dir(form.fields["name"]))  # .value = "Order items"
         return form
 
     def get_initial(self):
@@ -120,7 +153,6 @@ class StockItemCreate(CreateView):
                 pk__in=[int(x) for x in self.kwargs["fromitems"].split(",")],
             )
             initial["orderitems"] = qs
-            initial["name"] = qs.first().name
         return initial
 
 
@@ -134,15 +166,9 @@ class StockItemDetail(DetailView):
     context_object_name = "stockitem"
 
 
-class CommonTreeWidget(s2forms.ModelSelect2MultipleWidget):
-    search_fields = [
-        "name__icontains",
-    ]
-
-
 class StockItemUpdate(UpdateView):
     model = StockItem
-    template_name = "stockitem/form.html"
+    template_name = "stockitem/form2.html"
     context_object_name = "stock_item"
     fields = [
         "name",
@@ -155,12 +181,12 @@ class StockItemUpdate(UpdateView):
         "storage",
     ]
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        # We override the widget for tags for autocomplete
-        form.fields["tags"].widget = TagChoices()
-        # if get paramenter fromitems is set, lock down orderitem list
-        return form
+    # def get_form(self, form_class=None):
+    #    form = super().get_form(form_class)
+    #    # We override the widget for tags for autocomplete
+    #    form.fields["tags"].widget = TagChoices()
+    #    # if get paramenter fromitems is set, lock down orderitem list
+    #    return form
 
 
 def stockitem_list(request):

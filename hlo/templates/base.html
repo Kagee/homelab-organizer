@@ -35,6 +35,8 @@
     </script>
   </head>
   <body>
+    {% block modals %}
+    {% endblock modals %}
     {% if messages %}
       <div class="toast-container top-50 start-50 translate-middle">
         {% for message in messages %}

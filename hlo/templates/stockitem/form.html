@@ -1,14 +1,79 @@
 {% extends "base.html" %}
-{% block title %}Create stock item{% endblock title %}
-{% block content %}
-
-<div class="row">
-    <div class="col">
-        {% load crispy_forms_tags %}
-
-        <form method="post" class="my-class">
-            {% crispy form %}
-        </form>
+{% load bootstrap_icons %}
+{% block title %}
+    Create stock item
+{% endblock title %}
+{% block modals %}
+    <div class="modal" tabindex="-1" id="keyboardModel">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!-- <div class="modal-header">
+                    <h5 class="modal-title">Filter results</h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>-->
+                <div class="modal-body">
+                  <button type="button"
+                  class="btn btn-primary" id="btn_diameter" data-bs-dismiss="modal">⌀</button>
+                  <button type="button"
+                  class="btn btn-primary" id="btn_degree" data-bs-dismiss="modal">°</button>
+                  
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+{% endblock modals %}
+{% block content %}
+    <div class="row">
+        <div class="col">
+            <h1>{{ original_name }}</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            {% load crispy_forms_tags %}
+            <form method="post">
+                {{ form.media.css }}
+                {% for field in form %}
+                    <div class="row">
+                        <div class="col">
+                            {% if field.name == "name" %}
+                                <div class="row">
+                                    <div id="dynamic_name_div" class="col-11">
+                                    {% endif %}
+                                    {{ field |as_crispy_field }}
+                                    {% if field.name == "name" %}
+                                    </div>
+                                    <div id="dynamic_name_div_post" class="col-1">
+                                        <!-- override type, default is submit! -->
+                                        <button data-bs-toggle="modal"
+                                                data-bs-target="#keyboardModel"
+                                                type="button"
+                                                class="btn btn-primary"
+                                                id="keyboard_btn"
+                                                name="keyboard_btn">{% bs_icon 'keyboard' %}</button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+                {{ form.media.js }}
+            </form>
+        </div>
+        <div class="col-6">{{ image_tag }}</div>
+    </div>
+    <script type="text/javascript">
+        $(window).on("load", function() {
+            $("#btn_diameter").on("click", function() { 
+                $("#id_name").get(0).setRangeText("⌀")
+            })
+            $("#btn_degree").on("click", function() { 
+                $("#id_name").get(0).setRangeText("°")
+            })
+            
+        })
+    </script>
 {% endblock content %}
