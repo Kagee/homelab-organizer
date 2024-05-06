@@ -29,17 +29,17 @@ urlpatterns = [
         path(
             "label/render/orderitem/<int:pk>.png",
             label_render_orderitem,
-            name="barcode-redirect",
+            name="label-render-orderitem",
         ),
         path(
             "label/print/orderitem/<int:pk>",
             label_print_orderitem,
-            name="label_print_orderitem",
+            name="label-print-orderitem",
         ),
         path(
             "sha1/<str:sha1>",
             sha1_redirect,
-            name="sha1_redirect",
+            name="sha1-redirect",
         ),
         path(
             "search/items",
