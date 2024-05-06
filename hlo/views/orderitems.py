@@ -97,7 +97,12 @@ def orderitem_filtered_list(
 
 
 class OrderItemDetailView(DetailView):
-    model = OrderItem
+    # model = OrderItem
+    queryset = (
+        OrderItem.objects.select_related("meta")
+        .select_related("order")
+        .select_related("order__shop")
+    )
     template_name = "orderitem/detail.html"
     context_object_name = "order_item"
 

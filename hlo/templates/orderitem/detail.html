@@ -1,35 +1,82 @@
 {% extends "base.html" %}
-{% block title %}Details for {{ order_item.name }}{% endblock title %}
+{% load bootstrap_icons %}
+{% block title %}
+    Details for {{ order_item.name }}
+{% endblock title %}
 {% block content %}
-<!-- https://getbootstrap.com/docs/5.0/layout/grid/ -->
-<div class="row">
-    <div class="col-6">
-        <h1>{{ order_item.name }}</h1>
-        <div class="product-main-info-partnumber-store">
+    <!-- https://getbootstrap.com/docs/5.0/layout/grid/ -->
+    <div class="row">
+        <div class="col-6">
+            <h1>{{ order_item.name }}</h1>
+            <div class="product-main-info-partnumber-store">
+                <p>
+                    <span>Order number/date:</span>
+                    <span><a href="{% url 'order-detail' order_item.order.id %}"
+   title="View original order details">{{ order_item.order.order_id }} / {{ order_item.order.date }}</a></span>
+                    <br>
+                    <span>Item number:</span>
+                    <span><a href="{{ order_item.get_orderitem_url }}"
+   title="View original item listing on {{ order_item.order.shop.branch_name }}">{{ order_item.item_id }}</a></span>
+                </p>
+            </div>
+            {% if not orderitem.stockitems.count %}
+                <a href="{% url 'stockitem-create-from' order_item.id %}"
+                   class="btn btn-primary btn-sm">Create stock item {% bs_icon 'box-arrow-in-right' %}</a>
+            {% endif %}
+            {% if order_item.attachements.all %}
+                <h4>Attachements</h4>
+                {% for attachement in order_item.attachements.all %}
+                    Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a>
+                    <br>
+                {% endfor %}
+            {% endif %}
+            <h4>Label</h4>
             <p>
-                <span>Order number/date:</span>
-                <span><a href="{% url 'order-detail' order_item.order.id %}" title="View original order details">
-                    {{ order_item.order.order_id }} / {{ order_item.order.date }}
-                </a></span>
-                <br>
-                <span>Item number:</span>
-                <span><a href="{{ order_item.get_orderitem_url }}" title="View original item listing on {{ order_item.order.shop.branch_name }}">
-                        {{ order_item.item_id }}
-                    </a></span>
+                <img src="{% url 'label-render-orderitem' order_item.id %}" width="400" />
+            </p>
+            <p>
+                <a id="print-label" class="btn btn-primary btn-sm">{% if order_item.meta.label_printed %}Reprint label{%else%}Print label{% endif %}</a>
             </p>
         </div>
-        {% if order_item.attachements.all %}
-        <h4>Attachements</h4>
-        {% for attachement in order_item.attachements.all %}
-        Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a><br>
-        {% endfor %}
-        {% endif %}
+        <div class="col-6">
+            {% if order_item.thumbnail %}
+                <img src="{{ order_item.thumbnail.url }}"
+                     style="height: 100%;
+                            width: auto;
+                            max-width: 500px" />
+            {% endif %}
+        </div>
     </div>
-    <div class="col-6">
-        {% if order_item.thumbnail %}
-        <img src="{{ order_item.thumbnail.url }}" style="height: 100%; width: auto;max-width: 500px;" />
-        {% endif %}
-    </div>
+    {% csrf_token %}
+    <script type="text/javascript">
+        $('#print-label').click(function() 
+        {
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            url = "{% url 'label-print-orderitem' order_item.id %}"
+            if ({{ order_item.meta.label_printed | yesno:"true,false" }}) {
+                if (confirm("A label for this item has already been printed.\n\nAre you sure you want to print a new label?") != true) {
+                    return
+                }
+            }
+            $.ajax
+            ({ 
+                url: url,
+                type: 'post',
+                headers: {'X-CSRFToken': csrftoken},
+                success: function()
+                {
+                    $('#print-label').hide()
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    if (Object.hasOwn(jqXHR, 'responseJSON')) {
+                        alert(jqXHR.responseJSON["reason"] + ": " + jqXHR.responseJSON["text"] )
+                    } else {
+                        alert("Serverside error: \nHTTP " +jqXHR.status + " " + errorThrown)
+                    }
+                }
+            });
+        });
+        </script>
+        
 
-</div>
-{% endblock %}
+{% endblock content %}

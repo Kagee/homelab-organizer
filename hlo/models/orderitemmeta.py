@@ -12,9 +12,10 @@ class OrderItemMeta(models.Model):
         related_name="meta",
     )
     hidden = models.BooleanField(default=False)
+    label_printed = models.BooleanField(default=False)
     comment = models.CharField(max_length=255, default="", blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.parent:
             return str(self.parent.name)
-        return "No parent"
+        return "Parent is currently not in avaliable in database."
