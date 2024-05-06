@@ -14,7 +14,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from PIL import Image, ImageDraw, ImageFont
 
-from hlo.models import OrderItem
+from hlo.models import OrderItem, OrderItemMeta
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +29,19 @@ def label_render_orderitem(_request: WSGIRequest, pk: int) -> HttpResponse:
     return _label_response(_get_label(*_orderitem_get_label_data(pk)))
 
 
-def label_print_orderitem(_request: WSGIRequest, pk: int) -> JsonResponse:
-    response = _label_print(_get_label(*_orderitem_get_label_data(pk)))
+def label_print_orderitem(request: WSGIRequest, pk: int) -> JsonResponse:
+    if request.method != "POST":
+        return JsonResponse(
+            {
+                "status": "error",
+                "status_code": 504,
+                "reason": "Invalid protocol",
+                "text": "Print must be POST",
+            },
+            status=405,
+        )
+    qr_text, label_text, oi = _orderitem_get_label_data(pk)
+    response = _label_print(_get_label(qr_text, label_text, oi))
     """
         $.ajax({
         type : 'POST',
@@ -47,6 +58,11 @@ def label_print_orderitem(_request: WSGIRequest, pk: int) -> JsonResponse:
         });
     """
     if response.ok:
+        oim, created = OrderItemMeta.objects.get_or_create(
+            parent=oi,
+        )
+        oim.label_printed = True
+        oim.save()
         return JsonResponse({"status": "ok"})
     return JsonResponse(
         {
@@ -55,14 +71,14 @@ def label_print_orderitem(_request: WSGIRequest, pk: int) -> JsonResponse:
             "reason": response.reason,
             "text": response.text,
         },
-        status_code=500,
+        status=500,
     )
 
 
 def sha1_redirect(request: WSGIRequest, sha1: str) -> HttpResponseRedirect:
     oi: OrderItem = OrderItem.objects.annotate(
         stockitem_count=Count("stockitem"),
-    ).get(sha1_id=sha1.lower())
+    ).get(sha1_id=sha1.upper())
     if not oi:
         # TODO: Add support for sha1 redirect to storage
         messages.add_message(
@@ -78,7 +94,14 @@ def sha1_redirect(request: WSGIRequest, sha1: str) -> HttpResponseRedirect:
     return redirect("orderitem", pk=oi.pk)
 
 
-def _orderitem_get_label_data(pk: int) -> tuple[str, str]:
+def _orderitem_get_label_data(pk: int) -> tuple[str, str, OrderItem]:
+    """
+    Get label text from OrderItem or related StockItem, and QR-code for OrderItem.
+
+    :param pk: primary key for OrderItem
+    :rtype: qr_text, label_text, OrderItem
+
+    """
     qs = OrderItem.objects.annotate(
         stockitem_count=Count("stockitem"),
     )
@@ -86,14 +109,9 @@ def _orderitem_get_label_data(pk: int) -> tuple[str, str]:
     label_text = oi.name
     if oi.stockitem_count:
         label_text = oi.stockitem.first().stockitem.name
-        logger.debug("Making label for text '%s'", label_text)
 
-    label_text = (
-        "10/20/30pcs NdFeB Magnet Diametrically Magnetized Rod "
-        "Diameter 6x2 mm Experiment Precision Instrumentation Magnets 6*2 mm"
-    )
     qr_text = f"{settings.QR_URL_PREFIX}{str(oi.sha1_id).upper()}"
-    return qr_text, label_text
+    return qr_text, label_text, oi
 
 
 def _storage_get_label_data(pk: int) -> [str, str]:
@@ -124,14 +142,14 @@ def _label_response(im: Image) -> HttpResponse:
     return response
 
 
-def _get_label(qr_text: str, label_text: str) -> Image:
+def _get_label(qr_text: str, label_text: str, _oi: OrderItem) -> Image:
     # get_object_or_404 will do the pk filtering
 
     font_path = Path("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf")
 
     label_hash = hashlib.sha1()  # noqa: S324
     label_hash.update(
-        (label_text + qr_text + font_path).encode(),  # defaults to utf-8
+        (label_text + qr_text + str(font_path)).encode(),  # defaults to utf-8
     )
     hex_hash = label_hash.hexdigest()
     filename = hex_hash[2:] + ".png"
@@ -165,7 +183,6 @@ def _label_print(im: Image) -> requests.Response:
         "image_mode": "black_and_white",
         "cut_mode": "cut",
     }
-
     return requests.post(
         settings.BQW_ENDPOINT,
         files=files,
@@ -240,13 +257,6 @@ def _make_label(
             best_font_size = fontsize
             best_breaks = breaks
         prev_remainder = remainder
-        logger.debug(
-            "Fontsize: %s (%s, %s), remainder: %s (lower is better)",
-            fontsize,
-            best_font_size,
-            best_breaks,
-            remainder,
-        )
 
     font = ImageFont.truetype(font_path, best_font_size)
     txt = "\n".join(
