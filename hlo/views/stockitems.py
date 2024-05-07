@@ -63,8 +63,8 @@ class StockItemCreate(CreateView):
     def get_ai_name_from_orderitem(self, oi: OrderItem) -> str | None:
         if not settings.OPENAPI_PROJECT_API_KEY:
             return None
-        if oi.meta.ai_title:
-            return oi.meta.ai_title
+        if hasattr(oi, "meta") and oi.meta.ai_name:
+            return oi.meta.ai_name
 
         query = settings.OPENAPI_TITLE_CLEANUP_QUERY.format(
             title=oi.name,
@@ -81,11 +81,11 @@ class StockItemCreate(CreateView):
             ],
             model=settings.OPENAPI_TITLE_CLEANUP_MODEL,
         )
-        ai_title = result.choices[0].message.content.strip('"')
-        meta: OrderItemMeta = oi.meta
-        meta.ai_title = ai_title
-        meta.save()
-        return ai_title
+        ai_name = result.choices[0].message.content.strip('"')
+        oim, created = OrderItemMeta.objects.get_or_create(parent=oi)
+        oim.ai_name = ai_name
+        oim.save()
+        return ai_name
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         ctx = super().get_context_data(**kwargs)

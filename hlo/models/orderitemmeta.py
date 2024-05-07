@@ -14,7 +14,7 @@ class OrderItemMeta(models.Model):
     hidden = models.BooleanField(default=False)
     label_printed = models.BooleanField(default=False)
     comment = models.CharField(max_length=255, default="", blank=True)
-    ai_title = models.CharField(max_length=255, blank=True, default="")
+    ai_name = models.CharField(max_length=255, blank=True, default="")
 
     def __str__(self) -> str:
         if self.parent:
