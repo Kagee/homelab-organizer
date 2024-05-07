@@ -1,8 +1,28 @@
 {% extends "base.html" %}
+
 {% load bootstrap_icons %}
+{% load static %}
+{% load widget_tweaks %}
+
 {% block title %}
     Create stock item
 {% endblock title %}
+
+{% block head %}
+<!--
+<style>
+    .select2 input, select.django-select2 { width: 20em; }
+<style id="multiselect_dropdown_styles">
+    
+</style>
+</style>
+-->
+
+<link rel="stylesheet"
+          href="{% static 'js/multiselect-dropdown/multiselect-dropdown.css' %}">
+
+{% endblock head %}
+
 {% block modals %}
     <div class="modal" tabindex="-1" id="keyboardModel">
         <div class="modal-dialog modal-dialog-centered">
@@ -25,6 +45,7 @@
         </div>
     </div>
 {% endblock modals %}
+
 {% block content %}
     <div class="row">
         <div class="col">
@@ -35,7 +56,7 @@
         <div class="col-6">
             {% load crispy_forms_tags %}
             <form method="post">
-                {{ form.media.css }}
+                {% csrf_token %}
                 {% for field in form %}
                     <div class="row">
                         <div class="col">
@@ -43,7 +64,13 @@
                                 <div class="row">
                                     <div id="dynamic_name_div" class="col-11">
                                     {% endif %}
-                                    {{ field |as_crispy_field }}
+                                    {% with "storage project category" as select_ids %}
+                                    {% if field.name in select_ids.split %}
+                                    {{ field | add_class:"multiselect-dropdown-upgrade multiselect-search" | as_crispy_field }}
+                                    {% else %}
+                                    {{ field | as_crispy_field }}
+                                    {% endif %}
+                                    {% endwith %}
                                     {% if field.name == "name" %}
                                     </div>
                                     <div id="dynamic_name_div_post" class="col-1">
@@ -60,11 +87,15 @@
                         </div>
                     </div>
                 {% endfor %}
-                {{ form.media.js }}
+                <button  type="submit" class="btn btn-primary">Create stock item</button>
             </form>
         </div>
         <div class="col-6">{{ image_tag }}</div>
     </div>
+
+{% endblock content %}
+
+{% block bodybottom %}
     <script type="text/javascript">
         $(window).on("load", function() {
             $("#btn_diameter").on("click", function() { 
@@ -76,4 +107,5 @@
             
         })
     </script>
-{% endblock content %}
+    <script src="{% static 'js/multiselect-dropdown/multiselect-dropdown.js' %}"></script>
+{% endblock bodybottom %}
