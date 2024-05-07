@@ -23,11 +23,11 @@
         <div class="col">
           <!-- Render image on top for <  lg -->
           {% for orderitem in stockitem.orderitems.all %}
-          {# djlint:off #}
+            {# djlint:off #}
             <img alt="Item thumbnail" src="{{ orderitem.thumbnail.url }}" class="img-fluid" />
-          {# djlint:on #}
+            {# djlint:on #}
           {% empty %}
-          <!-- No missing image for small screens -->
+            <!-- No missing image for small screens -->
           {% endfor %}
         </div>
       </div>
@@ -82,12 +82,9 @@
                 <td colspan="2">
                   <ul class="list">
                     {% for storage in stockitem.storage.all %}
-                      {% drilldown_tree_for_node storage as storage_drilldown %}
                       <li class="list-item">
-                        {% for node,structure in storage_drilldown|tree_info %}
-                          {{ node.name }}
-                          {% if not node.is_leaf_node %}&nbsp;&gt;&nbsp;{% endif %}
-                        {% endfor %}
+                        <a href="{% url "storage-detail" storage.pk %}">{% if storage.get_ancestors|length %}{{ storage.get_ancestors|tree_path:" > " }} >{% endif %}
+                        {{ storage }}</a>
                       </li>
                     {% empty %}
                       <li class="list-item">No storage locations</li>
@@ -135,9 +132,9 @@
     <div class="col-5 d-none d-lg-block d-xl-block d-xxl-block">
       <!-- Render image to the side for >= lg -->
       {% for orderitem in stockitem.orderitems.all %}
-      {# djlint:off #}
+        {# djlint:off #}
         <img alt="Image thumbnail" src="{{ orderitem.thumbnail.url }}" class="img-fluid" />
-      {# djlint:on #}
+        {# djlint:on #}
       {% empty %}
         {% md_icon 'image-off' color='grey' size='100%' %}
       {% endfor %}

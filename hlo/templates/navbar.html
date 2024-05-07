@@ -32,6 +32,12 @@
                aria-current="page"
                href="{{ link }}">Stock items</a>
           </li>
+          <li>
+            {% url 'storage-list' as link %}
+            <a class="nav-link{% if request.path == link %} active{% endif %}"
+               aria-current="page"
+               href="{{ link }}">Storage</a>
+          </li>
           <li class="nav-item dropdown">
             {% url 'item-search' as link_I %}
             {% url 'attachement-search' as link_A %}
@@ -56,6 +62,7 @@
               </li>
             </ul>
           </li>
+          
           {% if request.user.is_staff %}
             <li class="nav-item">
               <a class="nav-link{% if request.path == link %} active{% endif %}"

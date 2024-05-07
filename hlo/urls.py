@@ -13,6 +13,9 @@ from .views import (
     StockItemCreate,
     StockItemDetail,
     StockItemUpdate,
+    StorageDetailView,
+    StorageListView,
+    StorageUpdateView,
     TagAutoResponseView,
     index,
     item_search,
@@ -27,14 +30,19 @@ from .views import (
 urlpatterns = [
     *[  # This is where dev happens
         path(
-            "label/render/orderitem/<int:pk>.png",
-            label_render_orderitem,
-            name="label-render-orderitem",
+            "storage/list",
+            StorageListView.as_view(),
+            name="storage-list",
         ),
         path(
-            "label/print/orderitem/<int:pk>",
-            label_print_orderitem,
-            name="label-print-orderitem",
+            "storage/detail/<int:pk>",
+            StorageDetailView.as_view(),
+            name="storage-detail",
+        ),
+        path(
+            "storage/update/<int:pk>",
+            StorageUpdateView.as_view(),
+            name="storage-update",
         ),
         path(
             "sha1/<str:sha1>",
@@ -45,6 +53,18 @@ urlpatterns = [
             "search/items",
             item_search,
             name="item-search",
+        ),
+    ],
+    *[  # Label stuff
+        path(
+            "label/render/orderitem/<int:pk>.png",
+            label_render_orderitem,
+            name="label-render-orderitem",
+        ),
+        path(
+            "label/print/orderitem/<int:pk>",
+            label_print_orderitem,
+            name="label-print-orderitem",
         ),
     ],
     *[  # Item stuff

@@ -10,7 +10,7 @@ from mptt.models import (  # type: ignore[import-untyped]
 
 class CommonTreeModel(MPTTModel):
     name = models.CharField(
-        max_length=50,
+        max_length=255,
         blank=True,  # Should not use null for Char/Text
     )
 

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
+{% load hlo_debug_tags %}
+{% block title %}
+    Details for {{ stock_item.name }}
+{% endblock title %}
+{% block content %}
+    {% load mptt_tags %}
+    <div class="row mt-3">
+        <div class="col-12 col-lg-7 col-xl-7 col-xxl-7">
+            <div class="row">
+                <!-- title -->
+                <div class="col-12">
+                    <h3>
+                        {{ storage }}
+                        {% if not storage.is_root_node %}
+                            <a class="btn btn-outline-secondary btn-sm"
+                               href="{% url "storage-detail" storage.parent.pk %}">{{ storage.parent }}</a>
+                        {% endif %}
+                    </h3>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <!-- table -->
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table">
+                            {% if not storage.is_leaf_node %}
+                                <tr class="table-dark">
+                                    <td colspan="2">Children</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <!-- <ul class="list-group">  -->
+                                        {% for node in storage.get_children %}
+                                            <a class="btn btn-outline-secondary btn-sm mt-2"
+                                               href="{% url "storage-detail" node.pk %}">{{ node }}</a>
+                                        {% endfor %}
+                                        <!-- </ul> -->
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if storage.stockitems.all.count %}
+                            <tr class="table-dark">
+                                <td colspan="2">Items ({{ storage.stockitems.all.count }})</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="list-group">
+                                        {% for stockitem in storage.stockitems.all %}
+                                            <a href="{{ stockitem.get_absolute_url }}"
+                                               class="list-group-item list-group-item-action">
+                                                <img style="min-height: 6em;
+                                                            max-width: 6em"
+                                                     src="{{ stockitem.thumbnail }}" />
+                                            {{ stockitem.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
