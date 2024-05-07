@@ -54,11 +54,9 @@ notes = ["FIXME", "XXX", "TODO", "NOTE"]
 # A module containing Django settings to be used while linting.
 django-settings-module = "hlo.settings"
 
-[tool.black]
-line-length = 80
-target-version = ['py310']
-experimental-string-processing = true
-preview = true
+# https://www.djlint.com/docs/configuration/
+[tool.djlint]
+ignore = "H031,H030"
 
 [tool.ruff]
 line-length = 80
@@ -68,20 +66,20 @@ target-version = "py310"
 #select = ["E", "F", "W", "I", "B"]
 lint.select = ["ALL"]
 lint.ignore = [
-  "D100", # Missing docstring in public module
-  "D101", # Missing docstring in public class
-  "D102", # Missing docstring in public method
-  "D103", # Missing docstring in public function
-  "D104", # Missing docstring in public package
-  "D106", # Missing docstring in public nested class
-  "D107", # Missing docstring in `__init__`
+  "D100",   # Missing docstring in public module
+  "D101",   # Missing docstring in public class
+  "D102",   # Missing docstring in public method
+  "D103",   # Missing docstring in public function
+  "D104",   # Missing docstring in public package
+  "D106",   # Missing docstring in public nested class
+  "D107",   # Missing docstring in `__init__`
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
-  "ANN", # Annotations
+  "ANN",    # Annotations
   "ANN002",
   "ANN003",
   "ANN101",
-  "D", # docstrings?
-  "TD", # TODOs
+  "D",      # docstrings?
+  "TD",     # TODOs
   ]
 lint.fixable = ["ALL"]
 # Exclude a variety of commonly ignored directories.
