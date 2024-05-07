@@ -128,6 +128,7 @@ INSTALLED_APPS: list[str] = [
     "crispy_forms",
     "crispy_bootstrap5",
     "import_export",
+    "widget_tweaks",
     "hlo",
 ]
 
