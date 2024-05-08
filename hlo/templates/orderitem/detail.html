@@ -11,12 +11,20 @@
             <div class="product-main-info-partnumber-store">
                 <p>
                     <span>Order number/date:</span>
-                    <span><a href="{% url 'order-detail' order_item.order.id %}"
-   title="View original order details">{{ order_item.order.order_id }} / {{ order_item.order.date }}</a></span>
+                    <span>
+                        <a href="{% url 'order-detail' order_item.order.id %}"
+                           title="View original order details">
+                            {{ order_item.order.order_id }} / {{ order_item.order.date }}
+                        </a>
+                    </span>
                     <br>
                     <span>Item number:</span>
-                    <span><a href="{{ order_item.get_orderitem_url }}"
-   title="View original item listing on {{ order_item.order.shop.branch_name }}">{{ order_item.item_id }}</a></span>
+                    <span>
+                        <a href="{{ order_item.get_orderitem_url }}"
+                           title="View original item listing on {{ order_item.order.shop.branch_name }}">
+                            {{ order_item.item_id }}
+                        </a>
+                    </span>
                 </p>
             </div>
             {% if not orderitem.stockitems.count %}
@@ -35,13 +43,17 @@
                 <img src="{% url 'label-render-orderitem' order_item.id %}" width="400" />
             </p>
             <p>
-                <a id="print-label" class="btn btn-primary btn-sm">{% if order_item.meta.label_printed %}Reprint label{%else%}Print label{% endif %}</a>
+                <a id="print-label" class="btn btn-primary btn-sm">
+                    {% if order_item.meta.label_printed %}
+                        Reprint label
+                    {% else %}
+                        Print label
+                    {% endif %}
+                </a>
             </p>
         </div>
         <div class="col-6">
-            {% if order_item.thumbnail %}
-                {{ order_item.image_tag }}
-            {% endif %}
+            {% if order_item.thumbnail %}{{ order_item.image_tag }}{% endif %}
         </div>
     </div>
     {% csrf_token %}
@@ -73,7 +85,5 @@
                 }
             });
         });
-        </script>
-        
-
+    </script>
 {% endblock content %}

@@ -1,52 +1,55 @@
 {% extends "common/base.html" %}
 {% load django_bootstrap5 %}
-{% block title %}Stock items{% endblock title %}
+{% block title %}
+    Stock items
+{% endblock title %}
 {% block content %}
-<div class="row">
-    <div class="col">
-        <table class="table table-bordered table-striped table-hover table-sm">
-            <thead>
-                <th scope="col">Thumnail</th>
-                <th scope="col">Name</th>
-                <th scope="col">Shop</th>
-            </thead>
-            <tbody>
-                {% for orderitem in page_obj %}
-                <tr>
-                    <td>
-                        {% if orderitem.thumbnail %}
-                        <div style="height: 50px;">
-                        <img src="{{ orderitem.thumbnail.url }}" style="height: 100%; width: auto;" />
-                        </div>
-                        {% endif %}
-                    </td>
-                    <td><a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a></td>
-                    <td>{{ orderitem.order.shop.list_icon }} {{ orderitem.order.date }} {{ orderitem.order.order_id }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <div class="pagination">
-            <span class="step-links">
-                {% if page_obj.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                {% endif %}
-
-                <span class="current">
-                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                </span>
-                {% load hlo_tags %}
-                {% if page_obj.has_next %}
-                <a href="?{% url_replace_parameter page=page_obj.next_page_number %}">next</a>
-                <a href="?{% url_replace_parameter page=page_obj.paginator.num_pages %}">last &raquo;</a>
-                {% endif %}
-            </span>
+    <div class="row">
+        <div class="col">
+            <table class="table table-bordered table-striped table-hover table-sm">
+                <thead>
+                    <th scope="col">Thumnail</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Shop</th>
+                </thead>
+                <tbody>
+                    {% for orderitem in page_obj %}
+                        <tr>
+                            <td>
+                                {% if orderitem.thumbnail %}
+                                    <div style="height: 50px;">
+                                        <img src="{{ orderitem.thumbnail.url }}"
+                                             style="height: 100%;
+                                                    width: auto" />
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
+                            </td>
+                            <td>{{ orderitem.order.shop.list_icon }} {{ orderitem.order.date }} {{ orderitem.order.order_id }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
-{% endblock %}
+    <div class="row">
+        <div class="col">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">« first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+                    <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+                    {% load hlo_tags %}
+                    {% if page_obj.has_next %}
+                        <a href="?{% url_replace_parameter page=page_obj.next_page_number %}">next</a>
+                        <a href="?{% url_replace_parameter page=page_obj.paginator.num_pages %}">last »</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

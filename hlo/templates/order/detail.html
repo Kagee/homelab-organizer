@@ -12,14 +12,19 @@
                     <h4>{{ order.shop.img_icon }}</h4>
                 </div>
                 <div class="col">
-                    <h1>{{ order.shop.branch_name }} <a href="{{ order.get_order_url }}" title="View original order details" class="text-muted">#{{ order.order_id }}</a></h1>
+                    <h1>
+                        {{ order.shop.branch_name }}
+                        <a href="{{ order.get_order_url }}"
+                           title="View original order details"
+                           class="text-muted">#{{ order.order_id }}</a>
+                    </h1>
                     <h3 class="text-muted">{{ order.items.count }} items, {{ order.date }}</h3>
                 </div>
             </div>
-
             <table class="table  table-sm table-bordered table-striped table-hover table-sm">
                 <thead>
-                    <tr>{# djlint:off #}
+                    <tr>
+                        {# djlint:off #}
                         <th scope="col" style="min-width: 6em;"></th>{# djlint:o #}
                         <th scope="col">Name</th>
                     </tr>
@@ -32,7 +37,7 @@
                                        height: 6em;
                                        background-size: contain;
                                        background-repeat: no-repeat;{# djlint:of #}
-                                       {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>{# djlint:on #}
+                        {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>{# djlint:on #}
                             <td>
                                 <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
                             </td>
@@ -40,10 +45,10 @@
                     {% endfor %}
                 </tbody>
             </table>
-        {% for attachement in order.attachements.all %}
-            Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a>
-            <br>
-        {% endfor %}
+            {% for attachement in order.attachements.all %}
+                Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a>
+                <br>
+            {% endfor %}
+        </div>
     </div>
-</div>
 {% endblock content %}

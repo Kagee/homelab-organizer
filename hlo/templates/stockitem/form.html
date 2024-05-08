@@ -1,51 +1,35 @@
 {% extends "common/base.html" %}
-
 {% load bootstrap_icons %}
 {% load static %}
 {% load widget_tweaks %}
-
 {% block title %}
     Create stock item
 {% endblock title %}
-
-{% block head %}
-<!--
-<style>
+{% block css %}
     .select2 input, select.django-select2 { width: 20em; }
-<style id="multiselect_dropdown_styles">
-    
-</style>
-</style>
--->
-
-<link rel="stylesheet"
+{% endblock css %}
+{% block head %}
+    <link rel="stylesheet"
           href="{% static 'js/multiselect-dropdown/multiselect-dropdown.css' %}">
-
 {% endblock head %}
-
 {% block modals %}
     <div class="modal" tabindex="-1" id="keyboardModel">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <!-- <div class="modal-header">
-                    <h5 class="modal-title">Filter results</h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                </div>-->
                 <div class="modal-body">
-                  <button type="button"
-                  class="btn btn-primary" id="btn_diameter" data-bs-dismiss="modal">⌀</button>
-                  <button type="button"
-                  class="btn btn-primary" id="btn_degree" data-bs-dismiss="modal">°</button>
-                  
+                    <button type="button"
+                            class="btn btn-primary"
+                            id="btn_diameter"
+                            data-bs-dismiss="modal">⌀</button>
+                    <button type="button"
+                            class="btn btn-primary"
+                            id="btn_degree"
+                            data-bs-dismiss="modal">°</button>
                 </div>
             </div>
         </div>
     </div>
 {% endblock modals %}
-
 {% block content %}
     <div class="row">
         <div class="col">
@@ -65,11 +49,11 @@
                                     <div id="dynamic_name_div" class="col-11">
                                     {% endif %}
                                     {% with "storage project category" as select_ids %}
-                                    {% if field.name in select_ids.split %}
-                                    {{ field | add_class:"multiselect-dropdown-upgrade multiselect-search" | as_crispy_field }}
-                                    {% else %}
-                                    {{ field | as_crispy_field }}
-                                    {% endif %}
+                                        {% if field.name in select_ids.split %}
+                                            {{ field | add_class:"multiselect-dropdown-upgrade multiselect-search" | as_crispy_field }}
+                                        {% else %}
+                                            {{ field | as_crispy_field }}
+                                        {% endif %}
                                     {% endwith %}
                                     {% if field.name == "name" %}
                                     </div>
@@ -87,14 +71,12 @@
                         </div>
                     </div>
                 {% endfor %}
-                <button  type="submit" class="btn btn-primary">Create stock item</button>
+                <button type="submit" class="btn btn-primary">Create stock item</button>
             </form>
         </div>
         <div class="col-6">{{ image_tag }}</div>
     </div>
-
 {% endblock content %}
-
 {% block bodybottom %}
     <script type="text/javascript">
         $(window).on("load", function() {

@@ -8,15 +8,21 @@
     <table>
         <tr style="border: 1px solid">
             <td>
-                <form action="" method="GET">
+                <form action="" method="get">
                     {{ combined_form.as_p }}
                     <input type="submit" value="Search" />
                 </form>
             </td>
         </tr>
         <tr style="bo>rder: 1px solid">
-            <td>Stockitems found: {{ orderitems.count }}<br>
-            {% for item in orderitems %} {{ item }}<br> {% endfor %}</td>
+            <td>
+                Stockitems found: {{ orderitems.count }}
+                <br>
+                {% for item in orderitems %}
+                    {{ item }}
+                    <br>
+                {% endfor %}
+            </td>
         </tr>
     </table>
     {% if 1 == 0 %}
@@ -153,4 +159,4 @@
             </ul>
         </nav>
     {% endif %}
-{% endblock %}
+{% endblock content %}

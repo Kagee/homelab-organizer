@@ -56,7 +56,7 @@ django-settings-module = "hlo.settings"
 
 # https://www.djlint.com/docs/configuration/
 [tool.djlint]
-ignore = "H031,H030"
+ignore = "H031,H030,H006,H013,H021"
 
 [tool.ruff]
 line-length = 80

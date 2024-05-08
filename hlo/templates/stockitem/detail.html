@@ -83,7 +83,8 @@
                   <ul class="list">
                     {% for storage in stockitem.storage.all %}
                       <li class="list-item">
-                        <a href="{% url "storage-detail" storage.pk %}">{% if storage.get_ancestors|length %}{{ storage.get_ancestors|tree_path:" > " }} >{% endif %}
+                        <a href="{% url "storage-detail" storage.pk %}">
+                          {% if storage.get_ancestors|length %}{{ storage.get_ancestors|tree_path:" > " }} >{% endif %}
                         {{ storage }}</a>
                       </li>
                     {% empty %}
@@ -132,9 +133,9 @@
     <div class="col-5 d-none d-lg-block d-xl-block d-xxl-block">
       <!-- Render image to the side for >= lg -->
       {% for orderitem in stockitem.orderitems.all %}
-        {# djlint:off #}
-        <img alt="Image thumbnail" src="{{ orderitem.thumbnail.url }}" class="img-fluid" />
-        {# djlint:on #}
+        <img alt="Image thumbnail"
+             src="{{ orderitem.thumbnail.url }}"
+             class="img-fluid" />
       {% empty %}
         {% md_icon 'image-off' color='grey' size='100%' %}
       {% endfor %}

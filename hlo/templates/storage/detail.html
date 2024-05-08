@@ -42,23 +42,23 @@
                                 </tr>
                             {% endif %}
                             {% if storage.stockitems.all.count %}
-                            <tr class="table-dark">
-                                <td colspan="2">Items ({{ storage.stockitems.all.count }})</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="list-group">
-                                        {% for stockitem in storage.stockitems.all %}
-                                            <a href="{{ stockitem.get_absolute_url }}"
-                                               class="list-group-item list-group-item-action">
-                                                <img style="min-height: 6em;
-                                                            max-width: 6em"
-                                                     src="{{ stockitem.thumbnail }}" />
-                                            {{ stockitem.name }}</a>
-                                        {% endfor %}
-                                    </div>
-                                </td>
-                            </tr>
+                                <tr class="table-dark">
+                                    <td colspan="2">Items ({{ storage.stockitems.all.count }})</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="list-group">
+                                            {% for stockitem in storage.stockitems.all %}
+                                                <a href="{{ stockitem.get_absolute_url }}"
+                                                   class="list-group-item list-group-item-action">
+                                                    <img style="min-height: 6em;
+                                                                max-width: 6em"
+                                                         src="{{ stockitem.thumbnail }}" />
+                                                {{ stockitem.name }}</a>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                </tr>
                             {% endif %}
                         </table>
                     </div>
@@ -66,4 +66,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
