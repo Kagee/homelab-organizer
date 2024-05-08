@@ -3,26 +3,24 @@ from django.db.models import UniqueConstraint
 
 
 class OrderStockItemLink(models.Model):
-    orderitem = models.ForeignKey(
+    orderitem_link = models.ForeignKey(
         "OrderItem",
         to_field="sha1_id",
         # When OrderItem is deleted, do nothing
         on_delete=models.DO_NOTHING,
         db_constraint=False,
-        related_name="stockitem",
     )
 
-    stockitem = models.ForeignKey(
+    stockitem_link = models.ForeignKey(
         "StockItem",
         # When StockItem is deleted, delete link
         on_delete=models.CASCADE,
-        related_name="orderitem",
     )
 
     class Meta:
         constraints = [
             UniqueConstraint(
-                fields=["orderitem", "stockitem"],
+                fields=["orderitem_link", "stockitem_link"],
                 name="unique_orderitem_stockitem",
             ),
         ]
@@ -31,7 +29,7 @@ class OrderStockItemLink(models.Model):
         return (
             # pylint: disable=no-member
             str(
-                f"\nOrderitem: {self.orderitem.name}\n"
-                f"Stockitem: {self.stockitem.name}",
+                f"\nOrderitem: {self.orderitem_link.name}\n"
+                f"Stockitem: {self.stockitem_link.name}",
             )
         )

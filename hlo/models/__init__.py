@@ -1,7 +1,6 @@
 __all__ = [
     "Attachement",
     "Category",
-    "CommonTreeModel",
     "Order",
     "OrderItem",
     "OrderItemMeta",
@@ -15,16 +14,12 @@ __all__ = [
 from django.contrib.auth.models import AbstractUser
 
 from .attachement import Attachement
-from .category import Category
-from .commontree import CommonTreeModel
+from .commontree import Category, Project, Storage
 from .order import Order
-from .orderitem import OrderItem
-from .orderitemmeta import OrderItemMeta
+from .orderitem import OrderItem, OrderItemMeta
 from .orderstockitemlink import OrderStockItemLink
-from .project import Project
 from .shop import Shop
 from .stockitem import StockItem
-from .storage import Storage
 
 
 class User(AbstractUser):

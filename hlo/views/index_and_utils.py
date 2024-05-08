@@ -41,7 +41,7 @@ def index(request):
 
     return render(
         request,
-        "index.html",
+        "common/index.html",
         cached_keys,
     )
 
