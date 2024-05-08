@@ -108,7 +108,7 @@ STATICFILES_DIRS = [
 ]
 
 INSTALLED_APPS: list[str] = [
-    "hlo.utils.admin_app.HLOAdminConfig",  # "django.contrib.admin",
+    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
