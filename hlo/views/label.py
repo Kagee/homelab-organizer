@@ -14,7 +14,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from PIL import Image, ImageDraw, ImageFont
 
-from hlo.models import OrderItem, OrderItemMeta
+from hlo.models import OrderItem, OrderItemMeta, Storage
 
 logger = logging.getLogger(__name__)
 
@@ -46,9 +46,11 @@ def label_print_storage(request: WSGIRequest, pk: int) -> JsonResponse:
             },
             status=405,
         )
-    qr_text, label_text, oi = _orderitem_get_label_data(pk)
-    response = _label_print(_get_label(qr_text, label_text, oi))
+    qr_text, label_text, st = _storage_get_label_data(pk)
+    response = _label_print(_get_label(qr_text, label_text, st))
     if response.ok:
+        st.label_printed = True
+        st.save()
         return JsonResponse({"status": "ok"})
     return JsonResponse(
         {
@@ -93,27 +95,32 @@ def label_print_orderitem(request: WSGIRequest, pk: int) -> JsonResponse:
 
 
 def sha1_redirect(request: WSGIRequest, sha1: str) -> HttpResponseRedirect:
-    oi: OrderItem = OrderItem.objects.annotate(
-        stockitem_count=Count("stockitem"),
-    ).get(sha1_id=sha1.upper())
-    if not oi:
-        # TODO: Add support for sha1 redirect to storage
-        messages.add_message(
-            request,
-            messages.WARNING,
-            f"Could not find item with barcode {sha1}.",
-        )
-        return redirect("index")
-
-    if oi.stockitem_count:
-        # There exist a StockItem for this OrderItem, redirect there
-        return redirect("stockitem-detail", pk=oi.stockitem.first().pk)
-    return redirect("orderitem", pk=oi.pk)
+    try:
+        obj: OrderItem = OrderItem.objects.annotate(
+            stockitem_count=Count("stockitems"),
+        ).get(sha1_id=sha1.upper())
+        redir = "orderitem-detail"
+        if obj and obj.stockitem_count:
+            obj = obj.stockitems.first()
+            redir = "stockitem-detail"
+    except OrderItem.DoesNotExist:
+        try:
+            obj: Storage = Storage.objects.get(sha1_id=sha1.upper())
+            redir = "storage-detail"
+        except Storage.DoesNotExist:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                f"Could not find object with barcode {sha1}.",
+            )
+            return redirect("index")
+    return redirect(redir, pk=obj.pk)
 
 
 def _orderitem_get_label_data(pk: int) -> tuple[str, str, OrderItem]:
     """
-    Get label text from OrderItem or related StockItem, and QR-code for OrderItem.
+    Get label text from OrderItem or related StockItem,
+    and QR-code for OrderItem.
 
     :param pk: primary key for OrderItem
     :rtype: qr_text, label_text, OrderItem
@@ -125,32 +132,17 @@ def _orderitem_get_label_data(pk: int) -> tuple[str, str, OrderItem]:
     oi = get_object_or_404(qs, pk=pk)
     label_text = oi.name
     if oi.stockitem_count:
-        label_text = oi.stockitem.first().stockitem.name
+        label_text = oi.stockitems.first().name
 
     qr_text = f"{settings.QR_URL_PREFIX}{str(oi.sha1_id).upper()}"
     return qr_text, label_text, oi
 
 
-def _storage_get_label_data(pk: int) -> [str, str]:
-    # TODO: Implement
-    """
-    qs = OrderItem.objects.annotate(
-        stockitem_count=Count("stockitem"),
-    )
-    oi = get_object_or_404(qs, pk=pk)
-    label_text = oi.name
-    if oi.stockitem_count:
-        label_text = oi.stockitem.first().stockitem.name
-        logger.debug("Making label for text '%s'", label_text)
-
-    label_text = (
-        "10/20/30pcs NdFeB Magnet Diametrically Magnetized Rod "
-        "Diameter 6x2 mm Experiment Precision Instrumentation Magnets 6*2 mm"
-    )
-    qr_text = f"{settings.QR_URL_PREFIX}{str(oi.sha1_id).upper()}"
-    """
-    label_text = qr_text = pk
-    return qr_text, label_text
+def _storage_get_label_data(pk: int) -> tuple[str, str, Storage]:
+    st = get_object_or_404(Storage, pk=pk)
+    label_text = st.name
+    qr_text = f"{settings.QR_URL_PREFIX}{str(st.sha1_id).upper()}"
+    return qr_text, label_text, st
 
 
 def _label_response(im: Image) -> HttpResponse:

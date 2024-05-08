@@ -56,34 +56,36 @@
             {% if order_item.thumbnail %}{{ order_item.image_tag }}{% endif %}
         </div>
     </div>
-    {% csrf_token %}
-    <script type="text/javascript">
-        $('#print-label').click(function() 
-        {
-            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            url = "{% url 'label-print-orderitem' order_item.id %}"
-            if ({{ order_item.meta.label_printed | yesno:"true,false" }}) {
-                if (confirm("A label for this item has already been printed.\n\nAre you sure you want to print a new label?") != true) {
-                    return
+{% endblock content %}
+{% block bodybottom %}
+{% csrf_token %}
+<script type="text/javascript">
+    $('#print-label').click(function() 
+    {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        url = "{% url 'label-print-orderitem' order_item.id %}"
+        if ({{ order_item.meta.label_printed | yesno:"true,false" }}) {
+            if (confirm("A label for this item has already been printed.\n\nAre you sure you want to print a new label?") != true) {
+                return
+            }
+        }
+        $.ajax
+        ({ 
+            url: url,
+            type: 'post',
+            headers: {'X-CSRFToken': csrftoken},
+            success: function()
+            {
+                $('#print-label').hide()
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                if (Object.hasOwn(jqXHR, 'responseJSON')) {
+                    alert(jqXHR.responseJSON["reason"] + ": " + jqXHR.responseJSON["text"] )
+                } else {
+                    alert("Serverside error: \nHTTP " +jqXHR.status + " " + errorThrown)
                 }
             }
-            $.ajax
-            ({ 
-                url: url,
-                type: 'post',
-                headers: {'X-CSRFToken': csrftoken},
-                success: function()
-                {
-                    $('#print-label').hide()
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    if (Object.hasOwn(jqXHR, 'responseJSON')) {
-                        alert(jqXHR.responseJSON["reason"] + ": " + jqXHR.responseJSON["text"] )
-                    } else {
-                        alert("Serverside error: \nHTTP " +jqXHR.status + " " + errorThrown)
-                    }
-                }
-            });
         });
-    </script>
-{% endblock content %}
+    });
+</script>
+{% endblock bodybottom %}

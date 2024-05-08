@@ -31,7 +31,7 @@ urls = [  # Item stuff
     path(
         "orderitem/detail/<int:pk>",
         OrderItemDetailView.as_view(),
-        name="orderitem",
+        name="orderitem-detail",
     ),
     path(
         "order/detail/<int:pk>",

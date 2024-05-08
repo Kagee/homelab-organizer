@@ -155,7 +155,7 @@ class OrderItem(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
-        return reverse("orderitem", kwargs={"pk": self.pk})
+        return reverse("orderitem-detail", kwargs={"pk": self.pk})
 
     @admin.display(description="Barcode URL")
     def barcode_url(self) -> SafeString:

@@ -14,7 +14,7 @@ class CommonTreeModel(MPTTModel):
         blank=True,  # Should not use null for Char/Text
     )
 
-    text = models.TextField(
+    comment = models.TextField(
         blank=True,  # Should not use null for Char/Text
     )
 
@@ -37,6 +37,8 @@ class CommonTreeModel(MPTTModel):
         blank=True,
         related_name="children",
     )
+
+    label_printed = models.BooleanField(default=False)
 
     class Meta:
         abstract = True

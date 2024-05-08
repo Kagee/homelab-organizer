@@ -2,18 +2,13 @@ import logging
 from typing import Any
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
-from django import forms
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, DetailView, UpdateView
-from django_select2 import forms as s2forms
-from django_select2.forms import ModelSelect2TagWidget
 from django_select2.views import AutoResponseView
 from openai import OpenAI
-from taggit.models import Tag
 
 from hlo.filters import StockItemFilter
 from hlo.forms import StockItemForm
@@ -77,7 +72,7 @@ class StockItemCreate(CreateView):
                 {
                     "role": "user",
                     "content": query,
-                }
+                },
             ],
             model=settings.OPENAPI_TITLE_CLEANUP_MODEL,
         )
@@ -117,10 +112,6 @@ class StockItemCreate(CreateView):
         form = super().get_form(form_class)
         # django-crispy-form formhelper
         # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
-        # form.helper = FormHelper()
-        # form.helper.add_input(
-        #    Submit("submit", "Create", css_class="btn-primary"),
-        # )
 
         form.helper = FormHelper()
         form.helper.form_method = "post"
@@ -180,13 +171,6 @@ class StockItemUpdate(UpdateView):
         "project",
         "storage",
     ]
-
-    # def get_form(self, form_class=None):
-    #    form = super().get_form(form_class)
-    #    # We override the widget for tags for autocomplete
-    #    form.fields["tags"].widget = TagChoices()
-    #    # if get paramenter fromitems is set, lock down orderitem list
-    #    return form
 
 
 def stockitem_list(request):
