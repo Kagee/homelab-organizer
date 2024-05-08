@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import Textarea, TextInput
 
-from hlo.models import OrderItem
+from hlo.models import OrderItem, OrderItemMeta, OrderStockItemLink
 
 
 @admin.register(OrderItem)
@@ -77,3 +77,13 @@ class OrderItemAdmin(admin.ModelAdmin):
             "subtotal",
             "tax",
         ]
+
+
+@admin.register(OrderItemMeta)
+class OrderItemMetaAdmin(admin.ModelAdmin):
+    autocomplete_fields = ["parent"]
+
+
+@admin.register(OrderStockItemLink)
+class OrderStockItemLinkAdmin(admin.ModelAdmin):
+    pass

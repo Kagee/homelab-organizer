@@ -6,14 +6,15 @@ from django.contrib.auth.admin import UserAdmin
 from hlo.models import User
 
 from .attachement import AttachementAdmin
-from .category import CategoryAdmin, CategoryResource
+from .commontree import CategoryAdmin, ProjectAdmin, StorageAdmin
 from .order import OrderAdmin
-from .orderitem import OrderItemAdmin
-from .orderitemmeta import OrderItemMetaAdmin
-from .project import ProjectAdmin
+from .orderitem import (
+    OrderItemAdmin,
+    OrderItemMetaAdmin,
+    OrderStockItemLinkAdmin,
+)
 from .shop import ShopAdmin
 from .stockitem import StockItemAdmin, StockItemResource
-from .storage import StorageAdmin
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,7 @@ __all__ = [
     "OrderAdmin",
     "OrderItemAdmin",
     "OrderItemMetaAdmin",
+    "OrderStockItemLinkAdmin",
     "ProjectAdmin",
     "ShopAdmin",
     "StockItemAdmin",
