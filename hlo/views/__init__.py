@@ -1,33 +1,34 @@
 import logging
 
-from hlo.views.storage import (
+from .combined_search import item_search
+from .commontree import (
+    CategoryCreateView,
+    CategoryDetailView,
+    CategoryListView,
+    CategoryUpdateView,
+    ProjectCreateView,
+    ProjectDetailView,
+    ProjectListView,
+    ProjectUpdateView,
     StorageCreateView,
     StorageDetailView,
     StorageListView,
     StorageUpdateView,
 )
-
-from .category import (
-    CategoryCreateView,
-    CategoryDetailView,
-    CategoryListView,
-    CategoryUpdateView,
-)
-from .combined_search import item_search
 from .index_and_utils import index, no_access, render404
-from .label import label_print_orderitem, label_render_orderitem, sha1_redirect
+from .label import (
+    label_print_orderitem,
+    label_print_storage,
+    label_render_orderitem,
+    label_render_storage,
+    sha1_redirect,
+)
 from .orderitems import (
     OrderItemDetailView,
     OrderItemFilter,
     orderitem_filtered_list,
 )
 from .orders import OrderDetailView, OrderListView
-from .project import (
-    ProjectCreateView,
-    ProjectDetailView,
-    ProjectListView,
-    ProjectUpdateView,
-)
 from .search import AttachementSearchView
 from .stockitems import (
     StockItemCreate,
@@ -44,6 +45,8 @@ __all__ = [
     "no_access",
     "label_render_orderitem",
     "label_print_orderitem",
+    "label_render_storage",
+    "label_print_storage",
     "sha1_redirect",
     "AttachementSearchView",
     "StockItemCreate",

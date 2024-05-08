@@ -21,12 +21,44 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "label_render_orderitem",
     "label_print_orderitem",
+    "label_render_storage",
+    "label_print_storage",
     "sha1_redirect",
 ]
 
 
+def label_render_storage(_request: WSGIRequest, pk: int) -> HttpResponse:
+    return _label_response(_get_label(*_storage_get_label_data(pk)))
+
+
 def label_render_orderitem(_request: WSGIRequest, pk: int) -> HttpResponse:
     return _label_response(_get_label(*_orderitem_get_label_data(pk)))
+
+
+def label_print_storage(request: WSGIRequest, pk: int) -> JsonResponse:
+    if request.method != "POST":
+        return JsonResponse(
+            {
+                "status": "error",
+                "status_code": 504,
+                "reason": "Invalid protocol",
+                "text": "Print must be POST",
+            },
+            status=405,
+        )
+    qr_text, label_text, oi = _orderitem_get_label_data(pk)
+    response = _label_print(_get_label(qr_text, label_text, oi))
+    if response.ok:
+        return JsonResponse({"status": "ok"})
+    return JsonResponse(
+        {
+            "status": "error",
+            "status_code": response.status_code,
+            "reason": response.reason,
+            "text": response.text,
+        },
+        status=500,
+    )
 
 
 def label_print_orderitem(request: WSGIRequest, pk: int) -> JsonResponse:
@@ -42,21 +74,6 @@ def label_print_orderitem(request: WSGIRequest, pk: int) -> JsonResponse:
         )
     qr_text, label_text, oi = _orderitem_get_label_data(pk)
     response = _label_print(_get_label(qr_text, label_text, oi))
-    """
-        $.ajax({
-        type : 'POST',
-        url :  ...,
-        dateType: 'json',
-        data: my_data,
-        success : function(response){
-             ...
-        },
-        error : function(response, status, error){
-            var err = response.responseText;
-            alert("Error: " + err);
-        }
-        });
-    """
     if response.ok:
         oim, created = OrderItemMeta.objects.get_or_create(
             parent=oi,
