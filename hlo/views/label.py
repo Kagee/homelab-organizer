@@ -120,7 +120,7 @@ def _orderitem_get_label_data(pk: int) -> tuple[str, str, OrderItem]:
 
     """
     qs = OrderItem.objects.annotate(
-        stockitem_count=Count("stockitem"),
+        stockitem_count=Count("stockitems"),
     )
     oi = get_object_or_404(qs, pk=pk)
     label_text = oi.name
