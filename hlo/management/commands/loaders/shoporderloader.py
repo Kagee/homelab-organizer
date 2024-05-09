@@ -95,7 +95,6 @@ class ShopOrderLoader:
                                 attachement_path,
                             )
                             if order_attachement_zip_file.is_file():
-                                self.log.debug("Is file %s", attachement_path)
                                 attachement_file = File(
                                     order_attachement_zip_file.open("rb"),
                                     attachement_path,
@@ -295,7 +294,6 @@ class ShopOrderLoader:
                             attachement_path,
                         )
                         if attachement_zip_file.is_file():
-                            self.log.debug("Is file %s", attachement_path)
                             attachement_file = File(
                                 attachement_zip_file.open("rb"),
                                 attachement_path,
