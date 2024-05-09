@@ -27,21 +27,19 @@
                 <div class="col-12">
                     <div class="table-responsive">
                         <table class="table">
-                            {% if not storage.is_leaf_node %}
                                 <tr class="table-dark">
                                     <td colspan="2">Children</td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">
-                                        <!-- <ul class="list-group">  -->
                                         {% for node in storage.get_children %}
                                             <a class="btn btn-outline-secondary btn-sm mt-2"
                                                href="{% url "storage-detail" node.pk %}">{{ node }}</a>
                                         {% endfor %}
-                                        <!-- </ul> -->
+                                        <a class="btn btn-outline-info btn-sm mt-2"
+                                               href="{% url "storage-create-parent" storage.pk %}">Create new child</a>
                                     </td>
                                 </tr>
-                            {% endif %}
                             {% if storage.stockitems.all.count %}
                                 <tr class="table-dark">
                                     <td colspan="2">Items ({{ storage.stockitems.all.count }})</td>

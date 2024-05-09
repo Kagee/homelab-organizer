@@ -6,14 +6,6 @@ from .commontree import CommonTreeModel
 
 class Storage(CommonTreeModel):
     COLOR_CHOICES = [
-        # ruff: noqa: ERA001
-        # Optional sub-options
-        # (
-        #    "No color",
-        #    (
-        #        ("", "None"),
-        #    ),
-        # ),
         ("", "None"),
         ("black", "Black"),  # 1f1d1e Eerie Black. Black #000000
         ("blue", "Blue"),  # 0165df True Blue. Blue #0000FF

@@ -39,39 +39,60 @@
                href="{{ link }}">Storage</a>
           </li>
           <li class="nav-item dropdown">
-            {% url 'item-search' as link_I %}
-            {% url 'attachement-search' as link_A %}
-            <a class="nav-link dropdown-toggle{% if request.path == link_I or request.path == link_A %} active{% endif %}"
+            {% url 'storage-list' as link_list %}
+            {% url 'storage-create' as link_create %}
+            <a class="nav-link dropdown-toggle{% if request.path == link_list or request.path == link_create %} active{% endif %}"
                href="#"
-               id="navbarDropdown"
+               id="navbarStorageDropdown"
                role="button"
                data-bs-toggle="dropdown"
-               aria-expanded="false">Search</a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+               aria-expanded="false">Storage</a>
+            <ul class="dropdown-menu" aria-labelledby="navbarStorageDropdown">
               <li>
-                {% if request.user.is_staff %}
-                  <a class="nav-link{% if request.path == link_I %} active{% endif %}"
-                     aria-current="page"
-                     href="{{ link_I }}">Item search</a>
-                </li>
-              {% endif %}
-              <li>
-                <a class="nav-link{% if request.path == link_A %} active{% endif %}"
+                <a class="nav-link{% if request.path == link_list %} active{% endif %}"
                    aria-current="page"
-                   href="{{ link_A }}">Attachement search</a>
+                   href="{{ link_list }}">List</a>
               </li>
-            </ul>
-          </li>
-          {% if request.user.is_staff %}
-            <li class="nav-item">
-              <a class="nav-link{% if request.path == link %} active{% endif %}"
+              <a class="nav-link{% if request.path == link_create %} active{% endif %}"
                  aria-current="page"
-                 href="{% url 'admin:index' %}"
-                 target="_blank">Admin</a>
+                 href="{{ link_create }}">Create</a>
             </li>
-          {% endif %}
-        </ul>
-      </div>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          {% url 'item-search' as link_I %}
+          {% url 'attachement-search' as link_A %}
+          <a class="nav-link dropdown-toggle{% if request.path == link_I or request.path == link_A %} active{% endif %}"
+             href="#"
+             id="navbarSearchDropdown"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">Search</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarSearchDropdown">
+            <li>
+              {% if request.user.is_staff %}
+                <a class="nav-link{% if request.path == link_I %} active{% endif %}"
+                   aria-current="page"
+                   href="{{ link_I }}">Item search</a>
+              </li>
+            {% endif %}
+            <li>
+              <a class="nav-link{% if request.path == link_A %} active{% endif %}"
+                 aria-current="page"
+                 href="{{ link_A }}">Attachement search</a>
+            </li>
+          </ul>
+        </li>
+        {% if request.user.is_staff %}
+          <li class="nav-item">
+            <a class="nav-link{% if request.path == link %} active{% endif %}"
+               aria-current="page"
+               href="{% url 'admin:index' %}"
+               target="_blank">Admin</a>
+          </li>
+        {% endif %}
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
 </header>
