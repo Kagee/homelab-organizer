@@ -8,9 +8,21 @@ from django.urls import include, path
 
 from hlo.views import (
     TagAutoResponseView,
+    index,
+    no_access,
 )
 
 urls = [
+    path(
+        "",
+        index,
+        name="index",
+    ),
+    path(
+        "no_access",
+        no_access,
+        name="no_access",
+    ),
     path("admin/", admin.site.urls, name="admin"),
     # path("admin/", hlo_admin.urls, name="admin"),  # noqa: ERA001
     # django-debug-toolbar
@@ -33,6 +45,6 @@ urls = [
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
 
-__all__ = [
-    "urls",
-]
+handler404 = "hlo.views.render404"
+
+__all__ = ["urls", "handler404"]

@@ -5,9 +5,15 @@ from hlo.views import (
     label_print_storage,
     label_render_orderitem,
     label_render_storage,
+    sha1_redirect,
 )
 
 urls = [  # Label stuff
+    path(
+        "sha1/<str:sha1>",
+        sha1_redirect,
+        name="sha1-redirect",
+    ),
     path(
         "label/render/orderitem/<int:pk>.png",
         label_render_orderitem,
