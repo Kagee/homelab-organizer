@@ -19,7 +19,6 @@ def attachement_file_path(instance, filename):
     prefix = instance.sha1[:2]
     filename = instance.sha1[2:]
     path = f"attachements/hashed/{prefix}/{filename}{suffix}"
-    logger.error("In upload_to: Path: %s", path)
     return path
 
 
@@ -64,7 +63,6 @@ class Attachement(models.Model):
                 else:
                     sha1hash.update(f.read())
                 self.sha1 = sha1hash.hexdigest()
-                logger.debug("In save: Attachement SHA1 is %s", self.sha1)
                 super().save(*args, **kwargs)
         else:
             self.sha1 = self.sha1 if self.sha1 else None
