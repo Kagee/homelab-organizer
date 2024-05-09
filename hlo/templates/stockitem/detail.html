@@ -135,7 +135,7 @@
       {% for orderitem in stockitem.orderitems.all %}
         <img alt="Image thumbnail"
              src="{{ orderitem.thumbnail.url }}"
-             class="img-fluid" />
+             class="img-fluid" style="min-width: 300px;"/>
       {% empty %}
         {% md_icon 'image-off' color='grey' size='100%' %}
       {% endfor %}

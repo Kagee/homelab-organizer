@@ -70,6 +70,13 @@
                                         <img src="{% url 'label-render-storage' storage.id %}" width="300" />
                                     </p>
                                     <p>
+                                        <a id="print-three-labels" class="btn btn-primary btn-sm">
+                                            {% if storage.label_printed %}
+                                                Reprint three labels
+                                            {% else %}
+                                                Print three labels
+                                            {% endif %}
+                                        </a>
                                         <a id="print-label" class="btn btn-primary btn-sm">
                                             {% if storage.label_printed %}
                                                 Reprint label
@@ -77,6 +84,7 @@
                                                 Print label
                                             {% endif %}
                                         </a>
+
                                     </p>
                                 </td>
                             </tr>
@@ -90,8 +98,8 @@
 {% block bodybottom %}
 {% csrf_token %}
 <script type="text/javascript">
-    $('#print-label').click(function() 
-    {
+
+    function print_label() {
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         url = "{% url 'label-print-storage' storage.id %}"
         if ({{ storage.label_printed | yesno:"true,false" }}) {
@@ -116,6 +124,18 @@
                 }
             }
         });
+    }
+
+    $('#print-label').click(function() 
+    {
+        print_label();
     });
+    $('#print-three-labels').click(function() 
+    {
+        print_label();
+        print_label();
+        print_label();
+    });
+
 </script>
 {% endblock bodybottom %}
