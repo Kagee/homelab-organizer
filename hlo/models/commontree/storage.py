@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.html import mark_safe
 
 from .commontree import CommonTreeModel
@@ -63,6 +64,9 @@ class Storage(CommonTreeModel):
         return mark_safe(  # noqa: S308
             str(self.name) + str("&nbsp;&nbsp;&nbsp;" + self.get_html_box()),
         )
+
+    def get_absolute_url(self) -> str:
+        return reverse("storage-detail", kwargs={"pk": self.pk})
 
     def __str__(self):
         return str(self.name) + str(

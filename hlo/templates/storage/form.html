@@ -14,37 +14,11 @@
     </div>
     <div class="row">
         <div class="col-6">
-            
             <form method="post">
                 {% csrf_token %}
                 {% for field in form %}
                     <div class="row">
-                        <div class="col">
-                            {% if field.name == "name" %}
-                                <div class="row">
-                                    <div id="dynamic_name_div" class="col-11">
-                                    {% endif %}
-                                    {% with "storage project category" as select_ids %}
-                                        {% if field.name in select_ids.split %}
-                                            {{ field | add_class:"multiselect-dropdown-upgrade multiselect-search" | as_crispy_field }}
-                                        {% else %}
-                                            {{ field | as_crispy_field }}
-                                        {% endif %}
-                                    {% endwith %}
-                                    {% if field.name == "name" %}
-                                    </div>
-                                    <div id="dynamic_name_div_post" class="col-1">
-                                        <!-- override type, default is submit! -->
-                                        <button data-bs-toggle="modal"
-                                                data-bs-target="#keyboardModel"
-                                                type="button"
-                                                class="btn btn-primary"
-                                                id="keyboard_btn"
-                                                name="keyboard_btn">{% bs_icon 'keyboard' %}</button>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
+                        <div class="col">{{ field | as_crispy_field }}</div>
                     </div>
                 {% endfor %}
                 <p class="text-end">

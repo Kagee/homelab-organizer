@@ -11,7 +11,7 @@ from mptt.models import (  # type: ignore[import-untyped]
 class CommonTreeModel(MPTTModel):
     name = models.CharField(
         max_length=255,
-        blank=True,  # Should not use null for Char/Text
+        blank=False,  # Should not use null for Char/Text
     )
 
     comment = models.TextField(
