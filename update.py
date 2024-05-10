@@ -81,15 +81,15 @@ def delete_db(args: argparse.Namespace) -> None:
             p.unlink()
 
 
-def recreate_run_migrations(args: argparse.Namespace) -> None:
-    if (
-        args.yes
-        or input("Delete, recreate and apply migrations? (y/N): ").lower()
-        == "y"
-    ):
+def delete_migrations(args: argparse.Namespace) -> None:
+    if args.yes or input("Delete migrations? (y/N): ").lower() == "y":
         migrations = Path("hlo/migrations")
         if migrations.is_dir():
             shutil.rmtree(migrations)
+
+
+def make_run_migrations(args: argparse.Namespace) -> None:
+    if args.yes or input("Make and apply migrations? (y/N): ").lower() == "y":
         try:
             subprocess.run(
                 [  # noqa: S603
@@ -114,7 +114,6 @@ def recreate_run_migrations(args: argparse.Namespace) -> None:
 
 
 def create_superuser(_args: argparse.Namespace) -> None:
-    print("Database deleted, must recreate superuser.V")
     print(f"Username: {SUPERUSER_NAME}")
     print(f"Email: {SUPERUSER_EMAIL}")
     subprocess.run(
@@ -193,8 +192,7 @@ def _argparse() -> argparse.Namespace:
     func_args = [
         "upgrade-pip",
         "install-upgrade_packages",
-        "delete-db",
-        "recreate-run-migrations",
+        "make_run_migrations",
         "create-superuser",
         "import-shops",
         "import-orders",
@@ -253,7 +251,7 @@ def _argparse() -> argparse.Namespace:
     return args
 
 
-def main() -> None:  # noqa: C901
+def main() -> None:
     args = _argparse()
 
     logger.debug("Command line args: %s", args)
@@ -262,21 +260,8 @@ def main() -> None:  # noqa: C901
         upgrade_pip(args)
     if args.install_upgrade_packages:
         install_upgrade_packages(args)
-    if args.delete_db:
-        delete_db(args)
-    if args.recreate_run_migrations:
-        if not args.delete_db:
-            if (
-                input(
-                    "You have not deleted the DB. "
-                    "Still recreate and rerun migrations? (Y/n): ",
-                ).lower()
-                != "n"  # only pressing n/N will bail out
-            ):
-                recreate_run_migrations(args)
-        else:
-            recreate_run_migrations(args)
-
+    if args.make_run_migrations:
+        make_run_migrations(args)
     if args.create_superuser:
         create_superuser(args)
     if args.import_shops:
