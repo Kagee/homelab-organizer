@@ -233,7 +233,7 @@ GRAPH_MODELS = {
     "group_models": True,
     "app_labels": ["hlo"],
     "exclude_models": ["ColorTagBase", "GenericTaggedItemBase", "TagBase"],
-    "output": "hlo_model_graph.png",
+    "output": "model_graph.png",
     "color_code_deletions": True,
     "arrow_shape": "normal",
     "rankdir": "TB",
