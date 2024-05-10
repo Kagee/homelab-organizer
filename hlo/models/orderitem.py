@@ -159,15 +159,24 @@ class OrderItem(models.Model):
     def get_absolute_url(self) -> str:
         return reverse("orderitem-detail", kwargs={"pk": self.pk})
 
-    @admin.display(description="Barcode URL")
-    def barcode_url(self) -> SafeString:
-        # pylint: disable=no-member
-        # replace with http://bc.h2x.no/<gen_id> later
-        return format_html(
-            '<a href="{}" target="_blank">{}</a>',
-            reverse("barcode", args=[self.sha1_id]),
-            self.sha1_id,
+    def simple_image_tag(
+        self,
+        max_width: int = 300,
+        max_height: int = 300,
+        classes=None,
+        style="",
+    ) -> SafeString:
+        if classes is None:
+            classes = []
+        return mark_safe(  # noqa: S308
+            f'<img src="{self.thumbnail.url}" class="{" ".join(classes)}" '
+            f'style="max-height: {max_height}px; '
+            f'max-width: {max_width}px; {style}"/>',
         )
+
+    @admin.display(description="Preview")
+    def admin_image_tag(self) -> SafeString:
+        return self.simple_image_tag(300, 300)
 
     def image_tag(self, px: int = 150, max_width: int = 0) -> SafeString:
         # pylint: disable=no-member
@@ -189,8 +198,7 @@ class OrderItem(models.Model):
             f' src="{self.thumbnail.url}" />',
         )
 
-    image_tag.short_description = "Thumbnail"
-
+    @admin.display(description="Attachements")
     def attachements_tag(self) -> SafeString:
         # pylint: disable=no-member
         if self.attachements.count() == 0:
@@ -204,8 +212,7 @@ class OrderItem(models.Model):
         html += "</ul>"
         return mark_safe(html)  # noqa: S308
 
-    attachements_tag.short_description = "Attachements"
-
+    @admin.display(description="Item ID / SKU")
     def item_ref(self) -> str:
         return (
             f"{self.item_id}"
@@ -213,7 +220,9 @@ class OrderItem(models.Model):
             f"{self.item_variation}"
         )
 
-    item_ref.short_description = "Item ID / SKU"
+    @admin.display(description="Manual input")
+    def text_manual_input(self) -> str:
+        return "Yes" if self.manual_input else "No"
 
     def get_orderitem_url(self) -> str:
         return self.order.shop.item_url_template.format(item_id=self.item_id)

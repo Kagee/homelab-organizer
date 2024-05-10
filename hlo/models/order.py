@@ -93,6 +93,10 @@ class Order(models.Model):
             f" {self.items.count()} items"
         )
 
+    @admin.display(description="Manual input")
+    def text_manual_input(self) -> str:
+        return "Yes" if self.manual_input else "No"
+
     @admin.display(description="Items")
     def attachements_tag(self):
         # pylint: disable=no-member
@@ -126,24 +130,27 @@ class Order(models.Model):
             '<ul style="margin: 0;">{}</ul>',
             format_html_join(
                 "\n",
-                '<li><a href="{}">{}</a>&nbsp;&nbsp;(<a target="_blank"'
+                '<li><a href="{}">{}{}</a>&nbsp;&nbsp;(<a target="_blank"'
                 ' href="{}">View on {}</a>)</li>',
                 [
                     (
                         reverse(
                             "admin:hlo_orderitem_change",
-                            args=(i[1],),
+                            args=[item.id],
                         ),
-                        i[0],
+                        item.simple_image_tag(
+                            50,
+                            50,
+                            style="padding-right: 15px;",
+                        ),
+                        item.name,
                         # pylint: disable=no-member
-                        self.shop.item_url_template.format(item_id=i[2]),
+                        self.shop.item_url_template.format(
+                            item_id=item.item_id,
+                        ),
                         self.shop.branch_name,
                     )
-                    for i in self.items.all().values_list(
-                        "name",
-                        "id",
-                        "item_id",
-                    )
+                    for item in self.items.all()
                 ],
             ),
         )

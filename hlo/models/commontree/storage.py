@@ -69,7 +69,8 @@ class Storage(CommonTreeModel):
         return reverse("storage-detail", kwargs={"pk": self.pk})
 
     def __str__(self):
-        cline = self.comment.split("\n")[0].strip()
-        packaging = " (" + cline + ")" if cline else ""
+        packaging = (
+            " (::" + self.name_secondary + ")" if self.name_secondary else ""
+        )
         color = self.VALUE_TO_HEX[self.color] if self.color else ""
         return f"{ self.name }{ packaging }{ color }"

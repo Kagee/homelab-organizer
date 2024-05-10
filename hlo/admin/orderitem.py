@@ -18,24 +18,40 @@ class OrderItemAdmin(admin.ModelAdmin):
         if (
             obj
         ):  # This is the case when obj is already created i.e. it's an edit
-            return [
-                "image_tag",
-                "order",
-                "computed",
-                "sha1",
-                "extra_data",
-                "total",
-                "subtotal",
-                "tax",
-                "item_id",
-                "count",
-                "item_variation",
-                "item_ref",
-                "attachements",
-                "attachements_tag",
-                "indent_extra_data",
-                "barcode_url",
-            ]
+            if obj.manual_input:
+                return [
+                    "admin_image_tag",
+                    "order",
+                    "text_manual_input",
+                    "computed",
+                    "sha1",
+                    "item_id",
+                    "item_variation",
+                    "item_ref",
+                    "attachements",
+                    "attachements_tag",
+                    "indent_extra_data",
+                ]
+            else:
+                return [
+                    "admin_image_tag",
+                    "name",
+                    "order",
+                    "text_manual_input",
+                    "computed",
+                    "sha1",
+                    "extra_data",
+                    "total",
+                    "subtotal",
+                    "tax",
+                    "item_id",
+                    "count",
+                    "item_variation",
+                    "item_ref",
+                    "attachements",
+                    "attachements_tag",
+                    "indent_extra_data",
+                ]
         return []
 
     filter_horizontal = ["attachements"]
@@ -53,8 +69,9 @@ class OrderItemAdmin(admin.ModelAdmin):
             return [
                 "item_ref",
                 "name",
-                "image_tag",
+                "admin_image_tag",
                 "thumbnail",
+                "text_manual_input",
                 "attachements_tag",
                 "order",
                 "count",
@@ -62,12 +79,12 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "subtotal",
                 "tax",
                 "indent_extra_data",
-                "barcode_url",
             ]
         return [
             "name",
             "count",
             "thumbnail",
+            "text_manual_input",
             "attachements",
             "order",
             "item_id",

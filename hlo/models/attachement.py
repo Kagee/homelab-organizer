@@ -2,6 +2,7 @@ import hashlib
 import logging
 from pathlib import Path
 
+from django.contrib import admin
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
@@ -85,6 +86,10 @@ class Attachement(models.Model):
         if self.order.count():
             return self.order.first()
         return self.orderitem.first()
+
+    @admin.display(description="Manual input")
+    def text_manual_input(self) -> str:
+        return "Yes" if self.manual_input else "No"
 
     def used_by(self):
         # pylint: disable=no-member

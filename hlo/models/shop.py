@@ -67,6 +67,10 @@ class Shop(models.Model):
             else ""
         )
 
+    @admin.display(description="Manual input")
+    def text_manual_input(self) -> str:
+        return "Yes" if self.manual_input else "No"
+
     @admin.display(description="Shop")
     def list_icon(self):
         if self.icon:

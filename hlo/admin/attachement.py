@@ -7,6 +7,7 @@ from hlo.models import Attachement
 class AttachementAdmin(admin.ModelAdmin):
     search_fields = ["name", "comment", "file"]
     readonly_fields = ["used_by", "text_ornot"]
+
     def get_fields(self, _request, obj=None):
         if (
             obj
