@@ -1,6 +1,6 @@
 import django_filters  # type: ignore[import-untyped]
 from django.db.models import Max, Min
-from django.db.utils import OperationalError
+from django.db.utils import OperationalError, ProgrammingError
 from django.utils.timezone import now
 
 from hlo.models import Order
@@ -40,7 +40,7 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
                 Max("date__year"),
                 Min("date__year"),
             )
-        except OperationalError:
+        except (OperationalError, ProgrammingError):
             order_years = {}
             order_years["date__year__max"] = this_year
             order_years["date__year__min"] = this_year - 1
