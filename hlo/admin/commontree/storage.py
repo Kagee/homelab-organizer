@@ -1,5 +1,6 @@
 import import_export  # type: ignore[import-untyped]
 from django.contrib import admin
+from django.forms.widgets import Textarea, TextInput
 from django.utils.html import format_html
 from mptt.admin import DraggableMPTTAdmin  # type: ignore[import-untyped]
 
@@ -30,6 +31,16 @@ class StorageAdmin(
     list_display = ("tree_actions", "indented_title_color")
     list_display_links = ("indented_title_color",)
     resource_class = StorageResource
+
+    def get_form(self, request, obj=None, change=False, **kwargs):  # noqa: FBT002
+        form = super().get_form(request, obj, change, **kwargs)
+        form.base_fields["name"].widget = TextInput(
+            attrs={"size": 100},
+        )
+        form.base_fields["name_secondary"].widget = TextInput(
+            attrs={"size": 100},
+        )
+        return form
 
     def indented_title_color(self, instance):
         return format_html(
