@@ -59,6 +59,7 @@ DATABASES = {
     "default": env.db(),
 }
 
+
 # Override this in logging.py
 LOGGING = {
     "version": 1,
@@ -84,12 +85,12 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
-        "file": {
-            "class": "logging.FileHandler",
-            "filename": "hlo.log",
-            "formatter": "verbose",
-            "encoding": "utf-8",
-        },
+        # "file": {
+        #    "class": "logging.FileHandler",
+        #    "filename": "hlo.log",
+        #    "formatter": "verbose",
+        #    "encoding": "utf-8",
+        # },
     },
     "root": {
         "handlers": ["console"],
