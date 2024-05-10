@@ -18,6 +18,7 @@ whoosh_index
 # symlinks
 .vscode
 .env
+.env-db
 scraper-cache
 input
 schema
