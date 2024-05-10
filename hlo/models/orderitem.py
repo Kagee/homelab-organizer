@@ -106,6 +106,8 @@ class OrderItem(models.Model):
         unique=True,
     )
 
+    manual_input = models.BooleanField(default=True)
+
     class Meta:
         ordering = ["order__date", "name"]
         constraints = [

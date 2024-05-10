@@ -39,6 +39,8 @@ class Shop(models.Model):
         blank=True,
     )
 
+    manual_input = models.BooleanField(default=True)
+
     class Meta:
         ordering = ["name"]
         constraints = [

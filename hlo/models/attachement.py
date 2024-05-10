@@ -49,6 +49,8 @@ class Attachement(models.Model):
 
     sha1 = models.CharField(max_length=40, editable=True)
 
+    manual_input = models.BooleanField(default=True)
+
     def __str__(self):
         return f"{self.name} ({self.type}) ({Path(self.file.name).name})"
 
