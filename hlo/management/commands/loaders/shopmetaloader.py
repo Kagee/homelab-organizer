@@ -41,6 +41,7 @@ class ShopMetaLoader:
                 defaults={
                     "order_url_template": shop["order_url"],  # required
                     "item_url_template": shop["item_url"],  # required
+                    "manual_input": False,
                 },
             )
             zip_file = json_file.with_suffix(".zip")

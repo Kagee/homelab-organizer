@@ -56,6 +56,7 @@ class ShopOrderLoader:
                     continue
                 defaults = {
                     "date": order["date"],
+                    "manual_input": False,
                 }
                 if "extra_data" in order:
                     defaults["extra_data"] = order["extra_data"]
@@ -121,6 +122,7 @@ class ShopOrderLoader:
                             ):
                                 defaults = {
                                     "sha1": sha1,
+                                    "manual_input": False,
                                 }
                                 if "name" in attachement:
                                     defaults["name"] = attachement["name"]
@@ -191,6 +193,7 @@ class ShopOrderLoader:
                         "item_id": item_id,
                         "item_variation": item_variation,
                         "order": order_object,
+                        "manual_input": False,
                     }
                     del item["name"]
                     del item["quantity"]
@@ -323,6 +326,7 @@ class ShopOrderLoader:
                         ):
                             defaults = {
                                 "sha1": sha1,
+                                "manual_input": False,
                             }
                             if "name" in attachement:
                                 defaults["name"] = attachement["name"]
