@@ -62,13 +62,14 @@ class Storage(CommonTreeModel):
 
     def html_rep(self):
         return mark_safe(  # noqa: S308
-            str(self.name) + str("&nbsp;&nbsp;&nbsp;" + self.get_html_box()),
+            str(self) + str("&nbsp;&nbsp;&nbsp;" + self.get_html_box()),
         )
 
     def get_absolute_url(self) -> str:
         return reverse("storage-detail", kwargs={"pk": self.pk})
 
     def __str__(self):
-        return str(self.name) + str(
-            self.VALUE_TO_HEX[self.color] if self.color else "",
-        )
+        cline = self.comment.split("\n")[0].strip()
+        packaging = " (" + cline + ")" if cline else ""
+        color = self.VALUE_TO_HEX[self.color] if self.color else ""
+        return f"{ self.name }{ packaging }{ color }"
