@@ -13,13 +13,13 @@
                 <!-- title -->
                 <div class="col-12">
                     <h3>
-                        {{ storage.name }}
+                        {{ storage.name }}{% if storage.name_secondary %} <span class="text-body-tertiary">({{ storage.name_secondary }})</span>{% endif %}
                         {% if not storage.is_root_node %}
                             <a class="btn btn-outline-secondary btn-sm"
                                href="{% url "storage-detail" storage.parent.pk %}">{{ storage.parent }}</a>
                         {% endif %}
                     </h3>
-                    <p class="text-body-secondary">{{ storage.comment }}</p>
+                    <p class="text-body-secondary">{{ storage.comment | linebreaks  }}</p>
                 </div>
             </div>
             <div class="row mt-3">

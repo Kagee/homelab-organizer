@@ -1,3 +1,5 @@
+from typing import Any
+
 from crispy_forms.helper import FormHelper
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
@@ -40,6 +42,13 @@ class StorageDetailView(DetailView):
     model = Storage
     template_name = "storage/detail.html"
     context_object_name = "storage"
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        ctx = super().get_context_data(**kwargs)
+
+        ctx["packaging"] = ctx["storage"].comment.split("\n")[0].strip()
+
+        return ctx
 
 
 class StorageListView(ListView):
