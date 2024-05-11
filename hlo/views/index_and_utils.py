@@ -20,8 +20,6 @@ def index(request):
     keys: dict = {
         "orderitem_count": OrderItem.objects.count,
         "stockitem_count": StockItem.objects.count,
-        "stockitem_with_location": lambda: 0,
-        "stockitem_without_location": lambda: 0,
         "attachement_count": Attachement.objects.count,
         "attachement_pdf": Attachement.objects.filter(
             file__endswith=".pdf",

@@ -1,50 +1,50 @@
 {% extends "common/base.html" %}
 {% load bootstrap_icons %}
 {% block title %}
-    Details for {{ order_item.name }}
+    Details for {{ orderitem.name }}
 {% endblock title %}
 {% block content %}
     <!-- https://getbootstrap.com/docs/5.0/layout/grid/ -->
     <div class="row">
         <div class="col-6">
-            <h1>{{ order_item.name }}</h1>
+            <h1>{{ orderitem.name }}</h1>
             <div class="product-main-info-partnumber-store">
                 <p>
                     <span>Order number/date:</span>
                     <span>
-                        <a href="{% url 'order-detail' order_item.order.id %}"
+                        <a href="{% url 'order-detail' orderitem.order.id %}"
                            title="View original order details">
-                            {{ order_item.order.order_id }} / {{ order_item.order.date }}
+                            {{ orderitem.order.order_id }} / {{ orderitem.order.date }}
                         </a>
                     </span>
                     <br>
                     <span>Item number:</span>
                     <span>
-                        <a href="{{ order_item.get_orderitem_url }}"
-                           title="View original item listing on {{ order_item.order.shop.branch_name }}">
-                            {{ order_item.item_id }}
+                        <a href="{{ orderitem.get_orderitem_url }}"
+                           title="View original item listing on {{ orderitem.order.shop.branch_name }}">
+                            {{ orderitem.item_id }}
                         </a>
                     </span>
                 </p>
             </div>
             {% if not orderitem.stockitems.count %}
-                <a href="{% url 'stockitem-create-from' order_item.id %}"
+                <a href="{% url 'stockitem-create-from' orderitem.id %}"
                    class="btn btn-primary btn-sm">Create stock item {% bs_icon 'box-arrow-in-right' %}</a>
             {% endif %}
-            {% if order_item.attachements.all %}
+            {% if orderitem.attachements.all %}
                 <h4>Attachements</h4>
-                {% for attachement in order_item.attachements.all %}
+                {% for attachement in orderitem.attachements.all %}
                     Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a>
                     <br>
                 {% endfor %}
             {% endif %}
             <h4>Label</h4>
             <p>
-                <img src="{% url 'label-render-orderitem' order_item.id %}" width="400" />
+                <img src="{% url 'label-render-orderitem' orderitem.id %}" width="400" />
             </p>
             <p>
                 <a id="print-label" class="btn btn-primary btn-sm">
-                    {% if order_item.meta.label_printed %}
+                    {% if orderitem.meta.label_printed %}
                         Reprint label
                     {% else %}
                         Print label
@@ -53,7 +53,7 @@
             </p>
         </div>
         <div class="col-6">
-            {% if order_item.thumbnail %}{{ order_item.image_tag }}{% endif %}
+            {% if orderitem.thumbnail %}{{ orderitem.image_tag }}{% endif %}
         </div>
     </div>
 {% endblock content %}
@@ -63,8 +63,8 @@
     $('#print-label').click(function() 
     {
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        url = "{% url 'label-print-orderitem' order_item.id %}"
-        if ({{ order_item.meta.label_printed | yesno:"true,false" }}) {
+        url = "{% url 'label-print-orderitem' orderitem.id %}"
+        if ({{ orderitem.meta.label_printed | yesno:"true,false" }}) {
             if (confirm("A label for this item has already been printed.\n\nAre you sure you want to print a new label?") != true) {
                 return
             }

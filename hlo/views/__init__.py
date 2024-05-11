@@ -24,16 +24,23 @@ from .label import (
     sha1_redirect,
 )
 from .orderitems import (
+    OrderItemCreateView,
     OrderItemDetailView,
-    OrderItemFilter,
+    # OrderItemFilter,
     orderitem_filtered_list,
 )
-from .orders import OrderDetailView, OrderListView
+from .orders import (
+    OrderCreateView,
+    OrderDetailView,
+    OrderListView,
+    OrderUpdateView,
+)
 from .search import AttachementSearchView
+from .shop import ShopCreateView, ShopDetailView, ShopListView, ShopUpdateView
 from .stockitems import (
     StockItemCreate,
     StockItemDetail,
-    StockItemFilter,
+    # StockItemFilter,
     StockItemUpdate,
     TagAutoResponseView,
     stockitem_list,
@@ -70,9 +77,17 @@ __all__ = [
     "item_search",
     "OrderItemDetailView",
     "OrderItemFilter",
+    "OrderItemCreateView",
+    "OrderItemUpdateView",
     "orderitem_filtered_list",
     "OrderDetailView",
     "OrderListView",
+    "OrderCreateView",
+    "OrderUpdateView",
+    "ShopDetailView",
+    "ShopListView",
+    "ShopCreateView",
+    "ShopUpdateView",
 ]
 
 

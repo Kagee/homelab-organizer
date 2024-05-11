@@ -4,7 +4,14 @@
 {% block title %}
   Find order items
 {% endblock title %}
-{% block content %}
+{% block javascript %}
+  $(document).ready(function($) {
+    $(".table-row").click(function() {
+      window.document.location = $(this).data("href");
+    });
+  });
+{% endblock javascript %}
+{% block modal %}
   <div class="modal" tabindex="-1" id="filterModal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -31,6 +38,8 @@
       </div>
     </div>
   </div>
+{% endblock modal %}
+{% block content %}
   <div class="row">
     <div class="col-12 d-lg-none d-xl-none d-xxl-none">
       <button type="button"
@@ -60,25 +69,27 @@
         </thead>
         <tbody>
           {% for orderitem in page_obj %}
-            <tr>
+            <tr class="table-row" data-href="{{ orderitem.get_absolute_url }}">
               <td class="p-2"
                   style="min-height: 12em;
                          height: 6em;
                          background-size: contain;
                          background-repeat: no-repeat;
                          {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>
-              <td>
+              <td class="align-middle">
                 <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
               </td>
               <!-- Hide shop col on small screens -->
-              <td class="text-center d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell">
-                {{ orderitem.order.shop.img_icon }}
+              <td class="text-center d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell align-middle">
+                <div class="align-items-center h-100">
+                <img src="{{ orderitem.order.shop.icon.url }}" style="max-height: 4em; max-width: 4em;" />
+                </div>
               </td>
               <!-- {{ orderitem.order.date | slice:"0:7" }} -->
-              <td class="text-center">
+              <td class="text-center align-middle">
                 {% if not orderitem.stockitems.count %}
                   <a href="{% url 'stockitem-create-from' orderitem.id %}"
-                     class="btn btn-primary btn-sm">{% bs_icon 'box-arrow-in-right' %}</a>
+                     class="btn btn-success btn-sm w-100 text-middle" style="height: 4em;"><div class="h-100 align-middle" style="vertical-align: centre;">{% bs_icon 'box-arrow-in-right' %}</div></a>
                 {% endif %}
               </td>
             </tr>

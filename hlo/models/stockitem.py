@@ -1,4 +1,6 @@
+from django.core.cache import cache
 from django.db import models
+from django.db.models import Count
 from django.urls import reverse
 from mptt.fields import TreeManyToManyField  # type: ignore[import-untyped]
 from taggit.managers import TaggableManager  # type: ignore[import-untyped]
@@ -50,6 +52,14 @@ class StockItem(models.Model):
         if self.name:
             return str(self.name)
         return str(self.orderitems.all().first().name)
+
+    def save(self, *args, **kwargs) -> None:
+        cache.set(
+            "stockitem_count",
+            StockItem.objects.count(),
+            timeout=None,
+        )
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
         return reverse("stockitem-detail", kwargs={"pk": self.pk})

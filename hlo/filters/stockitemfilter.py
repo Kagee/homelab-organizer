@@ -18,12 +18,12 @@ class NonOrderingStockItemFilter(django_filters.FilterSet):
     date_range = OrderDateRangeFilter(
         label="Timerange",
         empty_label="All time",
-        field_name="orderitem__order__date",
+        field_name="orderitems__order__date",
     )
 
     shop = django_filters.ModelChoiceFilter(
         queryset=Shop.objects.all(),
-        field_name="orderitem__order__shop",
+        field_name="orderitems__order__shop",
         empty_label="All shops",
         label="Shop",
     )
@@ -41,6 +41,6 @@ class StockItemFilter(NonOrderingStockItemFilter):
         # tuple-mapping retains order
         fields=(
             ("name", "name"),
-            ("orderitem__order__date", "orderitem__order__date"),
+            ("orderitems__order__date", "orderitems__order__date"),
         ),
     )

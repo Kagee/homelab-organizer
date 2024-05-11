@@ -2,6 +2,15 @@ import logging
 from typing import Any
 
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import (
+    HTML,
+    ButtonHolder,
+    Column,
+    Layout,
+    MultiWidgetField,
+    Row,
+    Submit,
+)
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
@@ -42,17 +51,6 @@ class TagAutoResponseView(AutoResponseView):
 class StockItemCreate(CreateView):
     model = StockItem
     template_name = "stockitem/form.html"
-    """
-    fields = [
-        "name",
-        "count",
-        "tags",
-        "orderitems",
-        "category",
-        "project",
-        "storage",
-    ]
-    """
     form_class = StockItemForm
 
     def get_ai_name_from_orderitem(self, oi: OrderItem) -> str | None:
@@ -147,6 +145,49 @@ class StockItemCreate(CreateView):
         return initial
 
 
+class StockItemUpdate(UpdateView):
+    model = StockItem
+    template_name = "stockitem/update_form.html"
+    context_object_name = "stockitem"
+    form_class = StockItemForm
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # django-crispy-form formhelper
+        # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
+
+        form.helper = FormHelper()
+        form.helper.form_method = "post"
+        form.helper.form_class = "form-horizontal"
+        form.helper.label_class = "col-2"
+        form.helper.field_class = "col-10"
+
+        # data-initvalue='[{"id":"IN","name":"India"}]'
+        logger.debug(form.fields["tags"].widget.attrs)
+        # form.fields["tags"].widget.attrs["data-initvalue"]
+        form.fields["tags"].initial = [
+            {
+                "text": "magnetic",
+                "id": "magnetic",
+            }
+        ]
+        # if get paramenter fromitems is set, lock down orderitem list
+        if oi := self.object.orderitems.first().pk:
+            form.fields["orderitems"].label = "Order items"
+            form.fields["orderitems"].disabled = True
+            form.fields["orderitems"].queryset = OrderItem.objects.filter(
+                pk=oi,
+            )
+            form.fields["orderitems"].widget.attrs["size"] = 1
+        return form
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        ctx = super().get_context_data(**kwargs)
+        logger.debug(ctx)
+        ctx["image_tag"] = ctx["object"].orderitems.first().image_tag(0, 300)
+        return ctx
+
+
 class StockItemDetail(DetailView):
     model = StockItem
     queryset = model.objects.all().prefetch_related(
@@ -157,26 +198,60 @@ class StockItemDetail(DetailView):
     context_object_name = "stockitem"
 
 
-class StockItemUpdate(UpdateView):
-    model = StockItem
-    template_name = "stockitem/form2.html"
-    context_object_name = "stock_item"
-    fields = [
-        "name",
-        "count",
-        "tags",
-        "orderitems",
-        "attachements",
-        "category",
-        "project",
-        "storage",
-    ]
-
-
 def stockitem_list(request):
-    qs_orderitems = StockItem.objects.all()
-    f = StockItemFilter(request.GET, queryset=qs_orderitems)
+    qs_stockitems = StockItem.objects.all()
+    f = StockItemFilter(request.GET, queryset=qs_stockitems)
     paginator = Paginator(f.qs, 10)
+
+    # Swap the name and render order for the name fields
+    f.form.fields["name"].widget.suffixes = ["lookup", None]
+    f.form.fields["name"].widget.widgets = (
+        f.form.fields["name"].widget.widgets[1],
+        f.form.fields["name"].widget.widgets[0],
+    )
+
+    f.form.helper = FormHelper()
+    f.form.helper.form_method = "get"
+    f.form.helper.form_class = "align-items-bottom"
+    f.form.helper.form_style = "inline"
+    f.form.helper.form_show_labels = True
+    f.form.helper.label_class = "fs-6"
+    layout = Layout(
+        Row(
+            Column(
+                MultiWidgetField(
+                    "name",
+                    attrs=(
+                        {"style": "width: 30%; display: inline-block;"},
+                        {"style": "width: 70%; display: inline-block;"},
+                    ),
+                    wrapper_class="hemmelig",
+                ),
+                css_class="col-4",
+            ),
+            *[
+                Column(field, css_class="col")
+                for field in f.form.fields
+                if field != "name"
+            ],
+            Column(
+                ButtonHolder(
+                    HTML(
+                        '<a href="{{ request.path }}" '
+                        'class="btn btn-secondary col ">Clear</a>',
+                    ),
+                    Submit("submit", "Submit", css_class="btn btn-primary col"),
+                    # HTML(
+                    #    '<button type="submit" class="btn btn-primary">Filter</button>'
+                    # ),
+                    css_class="row align-items-end h-100 pb-3",
+                ),
+                css_class="col",
+            ),
+            css_class="pt-3",
+        ),
+    )
+    f.form.helper.add_layout(layout)
 
     page = request.GET.get("page")
     try:

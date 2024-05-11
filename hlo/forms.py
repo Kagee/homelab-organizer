@@ -53,6 +53,7 @@ class StockItemForm(ModelForm):
         widgets = {
             "tags": TagChoices(
                 data_view="stockitem-tag-auto-json",
+                attrs={"data-token-separators": ","},
             ),
             "name": forms.Textarea(attrs={"rows": 3}),
         }

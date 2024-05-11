@@ -14,7 +14,7 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.views.generic import DetailView
+from django.views.generic import CreateView, DetailView, UpdateView
 
 from hlo.filters import OrderItemFilter
 from hlo.models import OrderItem
@@ -27,6 +27,7 @@ def orderitem_filtered_list(
 ) -> HttpResponse:
     qs_orderitems = (
         OrderItem.objects.exclude(meta__hidden=True)  # Items with meta = hidden
+        .exclude(stockitems__count__gt=0)
         .select_related("order")
         .select_related("order__shop")
         .prefetch_related("stockitems")
@@ -103,10 +104,21 @@ class OrderItemDetailView(DetailView):
         .select_related("order__shop")
     )
     template_name = "orderitem/detail.html"
-    context_object_name = "order_item"
+
+
+class OrderItemCreateView(CreateView):
+    model = OrderItem
+    template_name = "orderitem/form.html"
+
+
+class OrderItemUpdateView(UpdateView):
+    model = OrderItem
+    template_name = "orderitem/form.html"
 
 
 __all__ = [
     "orderitem_filtered_list",
     "OrderItemDetailView",
+    "OrderItemCreateView",
+    "OrderItemUpdateView",
 ]
