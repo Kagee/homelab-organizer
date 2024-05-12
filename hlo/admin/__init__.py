@@ -14,7 +14,7 @@ from .orderitem import (
     OrderStockItemLinkAdmin,
 )
 from .shop import ShopAdmin
-from .stockitem import StockItemAdmin, StockItemResource
+from .stockitem import StockItemAdmin
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,6 @@ __all__ = [
     "ProjectAdmin",
     "ShopAdmin",
     "StockItemAdmin",
-    "StockItemResource",
     "StorageAdmin",
     "User",
 ]

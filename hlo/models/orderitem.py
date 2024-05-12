@@ -3,10 +3,13 @@ from __future__ import annotations
 import hashlib
 import logging
 import pprint
+from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from django.contrib import admin
+from django.core.cache import cache
+from django.core.files.images import ImageFile
 from django.db import models
 from django.urls import reverse
 from django.utils.html import escape, format_html, mark_safe
@@ -127,20 +130,23 @@ class OrderItem(models.Model):
         )
 
     def save(self, *args, **kwargs) -> None:
-        # pylint: disable=no-member
+        self.thumnail_sha1 = ""
+
+        buf = BytesIO()
         if self.thumbnail:
             with self.thumbnail.open("rb") as f:
                 tbhash = hashlib.sha1()  # noqa: S324
                 if f.multiple_chunks():
                     for chunk in f.chunks():
                         tbhash.update(chunk)
+                        buf.write(chunk)
                 else:
-                    tbhash.update(f.read())
+                    data = f.read()
+                    tbhash.update(data)
+                    buf.write(data)
                 self.thumnail_sha1 = tbhash.hexdigest()
-
-                super().save(*args, **kwargs)
-        else:
-            self.thumnail_sha1 = ""
+            buffile = ImageFile(buf)
+            self.thumbnail.file = buffile
 
         item_variation = "novariation"
         if len(self.item_variation):

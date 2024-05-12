@@ -1,11 +1,32 @@
+from __future__ import annotations
+
+import hashlib
+import logging
+from io import BytesIO
+from pathlib import Path
+
 from django.core.cache import cache
+from django.core.files.images import ImageFile
 from django.db import models
-from django.db.models import Count
 from django.urls import reverse
 from mptt.fields import TreeManyToManyField  # type: ignore[import-untyped]
 from taggit.managers import TaggableManager  # type: ignore[import-untyped]
 
+from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
+
 from . import Attachement
+
+logger = logging.getLogger(__name__)
+
+
+def thumnail_path(instance: StockItem, filename: str) -> str:
+    if len(instance.thumnail_sha1) != 40:  # noqa: PLR2004
+        msg = f"SHA1 sum is not 40 chars: {instance.thumnail_sha1}"
+        raise ValueError(msg)
+    suffix = Path(filename).suffix
+    prefix = instance.thumnail_sha1[:2]
+    filename = instance.thumnail_sha1[2:]
+    return f"thumbnails/hashed/{prefix}/{filename}{suffix}"
 
 
 class StockItem(models.Model):
@@ -39,6 +60,19 @@ class StockItem(models.Model):
         blank=True,
     )
 
+    thumbnail = models.ImageField(
+        upload_to=thumnail_path,
+        storage=OverwritingFileSystemStorage(),
+        blank=True,
+    )
+
+    thumnail_sha1 = models.CharField(
+        max_length=40,
+        editable=False,
+        default="",
+        blank=True,
+    )
+
     class Meta:
         ordering = ["name"]
         constraints = [
@@ -59,6 +93,24 @@ class StockItem(models.Model):
             StockItem.objects.count(),
             timeout=None,
         )
+        # pylint: disable=no-member
+        self.thumnail_sha1 = ""
+
+        buf = BytesIO()
+        if self.thumbnail:
+            with self.thumbnail.open("rb") as f:
+                tbhash = hashlib.sha1()  # noqa: S324
+                if f.multiple_chunks():
+                    for chunk in f.chunks():
+                        tbhash.update(chunk)
+                        buf.write(chunk)
+                else:
+                    data = f.read()
+                    tbhash.update(data)
+                    buf.write(data)
+                self.thumnail_sha1 = tbhash.hexdigest()
+            buffile = ImageFile(buf)
+            self.thumbnail.file = buffile
         super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
@@ -70,7 +122,9 @@ class StockItem(models.Model):
             names = [orderitem.name for orderitem in self.orderitems.all()]
         return names
 
-    def thumbnail(self):
+    def thumbnail_url(self):
+        if self.thumbnail:
+            return self.thumbnail.url
         if self.orderitems:
             for orderitem in self.orderitems.all():
                 if orderitem.thumbnail:
