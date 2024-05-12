@@ -1,0 +1,24 @@
+{% extends "common/base.html" %}
+{% load hlo_tags %}
+{% load hlo_debug_tags %}
+{% load mptt_tags %}
+{% load django_bootstrap5 %}
+{% block title %}
+    Storage
+{% endblock title %}
+{% block content %}
+    <div class="row">
+        <div class="col pt-3">
+            {% for shop in shops %}
+                <div class="row">
+                    <div class="col-2 border pt-1 pb-1 text-center">
+                        <img height="50" src="{{ shop.icon.url }}" />
+                    </div>
+                    <div class="col-10 border align-middle">
+                            <a href="{% url "shop-detail" shop.id %}" style="margin: auto">{{ shop.branch_name }}</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

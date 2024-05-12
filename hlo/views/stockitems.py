@@ -13,6 +13,7 @@ from crispy_forms.layout import (
 )
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.forms.widgets import Select
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, DetailView, UpdateView
@@ -82,7 +83,7 @@ class StockItemCreate(CreateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         ctx = super().get_context_data(**kwargs)
-
+        ctx["title"] = "Create stock item"
         if "fromitems" in self.kwargs:
             oi = get_object_or_404(
                 OrderItem.objects.prefetch_related("meta"),
@@ -99,7 +100,7 @@ class StockItemCreate(CreateView):
 
             ctx["original_name"] = oi.name
             ctx["ai_name"] = ai_name
-            ctx["image_tag"] = oi.image_tag(0, 300)
+            ctx["image_url"] = oi.thumbnail.url
             form = ctx["form"]
             form.fields["name"].initial = ai_name
             form.fields["name"].help_text = name_help
@@ -108,14 +109,6 @@ class StockItemCreate(CreateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        # django-crispy-form formhelper
-        # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
-
-        form.helper = FormHelper()
-        form.helper.form_method = "post"
-        form.helper.form_class = "form-horizontal"
-        form.helper.label_class = "col-2"
-        form.helper.field_class = "col-10"
 
         # if get paramenter fromitems is set, lock down orderitem list
         if "fromitems" in self.kwargs:
@@ -147,26 +140,33 @@ class StockItemCreate(CreateView):
 
 class StockItemUpdate(UpdateView):
     model = StockItem
-    template_name = "stockitem/update_form.html"
+    template_name = "stockitem/form.html"
     context_object_name = "stockitem"
     form_class = StockItemForm
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        # django-crispy-form formhelper
-        # https://django-crispy-forms.readthedocs.io/en/latest/form_helper.html
-
-        form.helper = FormHelper()
-        form.helper.form_method = "post"
-        form.helper.form_class = "form-horizontal"
-        form.helper.label_class = "col-2"
-        form.helper.field_class = "col-10"
-
-        # https://apalfrey.github.io/select2-bootstrap-5-theme/examples/multiple-select/#multiple-select-custom
-        # (option_value, option_label)  # noqa: ERA001
-        form.fields["tags"].widget.choices = [
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["initial_tags"] = [
             (x["name"], x["name"]) for x in self.object.tags.all().values()
         ]
+        return kwargs
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        # https://github.com/codingjoe/django-select2/issues/4#issuecomment-2106265109
+        # form.fields["tags"].widget.choices = [
+        #    (x["name"], x["name"]) for x in self.object.tags.all().values()
+        # ]
+
+        form.fields["count_unit"].widget = Select(
+            choices=[
+                (x["count_unit"], x["count_unit"])
+                for x in StockItem.objects.order_by()
+                .values("count_unit")
+                .distinct()
+            ],
+        )
 
         # if get paramenter fromitems is set, lock down orderitem list
         if oi := self.object.orderitems.first().pk:
@@ -180,8 +180,8 @@ class StockItemUpdate(UpdateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         ctx = super().get_context_data(**kwargs)
-        logger.debug(ctx)
-        ctx["image_tag"] = ctx["object"].orderitems.first().image_tag(0, 300)
+        ctx["image_tag"] = ctx["object"].thumbnail_url
+        ctx["title"] = "Update stock item"
         return ctx
 
 

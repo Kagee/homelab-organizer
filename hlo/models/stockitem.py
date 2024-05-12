@@ -20,19 +20,20 @@ logger = logging.getLogger(__name__)
 
 
 def thumnail_path(instance: StockItem, filename: str) -> str:
-    if len(instance.thumnail_sha1) != 40:  # noqa: PLR2004
-        msg = f"SHA1 sum is not 40 chars: {instance.thumnail_sha1}"
+    if len(instance.thumbnail_sha1) != 40:  # noqa: PLR2004
+        msg = f"SHA1 sum is not 40 chars: {instance.thumbnail_sha1}"
         raise ValueError(msg)
     suffix = Path(filename).suffix
-    prefix = instance.thumnail_sha1[:2]
-    filename = instance.thumnail_sha1[2:]
+    prefix = instance.thumbnail_sha1[:2]
+    filename = instance.thumbnail_sha1[2:]
     return f"thumbnails/hashed/{prefix}/{filename}{suffix}"
 
 
 class StockItem(models.Model):
     name = models.CharField(max_length=255, blank=True, default="")
     count = models.PositiveIntegerField("Count", default=0)
-    tags = TaggableManager(blank=True)
+    count_unit = models.CharField("Unit", default="items", max_length=50)
+    tags = TaggableManager(verbose_name="Tags", help_text=None, blank=True)
     category = TreeManyToManyField(
         "Category",
         blank=True,
@@ -66,7 +67,7 @@ class StockItem(models.Model):
         blank=True,
     )
 
-    thumnail_sha1 = models.CharField(
+    thumbnail_sha1 = models.CharField(
         max_length=40,
         editable=False,
         default="",
@@ -94,7 +95,7 @@ class StockItem(models.Model):
             timeout=None,
         )
         # pylint: disable=no-member
-        self.thumnail_sha1 = ""
+        self.thumbnail_sha1 = ""
 
         buf = BytesIO()
         if self.thumbnail:
@@ -108,7 +109,7 @@ class StockItem(models.Model):
                     data = f.read()
                     tbhash.update(data)
                     buf.write(data)
-                self.thumnail_sha1 = tbhash.hexdigest()
+                self.thumbnail_sha1 = tbhash.hexdigest()
             buffile = ImageFile(buf)
             self.thumbnail.file = buffile
         super().save(*args, **kwargs)

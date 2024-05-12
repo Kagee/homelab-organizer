@@ -1,0 +1,19 @@
+{% load crispy_forms_field %}
+<!-- block raw field:{{ field.id_for_label }}-->
+{% if buttons %}<div class="input-group{% if div.input_size %} input-size {{ div.input_size }}{% else %} no-input-size{% endif %}">{% endif %}
+    {% if field|is_select %}
+        {% if field.errors %}
+            {% crispy_field field "class" "form-select is-invalid" %}{{ buttons|safe }}
+        {% else %}
+            {% crispy_field field "class" "form-select" %}{{ buttons|safe }}
+        {% endif %}
+    {% elif field.errors %}
+        {% crispy_field field "class" "form-control is-invalid" %}{{ buttons|safe }}
+    {% else %}
+        {% crispy_field field "class" "form-control" %}{{ buttons|safe }}
+    {% endif %}
+    {% if not field|is_file %}
+        {% include "bootstrap5/layout/help_text_and_errors.html" %}
+    {% endif %}
+{% if buttons %}</div>{% endif %}
+<!-- endblock raw field:{{ field.id_for_label }}-->

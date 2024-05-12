@@ -254,7 +254,7 @@ class ShopOrderLoader:
                             )
                             raise AttributeError(msg)
                         sha1 = ""
-                        if item_object.thumnail_sha1:
+                        if item_object.thumbnail_sha1:
                             sha1hash = hashlib.sha1()  # noqa: S324
                             if thumbnail_file.multiple_chunks():
                                 for chunk in thumbnail_file.chunks():
@@ -263,12 +263,12 @@ class ShopOrderLoader:
                                 sha1hash.update(thumbnail_file.read())
                             sha1 = sha1hash.hexdigest()
                         if (
-                            not item_object.thumnail_sha1
-                            or item_object.thumnail_sha1 != sha1
+                            not item_object.thumbnail_sha1
+                            or item_object.thumbnail_sha1 != sha1
                         ):
                             self.log.debug(
                                 "No sha1 or not matching: %s %s",
-                                item_object.thumnail_sha1,
+                                item_object.thumbnail_sha1,
                                 sha1,
                             )
                             if item_object.thumbnail:

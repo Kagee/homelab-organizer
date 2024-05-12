@@ -1,13 +1,12 @@
 {% extends "common/base.html" %}
+
+{% load crispy_forms_tags %}
 {% load bootstrap_icons %}
-{% load static %}
 {% load widget_tweaks %}
+{% load static %}
 {% block title %}
-    Create stock item
+    {{ title }}
 {% endblock title %}
-{% block css %}
-    .select2 input, select.django-select2 { width: 20em; }
-{% endblock css %}
 {% block head %}
     <link rel="stylesheet"
           href="{% static 'js/multiselect-dropdown/multiselect-dropdown.css' %}">
@@ -32,51 +31,20 @@
 {% endblock modals %}
 {% block content %}
     <div class="row">
-        <div class="col">
-            <h1>{{ original_name }}</h1>
+        <div class="col-6">
+            {% if stockitem.name %}
+                <h1>{{ stockitem.name }}</h1>
+            {% else %}
+                <h1>Create storage object<br></h1>
+                <h4 class="text-secondary">{{ original_name }}</h4>
+            {% endif %}
         </div>
     </div>
     <div class="row">
         <div class="col-6">
-            {% load crispy_forms_tags %}
-            <form method="post">
-                {% csrf_token %}
-                {% for field in form %}
-                    <div class="row">
-                        <div class="col">
-                            {% if field.name == "name" %}
-                                <div class="row">
-                                    <div id="dynamic_name_div" class="col-11">
-                                    {% endif %}
-                                    {% with "storage project category" as select_ids %}
-                                        {% if field.name in select_ids.split %}
-                                            {{ field | add_class:"multiselect-dropdown-upgrade multiselect-search" | as_crispy_field }}
-                                        {% else %}
-                                            {{ field | as_crispy_field }}
-                                        {% endif %}
-                                    {% endwith %}
-                                    {% if field.name == "name" %}
-                                    </div>
-                                    <div id="dynamic_name_div_post" class="col-1">
-                                        <!-- override type, default is submit! -->
-                                        <button data-bs-toggle="modal"
-                                                data-bs-target="#keyboardModel"
-                                                type="button"
-                                                class="btn btn-primary"
-                                                id="keyboard_btn"
-                                                name="keyboard_btn">{% bs_icon 'keyboard' %}</button>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
-                <p class="text-end">
-                    <button type="submit" class="btn btn-primary">Create stock item</button>
-                </p>
-            </form>
+            {% crispy form %}
         </div>
-        <div class="col-6">{{ image_tag }}</div>
+        <div class="col-6"><img width="300" src="{{ image_url }}" /></div>
     </div>
 {% endblock content %}
 {% block bodybottom %}
@@ -87,6 +55,13 @@
             })
             $("#btn_degree").on("click", function() { 
                 $("#id_name").get(0).setRangeText("°")
+            })
+            $("#unit_btn").on("click", function() { 
+                var v = prompt("New unit")
+                if (v.length > 0) {
+                    $("#id_count_unit").append(new Option(v,v));
+                    $("#id_count_unit").val(v).change();
+                }
             })
             
         })

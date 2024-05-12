@@ -80,15 +80,14 @@
                aria-expanded="false">Order items</a>
             <ul class="dropdown-menu" aria-labelledby="navbarOrderItemDropdown">
               <li>
+                <a class="nav-link{% if request.path == link_list %} active{% endif %}"
+                   aria-current="page"
+                   href="{{ link_list }}">List</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link{% if request.path == link_create %} active{% endif %}"
                    aria-current="page"
                    href="{{ link_create }}">Create</a>
-              </li>
-              <li class="nav-item">
-                {% url 'orderitem-list' as link %}
-                <a class="nav-link{% if request.path == link %} active{% endif %}"
-                   aria-current="page"
-                   href="{{ link }}">List</a>
               </li>
             </ul>
             <!-- navbarOrderItemDropdown -->
