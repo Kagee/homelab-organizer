@@ -15,6 +15,21 @@ class TagChoices(ModelSelect2TagWidget):
     def get_model_field_values(self, value) -> dict:
         return {"name": value}
 
+    def create_option(  # noqa: PLR0913
+        self, name, value, label, selected, index, subindex=None, attrs=None
+    ):
+        return super().create_option(
+            name,
+            value,
+            label,
+            # if there are *any* options, set them as selected="selected", as
+            # that is how we specify initial values while using ajax data
+            "selected",
+            index,
+            subindex,
+            attrs,
+        )
+
     def value_from_datadict(self, data, files, name):
         """Create objects for missing tags.
 

@@ -78,7 +78,7 @@
           {% for stockitem in stockitems %}
             <!-- transform as a hack to stop .stretched-link -->
             <tr class="table-row" data-href="{{ stockitem.get_absolute_url }}">
-              {% with thumb_link=stockitem.thumbnail %}
+              {% with thumb_link=stockitem.thumbnail_url %}
                 <td class="p-2"
                     style="min-height: 12em;
                            height: 6em;

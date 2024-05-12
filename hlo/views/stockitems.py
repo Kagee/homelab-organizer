@@ -162,15 +162,12 @@ class StockItemUpdate(UpdateView):
         form.helper.label_class = "col-2"
         form.helper.field_class = "col-10"
 
-        # data-initvalue='[{"id":"IN","name":"India"}]'
-        logger.debug(form.fields["tags"].widget.attrs)
-        # form.fields["tags"].widget.attrs["data-initvalue"]
-        form.fields["tags"].initial = [
-            {
-                "text": "magnetic",
-                "id": "magnetic",
-            }
+        # https://apalfrey.github.io/select2-bootstrap-5-theme/examples/multiple-select/#multiple-select-custom
+        # (option_value, option_label)  # noqa: ERA001
+        form.fields["tags"].widget.choices = [
+            (x["name"], x["name"]) for x in self.object.tags.all().values()
         ]
+
         # if get paramenter fromitems is set, lock down orderitem list
         if oi := self.object.orderitems.first().pk:
             form.fields["orderitems"].label = "Order items"
