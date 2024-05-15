@@ -1,0 +1,56 @@
+{% extends "common/base.html" %}
+{% load static %}
+{% block title %}
+    Details for {{ shop.branch_name }}
+{% endblock title %}
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-3 pt-3">
+                    <img height="50" src="{{ shop.icon.url }}" class="pe-3" />
+                </div>
+                <div class="col-9">
+                    <h1>
+                        {{ shop.branch_name }} <a class="btn btn-outline-secondary btn-sm"
+   href="{% url 'shop-update' shop.id %}"
+   role="button">edit</a> <a class="btn btn-outline-secondary btn-sm"
+   href="{% url 'order-create-shop' shop.id %}"
+   role="button">create order</a>
+                    </h1>
+                    {% if shop.name != shop.branch_name %}<h6 class="text-secondary">a branch of {{ shop.name }}</h6>{% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col-1">#</th>
+                                <th scope="col-2">Date</th>
+                                <th scope="col-10">Last</th>
+                                <th scope="col-4">Num items</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <th scope="row">
+                                        <a href="{% url 'order-detail' order.id %}">{{ order.order_id }}</a>
+                                    </th>
+                                    <td>{{ order.date }}</td>
+                                    <td>
+                                        <ul>
+                                            {% for item in order.items.all %}<li>{{ item.name }}</li>{% endfor %}
+                                        </ul>
+                                    </td>
+                                    <td>{{ order.items.count }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

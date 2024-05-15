@@ -17,7 +17,8 @@ from django.shortcuts import render
 from django.views.generic import CreateView, DetailView, UpdateView
 
 from hlo.filters import OrderItemFilter
-from hlo.models import OrderItem
+from hlo.forms import OrderItemForm
+from hlo.models import Order, OrderItem
 
 logger = logging.getLogger(__name__)
 
@@ -109,11 +110,52 @@ class OrderItemDetailView(DetailView):
 class OrderItemCreateView(CreateView):
     model = OrderItem
     template_name = "orderitem/form.html"
+    form_class = OrderItemForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Create new Order object"
+        return context
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.helper.add_input(Submit("submit", "Create Order object"))
+        # if get paramenter fromitems is set, lock down orderitem list
+        if "order" in self.kwargs:
+            form.fields["order"].disabled = True
+            form.fields["order"].initial = Order.objects.get(
+                pk=self.kwargs["order"],
+            )
+        return form
 
 
 class OrderItemUpdateView(UpdateView):
     model = OrderItem
     template_name = "orderitem/form.html"
+    form_class = OrderItemForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Update item"
+        return context
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        if not self.object.manual_input:
+            for field in form.fields.values():
+                field.disabled = "disabled"
+                # field.widget.attrs["disabled"] = "disabled"
+            form.helper.add_input(
+                Submit(
+                    "submit",
+                    "Update item object",
+                    disabled="disabled",
+                ),
+            )
+        else:
+            form.helper.add_input(Submit("submit", "Update item object"))
+        return form
 
 
 __all__ = [

@@ -3,22 +3,53 @@
 {% load hlo_debug_tags %}
 {% load mptt_tags %}
 {% load django_bootstrap5 %}
+{% load bootstrap_icons %}
 {% block title %}
     Storage
 {% endblock title %}
 {% block content %}
     <div class="row">
-        <div class="col pt-3">
-            {% for shop in shops %}
-                <div class="row">
-                    <div class="col-2 border pt-1 pb-1 text-center">
-                        <img height="50" src="{{ shop.icon.url }}" />
-                    </div>
-                    <div class="col-10 border align-middle">
-                            <a href="{% url "shop-detail" shop.id %}" style="margin: auto">{{ shop.branch_name }}</a>
-                    </div>
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Icon</th>
+                                <th scope="col">Name</th>
+                                <th scope="col"># Orders</th>
+                                <th scope="col">Manual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for shop in shops %}
+                                <tr>
+                                    <th scope="row">
+                                        <img height="50" src="{{ shop.icon.url }}" />
+                                    </th>
+                                    <td>
+                                        <a href="{% url "shop-detail" shop.id %}">{{ shop.branch_name }}
+                                            {% if shop.name != shop.branch_name %}<span class="text-secondary">({{ shop.name }})</span>{% endif %}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            {{ shop.orders.all.count }}
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        {% if shop.manual_input %}
+                                            {% bs_icon 'check-circle-fill' color='green' %}
+                                        {% else %}
+                                            {% bs_icon 'x-circle-fill' color='red' %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-            {% endfor %}
+            </div>
         </div>
     </div>
 {% endblock content %}

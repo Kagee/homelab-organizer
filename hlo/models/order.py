@@ -34,6 +34,7 @@ class Order(models.Model):
     attachements = models.ManyToManyField(
         Attachement,
         related_name="order",
+        blank=True,
     )
     total = MoneyField(
         max_digits=19,
@@ -92,6 +93,9 @@ class Order(models.Model):
             # 2pylint: disable=no-member
             f" {self.items.count()} items"
         )
+
+    def get_absolute_url(self) -> str:
+        return reverse("order-detail", kwargs={"pk": self.pk})
 
     @admin.display(description="Manual input")
     def text_manual_input(self) -> str:

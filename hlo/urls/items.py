@@ -5,10 +5,13 @@ from hlo.views import (
     OrderDetailView,
     OrderItemCreateView,
     OrderItemDetailView,
+    OrderItemUpdateView,
     OrderListView,
+    OrderUpdateView,
     ShopCreateView,
     ShopDetailView,
     ShopListView,
+    ShopUpdateView,
     StockItemCreate,
     StockItemDetail,
     StockItemUpdate,
@@ -47,9 +50,14 @@ urls = [
         name="orderitem-create",
     ),
     path(
-        "orderitem/create/<int:pk>",
+        "orderitem/create/<int:order>",
         OrderItemCreateView.as_view(),
         name="orderitem-create-order",
+    ),
+    path(
+        "orderitem/update/<int:pk>",
+        OrderItemUpdateView.as_view(),
+        name="orderitem-update",
     ),
     # ORDERS
     path(
@@ -68,6 +76,11 @@ urls = [
         name="order-create-shop",
     ),
     path(
+        "order/update/<int:pk>",
+        OrderUpdateView.as_view(),
+        name="order-update",
+    ),
+    path(
         "order/list",
         OrderListView.as_view(),
         name="order-list",
@@ -77,6 +90,11 @@ urls = [
         "shop/create",
         ShopCreateView.as_view(),
         name="shop-create",
+    ),
+    path(
+        "shop/update/<int:pk>",
+        ShopUpdateView.as_view(),
+        name="shop-update",
     ),
     path(
         "shop/detail/<int:pk>",

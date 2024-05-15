@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.db import models
+from django.urls import reverse
 from django.utils.html import format_html
 
 from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
@@ -58,6 +59,9 @@ class Shop(models.Model):
         if not self.branch_name:
             self.branch_name = self.name
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self) -> str:
+        return reverse("shop-detail", kwargs={"pk": self.pk})
 
     def longname(self):
         # pylint: disable=no-member

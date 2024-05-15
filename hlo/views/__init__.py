@@ -26,7 +26,7 @@ from .label import (
 from .orderitems import (
     OrderItemCreateView,
     OrderItemDetailView,
-    # OrderItemFilter,
+    OrderItemUpdateView,
     orderitem_filtered_list,
 )
 from .orders import (

@@ -1,0 +1,40 @@
+{% extends "common/base.html" %}
+{% load crispy_forms_tags %}
+{% load bootstrap_icons %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}
+    {{ title }}
+{% endblock title %}
+{% block content %}
+    <div class="row">
+        <div class="col">
+            {% if order %}
+                <h1>{{ order.shop.branch_name }} order {{ order.order_id }}</h1>
+            {% else %}
+                <h1>Create order object</h1>
+            {% endif %}
+        </div>
+    </div>
+    {% if order and not order.manual_input %}
+        <div class="alert alert-danger" role="alert">
+            This is a automatically created shop object. Editing is disabled by default. Press <a href="#" id="enableEdit">here</a> to enable editing.
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col">{% crispy form form.helper %}</div>
+    </div>
+{% endblock content %}
+{% block bodybottom %}
+    <script type="text/javascript">
+        $(window).on("load", function() {
+            $("#enableEdit").on("click", function() { 
+                if(confirm("This is a automatically created shop object.\n\nEditing is disabled by default.\n\nAre you REALLY sure you want to edit this object?")) {
+                    document.querySelectorAll('*[disabled="disabled"]').forEach((e) => {e.disabled=""}) 
+                }
+                
+            })
+            
+        })
+    </script>
+{% endblock bodybottom %}

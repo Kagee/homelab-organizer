@@ -6,25 +6,31 @@
 {% endblock title %}
 {% block content %}
     <div class="row">
-        <div class="col-12 pt-2">
-            <div class="row">
-                <div class="col-1 d-none d-lg-block d-xl-block d-xxl-block">
-                    <h4>{{ order.shop.img_icon }}</h4>
-                </div>
-                <div class="col">
-                    <h1>
-                        {{ order.shop.branch_name }}
-                        <a href="{{ order.get_order_url }}"
-                           title="View original order details"
-                           class="text-body-secondary">#{{ order.order_id }}</a>
-                    </h1>
-                    <h3 class="text-body-secondary">{{ order.items.count }} items, {{ order.date }}</h3>
-                </div>
+        <div class="row">
+            <div class="col-2 pt-3 d-none d-lg-block d-xl-block d-xxl-block">
+                <img height="50" src="{{ order.shop.icon.url }}" class="pe-3" />
             </div>
-            <table class="table  table-sm table-bordered table-striped table-hover table-sm">
-                <thead>
-                    <tr>
-                        {# djlint:off #}
+            <div class="col-10">
+                <h1>
+                    {{ order.shop.branch_name }}
+                    <a href="{{ order.get_order_url }}"
+                       title="View original order details"
+                       class="text-body-secondary">#{{ order.order_id }}</a>
+                    <a class="btn btn-outline-secondary btn-sm"
+                       href="{% url 'order-update' order.id %}"
+                       role="button">edit</a>
+                    <a class="btn btn-outline-secondary btn-sm"
+                       href="{% url 'orderitem-create-order' order.id %}"
+                       role="button">add item</a>
+
+                </h1>
+                <h6 class="text-body-secondary">{{ order.items.count }} items, {{ order.date }}</h6>
+            </div>
+        </div>
+        <table class="table  table-sm table-bordered table-striped table-hover table-sm">
+            <thead>
+                <tr>
+                    {# djlint:off #}
                         <th scope="col" style="min-width: 6em;"></th>{# djlint:o #}
                         <th scope="col">Name</th>
                     </tr>
@@ -37,18 +43,17 @@
                                        height: 6em;
                                        background-size: contain;
                                        background-repeat: no-repeat;{# djlint:of #}
-                        {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>{# djlint:on #}
-                            <td>
-                                <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% for attachement in order.attachements.all %}
-                Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a>
-                <br>
-            {% endfor %}
-        </div>
+                    {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>{# djlint:on #}
+                        <td>
+                            <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% for attachement in order.attachements.all %}
+            Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a>
+            <br>
+        {% endfor %}
     </div>
 {% endblock content %}

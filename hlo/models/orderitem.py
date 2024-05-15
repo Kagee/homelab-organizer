@@ -87,6 +87,7 @@ class OrderItem(models.Model):
     attachements = models.ManyToManyField(
         Attachement,
         related_name="orderitem",
+        blank=True,
     )
 
     thumbnail = models.ImageField(

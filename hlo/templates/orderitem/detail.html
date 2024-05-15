@@ -7,7 +7,12 @@
     <!-- https://getbootstrap.com/docs/5.0/layout/grid/ -->
     <div class="row">
         <div class="col-6">
-            <h1>{{ orderitem.name }}</h1>
+            <h1>
+                {{ orderitem.name }}
+                <a class="btn btn-outline-secondary btn-sm"
+                   href="{% url 'orderitem-update' orderitem.id %}"
+                   role="button">edit</a>
+            </h1>
             <div class="product-main-info-partnumber-store">
                 <p>
                     <span>Order number/date:</span>
@@ -58,8 +63,8 @@
     </div>
 {% endblock content %}
 {% block bodybottom %}
-{% csrf_token %}
-<script type="text/javascript">
+    {% csrf_token %}
+    <script type="text/javascript">
     $('#print-label').click(function() 
     {
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -87,5 +92,5 @@
             }
         });
     });
-</script>
+    </script>
 {% endblock bodybottom %}
