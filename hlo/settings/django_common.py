@@ -226,10 +226,20 @@ BOOTSTRAP5 = {  # We need bootstrap >= 5.3 for dark mode
     },
 }
 
+db_cache = "non-default"
+file_cache = "default"
+
+if PROD:
+    (db_cache, file_cache) = (file_cache, db_cache)
+
 CACHES = {
-    "default": {
+    db_cache: {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         "LOCATION": "hlo_django_default_cache",
+    },
+    file_cache: {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "/tmp/django_cache",  # noqa: S108
     },
 }
 
