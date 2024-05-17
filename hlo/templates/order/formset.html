@@ -4,19 +4,19 @@
 {% load widget_tweaks %}
 {% load static %}
 {% block title %}
-    {{ title }}
+    Create order and items
 {% endblock title %}
 {% block css %}
-#id_total_1 option{
-}
-#id_total_1{
-}
-#id_total_0 {
+    #id_total_1 option{
+    }
+    #id_total_1{
+    }
+    #id_total_0 {
     flex-grow: 10;
-}
-#div_id_attachements div {
+    }
+    #div_id_attachements div {
     width: unset;
-}
+    }
 {% endblock css %}
 {% block content %}
     <div class="row">
@@ -28,22 +28,89 @@
             {% endif %}
         </div>
     </div>
-    <div class="row">
-        <div class="col">{% crispy form form.helper %}</div>
-    </div>
+    <form method="POST">
+        {{ formset.management_form |crispy }}
+        {{ form.hidden_fields |crispy }}
+        <div class="row">
+            <div class="col">{% crispy form form.helper %}</div>
+        </div>
+        <div class="row border rounded ms-1 me-1 p-1 pb-2">
+            <div class="col-10">
+                <a class="link-underline link-underline-opacity-0 text-reset"
+                   data-bs-toggle="collapse"
+                   href="#collapseOrderAttachements"
+                   role="button"
+                   aria-expanded="false"
+                   aria-controls="collapseOrderAttachements">Order attachements{% bs_icon 'caret-down-fill' %}</a>
+            </div>
+            <div class="col-2">
+                <div class="collapse text-end" id="collapseOrderAttachements">
+                    <a class="link-underline link-underline-opacity-0 text-reset"
+                        id="btn_add_attachement"
+                       href="#"
+                       role="button">{% bs_icon 'plus' %} add attachement</a>
+                </div>
+            </div>
+        </div>
+        <div class="collapse" id="collapseOrderAttachements">
+            <div class="row  border rounded m-1 pt-2">
+                <div class="row" id="formset-container">
+                    <div class="col">{% crispy formset formset_helper %}</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-10"></div>
+            <div class="col-2">
+                <input type="submit"
+                       name="submit"
+                       value="Create Order object"
+                       class="btn btn-primary"
+                       id="submit-id-submit">
+            </div>
+        </div>
+    </form>
 {% endblock content %}
 {% block bodybottom %}
     <script type="text/javascript">
-        /*
+        var formset_template = `
+        {% crispy single_form formset_helper %}
+        `;
+        formset_template = formset_template.replace(/<input[^>]+name="csrfmiddlewaretoken"[^>]+\/?>/, "")
+        total_forms = document.querySelector("#id_form-TOTAL_FORMS");
+        total_forms_value = parseInt(total_forms.value)-1;
         $(window).on("load", function() {
-            $("#enableEdit").on("click", function() { 
-                if(confirm("This is a automatically created shop object.\n\nEditing is disabled by default.\n\nAre you REALLY sure you want to edit this object?")) {
-                    document.querySelectorAll('*[disabled="disabled"]').forEach((e) => {e.disabled=""}) 
-                }
-                
+
+            $("#btn_add_attachement").on("click", () => {
+                formset_increment_regexp = /((?:id|for)="[^"]+_|name=")([^"]+")/gi
+                next_formset = formset_template.replaceAll(
+                    formset_increment_regexp,
+                    "$1form-"+(++total_forms_value)+"-$2"
+                    )
+                alert(next_formset);
+                var dom_nodes = $($.parseHTML('<div class="row" id="formset-container-' + total_forms_value + '">' + next_formset + "</div>"));
+                $("#formset-container").parent().append(dom_nodes);
+                total_forms.value = total_forms_value
             })
-            
         })
+
+        /* 
+        div id="div_id_file"
+        label for="id_file"
+        input name="file" id="id_file"
+        
+        div id="div_id_form-0-file"
+        label for="id_form-0-file"
+        input type="file" name="form-0-file" id="id_form-0-file"
+
+        name="file"
+        name="form-0-file"
+
+        for="id_form-0-file"
+
+        id="div_id_file"
+        /(id="[^"]+_)([^"]+")/ {$1}form-X-{$2}
+        id="div_id_form-0-file"
         */
     </script>
 {% endblock bodybottom %}

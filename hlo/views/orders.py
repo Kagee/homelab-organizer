@@ -3,12 +3,16 @@ import logging
 from crispy_forms.layout import (
     Submit,
 )
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from hlo.forms import AttachementFormSet, OrderForm, OrderFormSimple
-
-# pylint: disable=wildcard-import,unused-wildcard-import
+from hlo.forms import (
+    AttachementForm,
+    AttachementFormSet,
+    AttachementFormSetHelper,
+    OrderForm,
+    OrderFormSimple,
+)
 from hlo.models import Order, Shop
 
 logger = logging.getLogger(__name__)
@@ -32,6 +36,19 @@ class OrderSimpleCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["formset"] = AttachementFormSet()
+        context["formset_helper"] = AttachementFormSetHelper()
+        context["single_form"] = AttachementForm()
+        # context["formset_template"] = context["formset_helper"].render_layout(
+        #    context["formset"]._construct_form(99),  # noqa: SLF001
+        #    context,
+        # )
+        # logger.error(AttachementFormSet()._construct_form(99))
+        # logger.warning(
+        #    AttachementFormSetHelper().render_layout(
+        #        AttachementFormSet()._construct_form(99),
+        #        context,
+        #    )
+        # )
         return context
 
     def get_form(self, form_class=None):
@@ -44,9 +61,21 @@ class OrderSimpleCreateView(CreateView):
     def post(self, request, *_args, **_kwargs):
         formset = AttachementFormSet(request.POST)
         form = OrderFormSimple(request.POST)
-        if formset.is_valid() and form.is_valid():
-            return self.form_valid(formset, form)
-        return self.form_invalid(form)
+        if formset.is_valid():
+            logger.warning("Formset is valid")
+        else:
+            logger.debug(formset.errors)
+        if form.is_valid():
+            logger.error("Form is valid")
+        else:
+            logger.debug(form.errors)
+        # if formset.is_valid() and form.is_valid():
+        #    return self.form_valid(formset, form)
+        # return self.form_invalid(form)
+        return HttpResponse(
+            f"formset: {formset.is_valid()}: {formset.errors}"
+            f" form: {form.is_valid()}: {form.errors}",
+        )
 
     def form_invalid(self, form):
         """If the form is invalid, render the invalid form."""

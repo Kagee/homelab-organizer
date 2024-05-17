@@ -12,7 +12,7 @@ from crispy_forms.layout import (
     Submit,
 )
 from django import forms
-from django.forms import ModelForm, inlineformset_factory
+from django.forms import ModelForm, inlineformset_factory, modelformset_factory
 from django.forms.widgets import DateInput, HiddenInput
 from django_bootstrap_icons.templatetags.bootstrap_icons import bs_icon
 from django_select2.forms import ModelSelect2TagWidget
@@ -114,19 +114,39 @@ class AttachementForm(ModelForm):
         help_texts = {}
 
 
-OrderAttachementInlineFormSet = inlineformset_factory(
-    parent_model=Order,
-    fk_name="order",
+AttachementFormSet = modelformset_factory(
     model=Attachement,
     form=AttachementForm,
     extra=1,
 )
 
 
+class AttachementFormSetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form_method = "POST"
+        self.form_class = "form-vertical"
+        self.label_class = "col"
+        self.field_class = "col"
+        self.render_required_fields = True
+        self.form_tag = False
+        self.add_layout(
+            Column(
+                Row(
+                    Column(Field("name")),
+                    Column(
+                        Field("type"),
+                    ),
+                    Column(Field("file")),
+                ),
+            ),
+        )
+
+
 class OrderFormSimple(ModelForm):
     class Meta:
         model = Order
-        exclude = ["manual_input", "extra_data"]  # noqa: DJ006
+        exclude = ["manual_input", "extra_data", "attachements"]  # noqa: DJ006
         widgets = {
             "shop": HiddenInput(),
             "date": RealDateInput(),
@@ -148,7 +168,8 @@ class OrderFormSimple(ModelForm):
         self.helper.form_class = "form-vertical"
         self.helper.label_class = "col"
         self.helper.field_class = "col"
-        self.helper.add_input(Submit("submit", "Create"))
+        self.helper.form_tag = False
+        # self.helper.add_input(Submit("submit", "Create"))
 
         self.helper.add_layout(
             Column(
@@ -159,7 +180,6 @@ class OrderFormSimple(ModelForm):
                     ),
                     Column(FieldWithButtons("total")),
                 ),
-                Row(Field("attachements")),
             ),
         )
 
