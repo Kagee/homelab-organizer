@@ -30,7 +30,12 @@ BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
 MEDIA_ROOT: Path = (BASE_DIR / Path("media_root")).resolve()
 MEDIA_URL: str = "files/"
 # Take environment variables from .env file
-environ.Env.read_env(BASE_DIR / ".env")
+
+PROD: bool = env("PROD", default=False)
+
+env_file = ".env-prod" if PROD else ".env"
+
+env.read_env(BASE_DIR / env_file)
 
 DEBUG: bool = env("DEBUG", default=False)
 

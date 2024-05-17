@@ -17,8 +17,7 @@ media_root
 whoosh_index
 # symlinks
 .vscode
-.env
-.env-db
+.env*
 scraper-cache
 input
 schema
