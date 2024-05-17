@@ -10,3 +10,8 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
+
+# djmoney valid currencies
+CURRENCIES = ("USD", "EUR", "NOK", "JPY")
+# djmoney currencies labels
+CURRENCY_CHOICES = [("USD", "$"), ("EUR", "€"), ("NOK", "kr"), ("JPY", "¥")]
