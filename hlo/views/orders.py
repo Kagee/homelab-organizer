@@ -6,7 +6,7 @@ from crispy_forms.layout import (
 from django.http import HttpResponseRedirect
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from hlo.forms import OrderAttachementInlineFormSet, OrderForm, OrderFormSimple
+from hlo.forms import AttachementFormSet, OrderForm, OrderFormSimple
 
 # pylint: disable=wildcard-import,unused-wildcard-import
 from hlo.models import Order, Shop
@@ -31,7 +31,7 @@ class OrderSimpleCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["formset"] = OrderAttachementInlineFormSet()
+        context["formset"] = AttachementFormSet()
         return context
 
     def get_form(self, form_class=None):
@@ -42,7 +42,7 @@ class OrderSimpleCreateView(CreateView):
         return form
 
     def post(self, request, *_args, **_kwargs):
-        formset = OrderAttachementInlineFormSet(request.POST)
+        formset = AttachementFormSet(request.POST)
         form = OrderFormSimple(request.POST)
         if formset.is_valid() and form.is_valid():
             return self.form_valid(formset, form)
