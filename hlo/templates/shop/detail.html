@@ -15,7 +15,7 @@
                         {{ shop.branch_name }} <a class="btn btn-outline-secondary btn-sm"
    href="{% url 'shop-update' shop.id %}"
    role="button">edit</a> <a class="btn btn-outline-secondary btn-sm"
-   href="{% url 'order-create-shop' shop.id %}"
+   href="{% url 'order-create-simple' shop.id %}"
    role="button">create order</a>
                     </h1>
                     {% if shop.name != shop.branch_name %}<h6 class="text-secondary">a branch of {{ shop.name }}</h6>{% endif %}

@@ -33,6 +33,7 @@ from .orders import (
     OrderCreateView,
     OrderDetailView,
     OrderListView,
+    OrderSimpleCreateView,
     OrderUpdateView,
 )
 from .search import AttachementSearchView
@@ -82,8 +83,9 @@ __all__ = [
     "orderitem_filtered_list",
     "OrderDetailView",
     "OrderListView",
-    "OrderCreateView",
     "OrderUpdateView",
+    "OrderCreateView",
+    "OrderSimpleCreateView",
     "ShopDetailView",
     "ShopListView",
     "ShopCreateView",

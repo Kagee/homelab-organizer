@@ -3,9 +3,10 @@ import logging
 from crispy_forms.layout import (
     Submit,
 )
+from django.http import HttpResponseRedirect
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from hlo.forms import OrderForm
+from hlo.forms import OrderAttachementInlineFormSet, OrderForm, OrderFormSimple
 
 # pylint: disable=wildcard-import,unused-wildcard-import
 from hlo.models import Order, Shop
@@ -21,6 +22,44 @@ class OrderListView(ListView):
 class OrderDetailView(DetailView):
     model = Order
     template_name = "order/detail.html"
+
+
+class OrderSimpleCreateView(CreateView):
+    model = Order
+    template_name = "order/formset.html"
+    form_class = OrderFormSimple
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["formset"] = OrderAttachementInlineFormSet()
+        return context
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields["shop"].initial = Shop.objects.get(
+            pk=self.kwargs["shop"],
+        )
+        return form
+
+    def post(self, request, *_args, **_kwargs):
+        formset = OrderAttachementInlineFormSet(request.POST)
+        form = OrderFormSimple(request.POST)
+        if formset.is_valid() and form.is_valid():
+            return self.form_valid(formset, form)
+        return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        """If the form is invalid, render the invalid form."""
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, formset, form):
+        self.object = form.save()
+        instances = formset.save(commit=False)
+        for instance in instances:
+            self.object.attachements.add(instance)
+        self.object.save()
+
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class OrderCreateView(CreateView):

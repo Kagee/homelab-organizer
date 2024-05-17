@@ -20,7 +20,6 @@
       </button>
       <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
           <li class="nav-item dropdown">
             {% url 'shop-list' as link_list %}
             {% url 'shop-create' as link_create %}
@@ -47,7 +46,7 @@
           <li class="nav-item dropdown">
             {% url 'order-list' as link_list %}
             {% url 'order-create' as link_create %}
-            <a class="nav-link dropdown-toggle{% if request.path == link_list or request.path == link_create %} active{% endif %}"
+            <a class="nav-link dropdown-toggle{% if request.path == link_list or request.path == link_create or request.path == link_create_simple %} active{% endif %}"
                href="#"
                id="navbarOrderDropdown"
                role="button"
@@ -67,8 +66,6 @@
             </ul>
             <!-- navbarOrderDropdown -->
           </li>
-
-
           <li class="nav-item dropdown">
             {% url 'orderitem-list' as link_list %}
             {% url 'orderitem-create' as link_create %}
@@ -79,6 +76,7 @@
                data-bs-toggle="dropdown"
                aria-expanded="false">Order items</a>
             <ul class="dropdown-menu" aria-labelledby="navbarOrderItemDropdown">
+
               <li>
                 <a class="nav-link{% if request.path == link_list %} active{% endif %}"
                    aria-current="page"
@@ -121,7 +119,6 @@
             </ul>
             <!-- navbarStorageDropdown -->
           </li>
-
           <li class="nav-item dropdown">
             {% url 'item-search' as link_I %}
             {% url 'attachement-search' as link_A %}

@@ -7,6 +7,7 @@ from hlo.views import (
     OrderItemDetailView,
     OrderItemUpdateView,
     OrderListView,
+    OrderSimpleCreateView,
     OrderUpdateView,
     ShopCreateView,
     ShopDetailView,
@@ -74,6 +75,11 @@ urls = [
         "order/create/<int:shop>",
         OrderCreateView.as_view(),
         name="order-create-shop",
+    ),
+    path(
+        "order/create_simple/<int:shop>",
+        OrderSimpleCreateView.as_view(),
+        name="order-create-simple",
     ),
     path(
         "order/update/<int:pk>",

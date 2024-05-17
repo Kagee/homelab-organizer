@@ -12,12 +12,13 @@ from crispy_forms.layout import (
     Submit,
 )
 from django import forms
-from django.forms import ModelForm
+from django.forms import ModelForm, inlineformset_factory
+from django.forms.widgets import DateInput, HiddenInput
 from django_bootstrap_icons.templatetags.bootstrap_icons import bs_icon
 from django_select2.forms import ModelSelect2TagWidget
 from taggit.models import Tag
 
-from hlo.models import Order, OrderItem, Shop, StockItem
+from hlo.models import Attachement, Order, OrderItem, Shop, StockItem
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +97,71 @@ class ShopForm(ModelForm):
         self.helper.form_class = "form-horizontal"
         self.helper.label_class = "col-2"
         self.helper.field_class = "col-10"
+
+
+class RealDateInput(DateInput):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.input_type = "date"
+
+
+class AttachementForm(ModelForm):
+    class Meta:
+        model = Attachement
+        exclude = ["comment", "text", "manual_input", "sha1"]  # noqa: DJ006
+        widgets = {}
+        labels = {}
+        help_texts = {}
+
+
+OrderAttachementInlineFormSet = inlineformset_factory(
+    parent_model=Order,
+    fk_name="order",
+    model=Attachement,
+    form=AttachementForm,
+    extra=1,
+)
+
+
+class OrderFormSimple(ModelForm):
+    class Meta:
+        model = Order
+        exclude = ["manual_input", "extra_data"]  # noqa: DJ006
+        widgets = {
+            "shop": HiddenInput(),
+            "date": RealDateInput(),
+        }
+        labels = {
+            "order_id": "ID",
+            "date": "Date",
+        }
+        help_texts = {
+            "order_id": None,
+        }
+
+    def __init__(self, *args, **kwargs):
+        # We need this so self.fields is populated
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.form_class = "form-vertical"
+        self.helper.label_class = "col"
+        self.helper.field_class = "col"
+        self.helper.add_input(Submit("submit", "Create"))
+
+        self.helper.add_layout(
+            Column(
+                Row(
+                    Column(Field("order_id")),
+                    Column(
+                        Field("date"),
+                    ),
+                    Column(FieldWithButtons("total")),
+                ),
+                Row(Field("attachements")),
+            ),
+        )
 
 
 # Create the form class.
