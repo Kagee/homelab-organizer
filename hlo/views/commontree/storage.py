@@ -10,7 +10,7 @@ class StorageCreateView(CreateView):
     model = Storage
     template_name = "storage/form.html"
     context_object_name = "storage"
-    fields = ["name", "comment", "parent"]
+    fields = ["name", "name_secondary", "comment", "parent"]
 
     def get_initial(self):
         # Get the initial dictionary from the superclass method
