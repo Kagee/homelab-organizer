@@ -277,4 +277,5 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.RemoteUserBackend",
 ]
 
+# For CustomPersistentRemoteUserMiddleware
 REMOTE_USER_HEADER = env("REMOTE_USER_HEADER")
