@@ -1,5 +1,6 @@
 venv
 prod-db/*
+prod_data_2024_05_29.json
 __pycache__
 *.swp
 chromedriver
