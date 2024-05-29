@@ -46,6 +46,7 @@
 			"*.swp": true,
 			"**/migrations/": true,
 			".gitignore": true,
+			"hlo/sqlite3": true,
 			"hlo_model_graph.png": true,
 		},
 		"python.languageServer": "Jedi",
