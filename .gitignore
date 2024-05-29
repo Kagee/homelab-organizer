@@ -1,4 +1,5 @@
 venv
+prod-db/*
 __pycache__
 *.swp
 chromedriver

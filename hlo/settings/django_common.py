@@ -58,11 +58,23 @@ DATE_FORMAT = "Y-m-d"
 SECRET_KEY: str = env("SECRET_KEY")
 
 # Parse database connection url strings
-DATABASES = {
-    # read os.environ['DATABASE_URL'] and raises
-    # ImproperlyConfigured exception if not found
-    "default": env.db(),
-}
+
+
+SQLITE3_FILE: str = env("SQLITE3_FILE", default="")
+
+if SQLITE3_FILE:
+    DATABASES = {
+        "default": {
+            "ENGINE": "hlo.sqlite3",
+            "NAME": BASE_DIR / SQLITE3_FILE,
+        },
+    }
+else:
+    DATABASES = {
+        # read os.environ['DATABASE_URL'] and raises
+        # ImproperlyConfigured exception if not found
+        "default": env.db(),
+    }
 
 
 # Override this in logging.py
