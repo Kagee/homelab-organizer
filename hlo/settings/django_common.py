@@ -276,3 +276,5 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.RemoteUserBackend",
 ]
+
+REMOTE_USER_HEADER = env("REMOTE_USER_HEADER")
