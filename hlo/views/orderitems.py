@@ -114,12 +114,12 @@ class OrderItemCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Create new Order object"
+        context["title"] = "Create new order item object"
         return context
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.helper.add_input(Submit("submit", "Create Order object"))
+        form.helper.add_input(Submit("submit", "Create order item object"))
         # if get paramenter fromitems is set, lock down orderitem list
         if "order" in self.kwargs:
             form.fields["order"].disabled = True
