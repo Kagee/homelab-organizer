@@ -18,6 +18,9 @@
                             <a class="btn btn-outline-secondary btn-sm"
                                href="{% url "storage-detail" storage.parent.pk %}">{{ storage.parent }}</a>
                         {% endif %}
+                        <a class="btn btn-outline-secondary btn-sm"
+                    href="{% url 'storage-update' storage.id %}"
+                    role="button">edit</a>
                     </h3>
                     <p class="text-body-secondary">{{ storage.comment | linebreaks  }}</p>
                 </div>
@@ -34,7 +37,7 @@
                                     <td colspan="2">
                                         {% for node in storage.get_children %}
                                             <a class="btn btn-outline-secondary btn-sm mt-2"
-                                               href="{% url "storage-detail" node.pk %}">{{ node }}</a>
+                                               href="{% url "storage-detail" node.pk %}">{{ node.name }}{% if node.name_secondary %}<span class="text-secondary"> ({{ node.name_secondary }})</span>{% endif %}</a>
                                         {% endfor %}
                                         <a class="btn btn-outline-info btn-sm mt-2"
                                                href="{% url "storage-create-parent" storage.pk %}">Create new child</a>

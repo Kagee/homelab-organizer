@@ -70,7 +70,7 @@ class Storage(CommonTreeModel):
 
     def __str__(self):
         packaging = (
-            " (::" + self.name_secondary + ")" if self.name_secondary else ""
+            " (" + self.name_secondary + ")" if self.name_secondary else ""
         )
         color = self.VALUE_TO_HEX[self.color] if self.color else ""
         return f"{ self.name }{ packaging }{ color }"

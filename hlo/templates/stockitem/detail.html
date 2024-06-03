@@ -103,7 +103,7 @@
                 <td class="table-secondary">Order items</td>
                 <td>
                   {% for orderitem in stockitem.orderitems.all %}
-                    {{ orderitem }}
+                    <a href="{% url "orderitem-detail" orderitem.pk %}">{{ orderitem }}</a>
                     <br>
                     {% if orderitem.attachements.all %}<ul>{% endif %}
                       {% for attachement in orderitem.attachements.all %}

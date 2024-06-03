@@ -14,6 +14,7 @@
                     <a href="{% url "storage-detail" storage.id %}"
                        class="list-group-item list-group-item-action">
                         {% repeat_multi "&nbsp;" storage.level 10 %}{{ storage.name }}
+                        {% if storage.name_secondary %}<span class="text-secondary"> ({{ storage.name_secondary }})</span>{% endif %}
                         <!-- () --></a>
                     {% endfor %}
                 </div>
