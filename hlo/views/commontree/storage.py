@@ -1,9 +1,13 @@
+import logging
 from typing import Any
 
 from crispy_forms.helper import FormHelper
+from django.http import HttpResponseRedirect
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from hlo.models import Storage
+
+logger = logging.getLogger(__name__)
 
 
 class StorageCreateView(CreateView):
@@ -24,6 +28,14 @@ class StorageCreateView(CreateView):
             )
             initial["parent"] = obj
         return initial
+
+    def get_success_url(self):
+        if (
+            "submit" in self.request.POST
+            and self.request.POST["submit"] == "view-parent"
+        ) and self.object.parent:
+            return self.object.parent.get_absolute_url()
+        return super().get_success_url()
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -61,3 +73,22 @@ class StorageUpdateView(UpdateView):
     model = Storage
     template_name = "storage/form.html"
     context_object_name = "storage"
+    fields = ["name", "name_secondary", "comment", "parent"]
+
+    def get_success_url(self):
+        if (
+            "submit" in self.request.POST
+            and self.request.POST["submit"] == "view-parent"
+        ) and self.object.parent:
+            return self.object.parent.get_absolute_url()
+        return super().get_success_url()
+
+    def get_form(self, form_class=None):
+        # Should be moved to modelform?
+        form = super().get_form(form_class)
+        form.helper = FormHelper()
+        form.helper.form_method = "post"
+        form.helper.form_class = "form-horizontal"
+        form.helper.label_class = "col-2"
+        form.helper.field_class = "col-10"
+        return form

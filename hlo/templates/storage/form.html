@@ -4,12 +4,14 @@
 {% load widget_tweaks %}
 {% load crispy_forms_tags %}
 {% block title %}
-    Create storage
+{% if storage %}Edit{% else %}Create{% endif %} storage {{ storage.name }}
 {% endblock title %}
 {% block content %}
-    <div class="row">
+    <div class="row mt-2 mb-4">
         <div class="col">
-            <h1>Create storage object</h1>
+            <h1>
+                {% if storage %}Edit{% else %}Create{% endif %} storage {{ storage.name }}
+            </h1>
         </div>
     </div>
     <div class="row">
@@ -22,7 +24,8 @@
                     </div>
                 {% endfor %}
                 <p class="text-end">
-                    <button type="submit" class="btn btn-primary">Create storage object</button>
+                    <button name="submit" type="submit" value="view-object" class="btn btn-primary">{% if storage %}Edit{% else %}Create{% endif %} storage and view</button>
+                    <button name="submit" type="submit" value="view-parent" class="btn btn-primary">{% if storage %}Edit{% else %}Create{% endif %} storage and view parent</button>
                 </p>
             </form>
         </div>
