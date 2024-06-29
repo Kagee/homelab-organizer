@@ -12,6 +12,7 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.cache import patch_cache_control
 from PIL import Image, ImageDraw, ImageFont
 
 from hlo.models import OrderItem, OrderItemMeta, Storage
@@ -147,13 +148,18 @@ def _storage_get_label_data(pk: int) -> tuple[str, str, Storage]:
 
 def _label_response(im: Image) -> HttpResponse:
     response = HttpResponse(content_type="image/png")
+    patch_cache_control(
+        response, no_cache=True, no_store=True, must_revalidate=True
+    )
     im.save(response, format="PNG")
     return response
 
 
-def _get_label(qr_text: str, label_text: str, _oi: OrderItem) -> Image:
-    # get_object_or_404 will do the pk filtering
-
+def _get_label(
+    qr_text: str,
+    label_text: str,
+    _oi: OrderItem | Storage,
+) -> Image:
     font_path = Path("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf")
 
     label_hash = hashlib.sha1()  # noqa: S324
@@ -162,7 +168,9 @@ def _get_label(qr_text: str, label_text: str, _oi: OrderItem) -> Image:
     )
     hex_hash = label_hash.hexdigest()
     filename = hex_hash[2:] + ".png"
+
     cache_file: Path = settings.BARCODE_CACHE / hex_hash[:2] / filename
+
     if cache_file.is_file():
         return Image.open(cache_file)
     return _make_label(label_text, qr_text, cache_file, font_path)
