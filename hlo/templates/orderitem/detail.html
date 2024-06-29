@@ -5,60 +5,138 @@
 {% endblock title %}
 {% block content %}
     <!-- https://getbootstrap.com/docs/5.0/layout/grid/ -->
-    <div class="row">
-        <div class="col-6">
-            <h1>
-                {{ orderitem.name }}
-                <a class="btn btn-outline-secondary btn-sm"
-                   href="{% url 'orderitem-update' orderitem.id %}"
-                   role="button">edit</a>
-            </h1>
-            <div class="product-main-info-partnumber-store">
-                <p>
-                    <span>Order number/date:</span>
-                    <span>
-                        <a href="{% url 'order-detail' orderitem.order.id %}"
-                           title="View original order details">
-                            {{ orderitem.order.order_id }} / {{ orderitem.order.date }}
-                        </a>
-                    </span>
-                    <br>
-                    <span>Item number:</span>
-                    <span>
-                        <a href="{{ orderitem.get_orderitem_url }}"
-                           title="View original item listing on {{ orderitem.order.shop.branch_name }}">
-                            {{ orderitem.item_id }}
-                        </a>
-                    </span>
-                </p>
+    <div class="row mt-3">
+        <div class="col-9 col-lg-7 col-xl-7 col-xxl-7">
+            <div class="row">
+                <!-- title -->
+                <div class="col-12">
+                    <h3>
+                        {{ orderitem.name }}
+                        {% if orderitem.manual_input %}
+                            <a class="btn btn-outline-secondary btn-sm"
+                               href="{% url 'orderitem-update' orderitem.id %}"
+                               role="button">edit</a>
+                        {% endif %}
+                        {% if not orderitem.stockitems.count %}
+                            <a href="{% url 'stockitem-create-from' orderitem.id %}"
+                               class="btn btn-outline-secondary btn-sm">Create stock item</a>
+                               <a href="{% url 'stockitem-create-from' orderitem.id %}"
+                               class="btn btn-outline-secondary btn-sm">Add to stock item</a>
+                        {% endif %}
+                    </h3>
+                </div>
             </div>
-            {% if not orderitem.stockitems.count %}
-                <a href="{% url 'stockitem-create-from' orderitem.id %}"
-                   class="btn btn-primary btn-sm">Create stock item {% bs_icon 'box-arrow-in-right' %}</a>
-            {% endif %}
-            {% if orderitem.attachements.all %}
-                <h4>Attachements</h4>
-                {% for attachement in orderitem.attachements.all %}
-                    Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a>
-                    <br>
-                {% endfor %}
-            {% endif %}
-            <h4>Label</h4>
-            <p>
-                <img src="{% url 'label-render-orderitem' orderitem.id %}" width="400" />
-            </p>
-            <p>
-                <a id="print-label" class="btn btn-primary btn-sm">
-                    {% if orderitem.meta.label_printed %}
-                        Reprint label
+            <div class="row d-lg-none d-xl-none d-xxl-none">
+                <!-- small screen image -->
+                <div class="col">
+                    {% if orderitem.thumbnail %}
+                        <img alt="Image thumbnail"
+                             src="{{ orderitem.thumbnail.url }}"
+                             class="img-fluid"
+                             style="max-width: 90%" />
                     {% else %}
-                        Print label
+                        {% md_icon 'image-off' color='grey' size='90%' %}
                     {% endif %}
-                </a>
-            </p>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <!-- table -->
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr class="table-dark">
+                                <td colspan="2">Metadata</td>
+                            </tr>
+                            <tr>
+                                <td>Internal order</td>
+                                <td>
+                                    <a href="{% url 'order-detail' orderitem.order.id %}" target="_blank">{{ orderitem.order }}</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Original order</td>
+                                <td>
+                                    <a href="{{ orderitem.order.get_order_url }}"
+                                       title="View original order details"
+                                       target="_blank">🛪 View original order {{ orderitem.order.shop.name }} #{{ orderitem.order.order_id }}</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Order date</td>
+                                <td>{{ orderitem.order.date }}</td>
+                            </tr>
+                            <tr>
+                                <td>Item number</td>
+                                <td>
+                                    <a href="{{ orderitem.get_orderitem_url }}"
+                                       title="View original item listing on {{ orderitem.order.shop.branch_name }}"
+                                       target="_blank">🛪 {{ orderitem.order.shop.name }} #{{ orderitem.item_id }}</a>
+                                </td>
+                            </tr>
+                            <tr class="table-dark">
+                                <td colspan="2">Related items and attachements</td>
+                            </tr>
+                            <tr>
+                                <td class="table-secondary">Stock items</td>
+                                <td>
+                                    {% for stockitem in orderitem.stockitems.all %}
+                                        <a href="{% url "stockitem-detail" stockitem.pk %}">{{ stockitem }} ({{ stockitem.pk }})</a>
+                                        <br>
+                                        {% if stockitem.attachements.all %}<ul>{% endif %}
+                                            {% for attachement in stockitem.attachements.all %}
+                                                <li>
+                                                    <a href="{{ attachement.file.url }}" target="_blank">{{ attachement.name }}</a>
+                                                </li>
+                                            {% endfor %}
+                                            {% if stockitem.attachements.all %}</ul>{% endif %}
+                                    {% empty %}
+                                        No linked stock items
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="table-secondary">Attachements</td>
+                                <td>
+                                    {% for attachement in stockitem.attachements.all %}
+                                        {{ attachement }}
+                                        <br>
+                                    {% empty %}
+                                        No attachements
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="table-secondary">Label</td>
+                                <td>
+                                    <p>
+                                        <img src="{% url 'label-render-orderitem' orderitem.id %}" width="400" />
+                                    </p>
+                                    <p>
+                                        <a id="print-label" class="btn btn-primary btn-sm">
+                                            {% if stockitem.orderitems.first.meta.label_printed %}
+                                                Reprint label
+                                            {% else %}
+                                                Print label
+                                            {% endif %}
+                                        </a>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-6">
-            {% if orderitem.thumbnail %}{{ orderitem.image_tag }}{% endif %}
+        <div class="col-3 d-none d-lg-block d-xl-block d-xxl-block">
+            <!-- Render image to the side for >= lg -->
+            {% if orderitem.thumbnail %}
+                <img alt="Image thumbnail"
+                     src="{{ orderitem.thumbnail.url }}"
+                     class="img-fluid"
+                     style="max-width: 90%" />
+            {% else %}
+                {% md_icon 'image-off' color='grey' size='90%' %}
+            {% endif %}
         </div>
     </div>
 {% endblock content %}

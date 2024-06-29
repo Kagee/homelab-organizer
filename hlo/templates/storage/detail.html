@@ -53,9 +53,14 @@
                                             {% for stockitem in storage.stockitems.all %}
                                                 <a href="{{ stockitem.get_absolute_url }}"
                                                    class="list-group-item list-group-item-action">
-                                                    <img style="min-height: 6em;
+                                                   {% if stockitem.thumbnail_url %}
+                                                   <img style="min-height: 6em;
                                                                 max-width: 6em"
                                                          src="{{ stockitem.thumbnail_url }}" />
+                                                         {% else %}
+                                                         {% md_icon 'image-off' color='grey' size="6em" %}
+                                                         {% endif %}
+                                                    
                                                 {{ stockitem.name }}</a>
                                             {% endfor %}
                                         </div>

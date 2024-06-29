@@ -99,8 +99,8 @@ class StockItemCreate(CreateView):
                 )
 
             ctx["original_name"] = oi.name
+            ctx["orderitem"] = oi
             ctx["ai_name"] = ai_name
-            ctx["image_url"] = oi.thumbnail.url
             form = ctx["form"]
             form.fields["name"].initial = ai_name
             form.fields["name"].help_text = name_help
@@ -153,11 +153,6 @@ class StockItemUpdate(UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-
-        # https://github.com/codingjoe/django-select2/issues/4#issuecomment-2106265109
-        # form.fields["tags"].widget.choices = [
-        #    (x["name"], x["name"]) for x in self.object.tags.all().values()
-        # ]
 
         form.fields["count_unit"].widget = Select(
             choices=[
@@ -238,9 +233,6 @@ def stockitem_list(request):
                         'class="btn btn-secondary col ">Clear</a>',
                     ),
                     Submit("submit", "Submit", css_class="btn btn-primary col"),
-                    # HTML(
-                    #    '<button type="submit" class="btn btn-primary">Filter</button>'
-                    # ),
                     css_class="row align-items-end h-100 pb-3",
                 ),
                 css_class="col",
