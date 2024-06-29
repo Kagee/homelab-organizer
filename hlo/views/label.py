@@ -1,6 +1,7 @@
 import hashlib
 import io
 import logging
+import re
 import textwrap
 from pathlib import Path
 
@@ -10,7 +11,13 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Count
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseNotFound,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.cache import patch_cache_control
 from PIL import Image, ImageDraw, ImageFont
@@ -20,12 +27,25 @@ from hlo.models import OrderItem, OrderItemMeta, Storage
 logger = logging.getLogger(__name__)
 
 __all__ = [
+    "label_render",
     "label_render_orderitem",
     "label_print_orderitem",
     "label_render_storage",
     "label_print_storage",
     "sha1_redirect",
 ]
+
+
+def label_render(_request: WSGIRequest, hex_hash: str) -> HttpResponse:
+    if len(hash) != 40 or not re.match("^[A-Fa-f0-9]*$", hash):  # noqa: PLR2004
+        return HttpResponseBadRequest("Hash is invalid")
+    filename = hex_hash[2:] + ".png"
+
+    cache_file: Path = settings.BARCODE_CACHE / hex_hash[:2] / filename
+
+    if cache_file.is_file():
+        return _label_response(Image.open(cache_file))
+    return HttpResponseNotFound("Label with hash {} not found.")
 
 
 def label_render_storage(_request: WSGIRequest, pk: int) -> HttpResponse:
@@ -153,6 +173,27 @@ def _label_response(im: Image) -> HttpResponse:
     )
     im.save(response, format="PNG")
     return response
+
+
+def _get_label_cache_file(
+    qr_text: str,
+    label_text: str,
+    _oi: OrderItem | Storage,
+) -> Image:
+    font_path = Path("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf")
+
+    label_hash = hashlib.sha1()  # noqa: S324
+    label_hash.update(
+        (label_text + qr_text + str(font_path)).encode(),  # defaults to utf-8
+    )
+    hex_hash = label_hash.hexdigest()
+    filename = hex_hash[2:] + ".png"
+
+    cache_file: Path = settings.BARCODE_CACHE / hex_hash[:2] / filename
+
+    if not cache_file.is_file():
+        _make_label(label_text, qr_text, cache_file, font_path)
+    return cache_file
 
 
 def _get_label(
