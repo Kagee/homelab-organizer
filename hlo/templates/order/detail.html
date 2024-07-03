@@ -25,6 +25,7 @@
 
                 </h1>
                 <h6 class="text-body-secondary">{{ order.items.count }} items, {{ order.date }}</h6>
+                <h3>Total: {{ order.total }}</h3>
             </div>
         </div>
         <table class="table  table-sm table-bordered table-striped table-hover table-sm">
@@ -33,6 +34,9 @@
                     {# djlint:off #}
                         <th scope="col" style="min-width: 6em;"></th>{# djlint:o #}
                         <th scope="col">Name</th>
+                        <th scope="col">Count</th>
+                        <th scope="col">Subtotal</th>
+                        <th scope="col">Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,6 +50,19 @@
                     {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>{# djlint:on #}
                         <td>
                             <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
+                        </td>
+                        <td>
+                            {{ orderitem.count }}
+                        </td>
+                        <td>
+                            {% if orderitem.subtotal %}
+                            {{ orderitem.subtotal }}
+                            {% else %}
+                            -
+                            {% endif%}
+                        </td>
+                        <td>
+                            {{ orderitem.total }}
                         </td>
                     </tr>
                 {% endfor %}
