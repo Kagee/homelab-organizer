@@ -1,4 +1,4 @@
-# ruff: noqa: T201,F401
+# ruff: noqa: T201,F401,ERA001
 import sys
 
 from attr.validators import instance_of
@@ -51,11 +51,11 @@ def make_parser(p=printables):
 def main():
     orig_tests = {
         "ASCII": [],
-        "BMP": [],
+        "BasicMultilingualPlane": [],
         "UNICODE": [],
     }
 
-    def dappend(
+    def test(
         search_str: str,
         expected_out_list: list,
         skip: str | list[str] | None = None,
@@ -71,31 +71,34 @@ def main():
             orig_tests[key].append(search_str)
             orig_tests[key].append(expected_out_list)
 
-    dappend("wood AND blue OR red", [["wood", "AND", "blue"], "OR", "red"])
-    dappend(
+    test("wood AND blue OR red", [["wood", "AND", "blue"], "OR", "red"])
+    test(
         "wood AND blå OR RØD",
         [["wood", "AND", "blå"], "OR", "RØD"],
         "ASCII",
     )
-    dappend("wood OR blue OR red", ["wood", "OR", "blue", "OR", "red"])
-    dappend("wood AND(blue OR red)", ["wood", "AND", ["blue", "OR", "red"]])
-    dappend(
+    test("wood OR blue OR red", ["wood", "OR", "blue", "OR", "red"])
+    test("wood AND(blue OR red)", ["wood", "AND", ["blue", "OR", "red"]])
+    test(
         '(steel OR iron)AND "lime green"',
         [["steel", "OR", "iron"], "AND", "lime green"],
     )
-    dappend(
+    test(
         "NOT steel OR iron AND 'lime green'",
         [["NOT", "steel"], "OR", ["iron", "AND", "lime green"]],
     )
-    dappend(
+    test(
         "NOT(steelAND OR ORiron) AND 'lime greenNOT'",
         [["NOT", ["steelAND", "OR", "ORiron"]], "AND", "lime greenNOT"],
     )
 
     for name, parser in (
-        ("ASCII", make_parser(printables)),
+        # ("ASCII", make_parser(printables)),
         # ("UNICODE", make_parser(pyparsing_unicode.printables)),
-        ("BMP", make_parser(pyparsing_unicode.BMP.printables)),
+        (
+            "BasicMultilingualPlane",
+            make_parser(pyparsing_unicode.BasicMultilingualPlane.printables),
+        ),
     ):
         print(f"{Fore.blue}#####", name, f"#####{Style.reset}")
         tests = iter(orig_tests[name])
@@ -103,7 +106,7 @@ def main():
         num_passed_tests = 0
         for t in tests:
             num_tests += 1
-            print(t.strip())
+            print(t.strip(), "", end="")
             u = next(tests)
             parsed = parser.parseString(t)[0]
             # can't compare lists directly using ==
@@ -111,7 +114,7 @@ def main():
                 print(f"{Fore.green}True{Style.reset}")
                 num_passed_tests += 1
             else:
-                print("False", parsed)
+                print(f"{Fore.red}False\n", "    ", parsed)
                 print(f"{Fore.red}     ", str(u), Style.reset)
             sys.stdout.flush()
 
