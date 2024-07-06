@@ -25,7 +25,11 @@
                             {% for shop in shops %}
                                 <tr>
                                     <th scope="row">
-                                        <img height="50" src="{{ shop.icon.url }}" />
+                                        {% if shop.icon %}
+                                            <img height="50" src="{{ shop.icon.url }}" class="pe-3" />
+                                        {% else %}
+                                            {% md_icon 'image-off' color='grey' size='50px' %}
+                                        {% endif %}
                                     </th>
                                     <td>
                                         <a href="{% url "shop-detail" shop.id %}">{{ shop.branch_name }}

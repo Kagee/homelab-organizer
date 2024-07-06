@@ -106,44 +106,44 @@
   <nav aria-label="Pagination"
        class="navbar fixed-bottom navbar-light bg-light justify-content-center pb-0 pt-1 clearfix">
     <ul class="pagination mb-1">
-      <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+      <li class="page-item{% if not stockitems.has_previous %} disabled{% endif %}">
         <a class="page-link"
-           {% if page_obj.has_previous %} href="?{% url_replace_parameter page=1 %}" {% endif %}
+           {% if stockitems.has_previous %} href="?{% url_replace_parameter page=1 %}" {% endif %}
            aria-label="First">
           <span class="d-lg-none d-xl-none d-xxl-none">«</span>
           <span class="d-none d-lg-block d-xl-block d-xxl-block">«&nbsp;First</span>
         </a>
       </li>
-      <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
+      <li class="page-item{% if not stockitems.has_previous %} disabled{% endif %}">
         <a class="page-link"
-           {% if page_obj.has_previous %} href="?{% url_replace_parameter page=page_obj.previous_page_number %}" {% endif %}
+           {% if stockitems.has_previous %} href="?{% url_replace_parameter page=stockitems.previous_page_number %}" {% endif %}
            aria-label="Previous">
           <span class="d-lg-none d-xl-none d-xxl-none">‹</span>
           <span class="d-none d-lg-block d-xl-block d-xxl-block">‹&nbsp;Previous</span>
         </a>
       </li>
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
+      {% for num in stockitems.paginator.page_range %}
+        {% if stockitems.number == num %}
           <li class="page-item">
-            <a class="page-link disabled">{{ page_obj.number }}</a>
+            <a class="page-link disabled">{{ stockitems.number }}</a>
           </li>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        {% elif num > stockitems.number|add:'-3' and num < stockitems.number|add:'3' %}
           <li class="page-item d-none d-lg-block d-xl-block d-xxl-block">
             <a class="page-link" href="?{% url_replace_parameter page=num %}">{{ num }}</a>
           </li>
         {% endif %}
       {% endfor %}
-      <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
+      <li class="page-item{% if not stockitems.has_next %} disabled{% endif %}">
         <a class="page-link"
-           {% if page_obj.has_next %} href="?{% url_replace_parameter page=page_obj.next_page_number %}" {% endif %}
+           {% if stockitems.has_next %} href="?{% url_replace_parameter page=stockitems.next_page_number %}" {% endif %}
            aria-label="Next">
           <span class="d-lg-none d-xl-none d-xxl-none">›</span>
           <span class="d-none d-lg-block d-xl-block d-xxl-block">Next&nbsp;›</span>
         </a>
       </li>
-      <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
+      <li class="page-item{% if not stockitems.has_next %} disabled{% endif %}">
         <a class="page-link"
-           {% if page_obj.has_next %} href="?{% url_replace_parameter page=page_obj.paginator.num_pages %}" {% endif %}
+           {% if stockitems.has_next %} href="?{% url_replace_parameter page=stockitems.paginator.num_pages %}" {% endif %}
            aria-label="Last">
           <span class="d-lg-none d-xl-none d-xxl-none">»</span>
           <span aria-hidden="true" class="d-none d-lg-block d-xl-block d-xxl-block">Last&nbsp;»</span>

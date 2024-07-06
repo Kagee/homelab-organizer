@@ -33,6 +33,7 @@ class StockItem(models.Model):
     name = models.CharField(max_length=255, blank=True, default="")
     count = models.PositiveIntegerField("Count", default=0)
     count_unit = models.CharField("Unit", default="items", max_length=50)
+    comment = models.TextField(blank=True, default="")
     tags = TaggableManager(verbose_name="Tags", help_text=None, blank=True)
     category = TreeManyToManyField(
         "Category",

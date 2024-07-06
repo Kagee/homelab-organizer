@@ -66,9 +66,11 @@ class Attachement(models.Model):
                 else:
                     sha1hash.update(f.read())
                 self.sha1 = sha1hash.hexdigest()
+                logger.debug("Attachement SHA1 was %s", self.sha1)
                 super().save(*args, **kwargs)
         else:
             self.sha1 = self.sha1 if self.sha1 else None
+            logger.warning("SHA1 was None?")
         super().save(*args, **kwargs)
 
     def text_ornot(self):

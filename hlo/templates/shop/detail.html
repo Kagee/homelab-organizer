@@ -1,5 +1,6 @@
 {% extends "common/base.html" %}
 {% load static %}
+{% load bootstrap_icons %}
 {% block title %}
     Details for {{ shop.branch_name }}
 {% endblock title %}
@@ -8,15 +9,21 @@
         <div class="col-12">
             <div class="row">
                 <div class="col-3 pt-3">
-                    <img height="50" src="{{ shop.icon.url }}" class="pe-3" />
+                    {% if shop.icon %}
+                        <img height="50" src="{{ shop.icon.url }}" class="pe-3" />
+                    {% else %}
+                        {% md_icon 'image-off' color='grey' size='50px' %}
+                    {% endif %}
                 </div>
                 <div class="col-9">
                     <h1>
                         {{ shop.branch_name }} <a class="btn btn-outline-secondary btn-sm"
-   href="{% url 'shop-update' shop.id %}"
-   role="button">edit</a> <a class="btn btn-outline-secondary btn-sm"
-   href="{% url 'order-create-simple' shop.id %}"
-   role="button">create order</a>
+    href="{% url 'shop-update' shop.id %}"
+    role="button">edit</a> <a class="btn btn-outline-secondary btn-sm"
+    href="{% url 'order-create-simple' shop.id %}"
+    role="button">create (simple) order</a> <a class="btn btn-outline-secondary btn-sm"
+    href="{% url 'order-create-shop' shop.id %}"
+    role="button">create order</a>
                     </h1>
                     {% if shop.name != shop.branch_name %}<h6 class="text-secondary">a branch of {{ shop.name }}</h6>{% endif %}
                 </div>

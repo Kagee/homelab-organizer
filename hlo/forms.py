@@ -240,6 +240,7 @@ class StockItemForm(ModelForm):
             "name",
             "count",
             "count_unit",
+            "comment",
             "tags",
             "category",
             "project",
@@ -273,7 +274,7 @@ class StockItemForm(ModelForm):
         self.helper.field_class = "col-10"
 
         self.fields["tags"].widget.choices = initial_tags
-
+        self.fields["comment"].widget.attrs["rows"] = 2
         self.helper.layout = Layout(
             FieldWithButtons(
                 "name",
@@ -321,6 +322,7 @@ class StockItemForm(ModelForm):
                 css_class="mb-3",  # Row
             ),
             Field("tags"),
+            Field("comment"),
             Field("thumbnail"),
             Field(
                 "category",

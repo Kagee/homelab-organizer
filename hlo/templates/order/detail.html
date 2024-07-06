@@ -8,7 +8,11 @@
     <div class="row">
         <div class="row">
             <div class="col-2 pt-3 d-none d-lg-block d-xl-block d-xxl-block">
-                <img height="50" src="{{ order.shop.icon.url }}" class="pe-3" />
+                {% if shop.icon %}
+                    <img height="50" src="{{ shop.icon.url }}" class="pe-3" />
+                {% else %}
+                    {% md_icon 'image-off' color='grey' size='50px' %}
+                {% endif %}
             </div>
             <div class="col-10">
                 <h1>
@@ -22,7 +26,6 @@
                     <a class="btn btn-outline-secondary btn-sm"
                        href="{% url 'orderitem-create-order' order.id %}"
                        role="button">add item</a>
-
                 </h1>
                 <h6 class="text-body-secondary">{{ order.items.count }} items, {{ order.date }}</h6>
                 <h3>Total: {{ order.total }}</h3>
@@ -51,19 +54,15 @@
                         <td>
                             <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
                         </td>
-                        <td>
-                            {{ orderitem.count }}
-                        </td>
+                        <td>{{ orderitem.count }}</td>
                         <td>
                             {% if orderitem.subtotal %}
-                            {{ orderitem.subtotal }}
+                                {{ orderitem.subtotal }}
                             {% else %}
-                            -
-                            {% endif%}
+                                -
+                            {% endif %}
                         </td>
-                        <td>
-                            {{ orderitem.total }}
-                        </td>
+                        <td>{{ orderitem.total }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
