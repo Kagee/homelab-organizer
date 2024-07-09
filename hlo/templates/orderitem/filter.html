@@ -82,7 +82,12 @@
               <!-- Hide shop col on small screens -->
               <td class="text-center d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell align-middle">
                 <div class="align-items-center h-100">
-                <img src="{{ orderitem.order.shop.icon.url }}" style="max-height: 4em; max-width: 4em;" />
+
+                  {% if orderitem.order.shop.icon %}
+                    <img src="{{ orderitem.order.shop.icon.url }}" style="max-height: 4em; max-width: 4em;" />
+                  {% else %}
+                    {% md_icon 'image-off' color='grey' size='4em' %}
+                  {% endif %}
                 </div>
               </td>
               <!-- {{ orderitem.order.date | slice:"0:7" }} -->
