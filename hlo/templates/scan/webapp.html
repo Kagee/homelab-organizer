@@ -1,0 +1,187 @@
+{% load django_bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Scan test</title>
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
+    <link rel="icon"
+          href="{% static 'images/logo/hlo-cc0-logo-favicon.ico' %}"
+          sizes="any">
+    <link rel="icon"
+          href="{% static 'images/logo/hlo-cc0-logo-black_128.png' %}"
+          type="image/png">
+    <link rel="apple-touch-icon"
+          href="{% static 'images/logo/hlo-cc0-logo-black_128.png' %}">
+
+    <link rel="stylesheet"
+          href="{% static 'bootstrap_icons/css/bootstrap_icons.css' %}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" 
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" 
+            crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
+          rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+            integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{% static 'js/html5-qrcode.min.js' %}"></script>
+
+    <script type="text/javascript">
+
+        scanner = null
+        function onScanSuccess(decodedText, decodedResult) {
+            // Handle on success condition with the decoded text or result.
+            alert('Scan result: ' + decodedText);
+            scanner.stop();
+        }
+        function cancelScan() {
+            if (scanner) {
+                scanner.stop();
+            }
+            $("#cancel-btn").prop('disabled', true);
+            $('#waiting-div').hide(0)
+            $('#scan-div').show(0)
+        }
+
+
+        let wakeLockSupported = false;
+        let wakeLock = null;
+        const changeUI = (status = 'acquired') => {
+            const acquired = status === 'acquired' ? true : false;
+            console.log(`Wake lock status changed to ${status}`)
+            if (acquired) {
+                $("#wake-lock-btn").addClass("btn-danger")
+                $("#wake-lock-btn").removeClass("btn-primary")
+                $("#wake-lock-btn").html(`Wake lock (press to unlock)`)
+            } else {
+                $("#wake-lock-btn").addClass("btn-primary")
+                $("#wake-lock-btn").removeClass("btn-danger")
+                $("#wake-lock-btn").html(`Wake lock (press to lock)`)
+            }           
+        }
+        if ('wakeLock' in navigator) {
+            wakeLockSupported = true;
+            $("wake-lock-div").show(0)
+            console.log("Wake lock supported")
+        } else {
+            $("wake-lock-div").hide()
+            console.log("Wake lock not supported")
+        }
+
+        let wakeButton = 'off';
+        // create an async function to request a wake lock
+        const requestWakeLock = async () => {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                wakeButton = 'on';
+                // change up our interface to reflect wake lock active
+                changeUI();
+
+                // listen for our release event
+                //wakeLock.onrelease = function(ev) {
+                //    console.log(ev);
+                //}
+                wakeLock.addEventListener('release', () => {
+                    // if wake lock is released alter the button accordingly
+                    changeUI('released');
+                });
+
+            } catch (err) {
+                changeUI(`${err.name}, ${err.message}`)
+            }
+        } // requestWakeLock()
+
+        
+        $(window).on('load', function() {
+            // Set reader width to 95%
+            z = Math.min(window.innerWidth, window.innerHeight) * 0.95;
+            $("#reader").width(z)
+
+ // setup a scanner
+ scanner = new Html5Qrcode(
+    "reader", {
+                fps: 10,
+                qrbox: 250,
+                formatsToSupport: [
+                            Html5QrcodeSupportedFormats.QR_CODE
+                        ]
+            });
+
+            // Setup listeners for DOMs that may not have been created yet
+            $("#scan-btn").on('click', function() {
+                if ($("#cancel-btn").prop('disabled')) {
+                const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+                scanner.start({ facingMode: "environment"}, config, onScanSuccess);
+                $("#cancel-btn").prop('disabled', false);
+                $('#scan-div').hide()
+                $('#waiting-div').show(0)
+                } else {
+                cancelScan();
+                }
+            });
+
+            $("#cancel-btn").on('click', cancelScan);
+
+            if (wakeLockSupported) {
+                $("#wake-lock-btn").on('click', function() {
+                    // if wakelock is off request it
+                    if (wakeButton === 'off') {
+                        requestWakeLock()
+                    } else { // if it's on release it
+                        wakeLock.release()
+                        .then(() => {
+                            wakeLock = null;
+                            wakeButton = 'off';
+                        })
+                    }
+                }); // $("#wake-lock-btn").on('click', function() {
+                const handleVisibilityChange = () => {
+                    if (wakeLock !== null && document.visibilityState === 'visible') {
+                        requestWakeLock();
+                    }
+                  }
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+            } // if (wakeLockSupported) {
+        });
+    </script>
+    </head>
+    <body>
+      <div class="container text-center">
+        <div class="row mt-1">
+          <div class="col">
+            <div style="margin: auto;" id="reader"></div>
+          </div>
+        </div>
+        <div class="row" id="scan-div">
+          <div class="col d-grid">
+            <button id="scan-btn" type="button" class="btn btn-primary btn-lg mt-1">&nbsp;<br />Scan<br />&nbsp;</button>
+          </div>
+        </div>
+        <div class="row" style="display: none" id="waiting-div">
+          <div class="col d-grid">
+            <button id="waiting-btn" type="button" class="btn btn-outline-primary btn-lg mt-1">&nbsp;<br />Waiting for match...<br />&nbsp;</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col d-grid">
+            <button id="cancel-btn" type="button" class="btn btn-primary btn-lg mt-1" disabled>Cancel</button>
+          </div>
+        </div>
+        <div class="row" id="wake-lock-div">
+            <div class="col d-grid">
+              <button id="wake-lock-btn" type="button" class="btn btn-primary btn-lg mt-1">Wake lock (press to lock)</button>
+            </div>
+          </div>
+      <script type="text/javascript">
+      </script>
+        </div>
+    </body>
+</html>
