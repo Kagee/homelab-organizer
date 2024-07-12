@@ -1,30 +1,34 @@
-from django.http import (
-    JsonResponse,
+from django.urls import path
+
+from hlo.views.scan import (
+    WebappView,
+    manifest_json,
+    move_item_to_storage,
+    move_storage_into_storage,
 )
-from django.views.generic.base import TemplateView
 
+urls = [
+    path(
+        "scan",
+        WebappView.as_view(),
+        name="scan",
+    ),
+    path(
+        "scan/move-item-to-storage",
+        move_item_to_storage,
+        name="move-item-to-storage",
+    ),
+    path(
+        "scan/move-storage-into-storage",
+        move_storage_into_storage,
+        name="move-store-into-storage",
+    ),
+    path(
+        "manifest.json",
+        manifest_json,
+    ),
+]
 
-class WebappView(TemplateView):
-    template_name = "scan/webapp.html"
-
-
-def manifest_json(_request):
-    manifest = {
-        "name": "HLO Scan",
-        "start_url": "scan",
-        "display": "standalone",
-        "background_color": "#FFFFFF",
-        "icons": [
-            {
-                "src": "static/images/logo/hlo-cc0-logo-black_128.png",
-                "sizes": "128x128",
-                "type": "image/png",
-            },
-        ],
-    }
-
-    return JsonResponse(
-        manifest,
-        status=200,
-        content_type="application/json",
-    )
+__all__ = [
+    "urls",
+]
