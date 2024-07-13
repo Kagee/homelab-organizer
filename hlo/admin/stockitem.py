@@ -20,4 +20,6 @@ class StockItemAdmin(admin.ModelAdmin):
         # We do this to not kill admin if OrderItem is deleted
         # if obj and obj.orderitems.count():
         return [OrderItemStockItemLinkInlineAdmin]
-        # return []
+
+    def get_readonly_fields(self, request, obj=None):
+        return ["sha1", *super().get_readonly_fields(request, obj)]

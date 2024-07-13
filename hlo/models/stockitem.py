@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import uuid
+from hashlib import sha1
 from io import BytesIO
 from pathlib import Path
 
@@ -29,12 +31,23 @@ def thumnail_path(instance: StockItem, filename: str) -> str:
     return f"thumbnails/hashed/{prefix}/{filename}{suffix}"
 
 
+def make_uuid_sha1():
+    return sha1(str(uuid.uuid4()).encode()).hexdigest().upper()  # noqa: S324
+
+
 class StockItem(models.Model):
     name = models.CharField(max_length=255, blank=True, default="")
     count = models.PositiveIntegerField("Count", default=0)
     count_unit = models.CharField("Unit", default="items", max_length=50)
     comment = models.TextField(blank=True, default="")
     tags = TaggableManager(verbose_name="Tags", help_text=None, blank=True)
+    sha1 = models.CharField(
+        max_length=40,
+        blank=False,
+        null=False,
+        default=make_uuid_sha1,
+        editable=False,
+    )
     category = TreeManyToManyField(
         "Category",
         blank=True,
