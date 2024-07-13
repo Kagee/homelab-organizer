@@ -4,7 +4,7 @@ prod_data_2024_05_29.json
 __pycache__
 *.swp
 chromedriver
-*.sqlite3
+*.sqlite3*
 *.sqlite3-journal
 *.sql
 hlo/settings/logging.py
@@ -12,7 +12,6 @@ hlo/settings/logging.py
 *~
 .idea
 *.code-workspace
-*/migrations/*
 .vscode/
 # folders
 media_root
