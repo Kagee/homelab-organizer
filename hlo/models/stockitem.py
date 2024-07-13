@@ -41,7 +41,7 @@ class StockItem(models.Model):
     count_unit = models.CharField("Unit", default="items", max_length=50)
     comment = models.TextField(blank=True, default="")
     tags = TaggableManager(verbose_name="Tags", help_text=None, blank=True)
-    sha1 = models.CharField(
+    sha1_id = models.CharField(
         max_length=40,
         blank=False,
         null=False,
