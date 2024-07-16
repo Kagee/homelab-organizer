@@ -1,3 +1,15 @@
+## JS / NPM DEPS
+
+* https://www.npmjs.com/package/bootstrap
+* https://www.npmjs.com/package/jquery
+* https://www.npmjs.com/package/html5-qrcode
+* https://www.npmjs.com/package/cropperjs
+
+### django-bootstrap-icons
+
+* https://www.npmjs.com/package/bootstrap-icons
+* https://www.npmjs.com/package/@mdi/svg
+
 ## To read
 https://blog.majsky.cz/django-protected-media-files/
 

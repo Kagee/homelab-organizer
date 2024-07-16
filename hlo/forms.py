@@ -14,10 +14,10 @@ from crispy_forms.layout import (
 from django import forms
 from django.forms import ModelForm, inlineformset_factory, modelformset_factory
 from django.forms.widgets import DateInput, HiddenInput
-from django_bootstrap_icons.templatetags.bootstrap_icons import bs_icon
 from django_select2.forms import ModelSelect2TagWidget
 from taggit.models import Tag
 
+from hlo.django_bootstrap_icons.templatetags.bootstrap_icons import bs_icon
 from hlo.models import Attachement, Order, OrderItem, Shop, StockItem
 
 logger = logging.getLogger(__name__)

@@ -24,3 +24,5 @@ input
 schema
 .mypy_cache
 postgresql-data
+node_modules
+package-lock.json

@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import environ
+from django.http import HttpRequest
 
 from hlo.utils.colored_logs import ColoredLogFormatter
 
@@ -136,7 +137,7 @@ INSTALLED_APPS: list[str] = [
     "haystack",
     "rest_framework",
     "django_filters",
-    "django_bootstrap_icons",
+    "hlo.django_bootstrap_icons",
     "django_extensions",
     "taggit",
     "django_bootstrap5",
@@ -221,23 +222,6 @@ AUTH_PASSWORD_VALIDATORS: list[dict[str, Any]] = [
 
 DEFAULT_AUTO_FIELD: str = "django.db.models.BigAutoField"
 
-BOOTSTRAP5 = {  # We need bootstrap >= 5.3 for dark mode
-    "css_url": {
-        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/css/bootstrap.min.css",
-        # We can not add integrity, as it would break if a
-        # new patch release comes. Should be static for production.
-        # "integrity": "...",  # noqa: ERA001
-        "crossorigin": "anonymous",
-    },
-    "javascript_url": {
-        "url": "https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js",
-        # We can not add integrity, as it would break if a
-        # new patch release comes. Should be static for production.
-        # "integrity": "...",  # noqa: ERA001
-        "crossorigin": "anonymous",
-    },
-}
-
 db_cache = "non-default"
 file_cache = "default"
 
@@ -267,21 +251,39 @@ GRAPH_MODELS = {
     "theme": "django2018",
 }
 
+
+def show_toolbar_callback(request: HttpRequest) -> bool:
+    return request.META.get("HTTP_HOST") != "scan.h2x.no"
+
+
 DEBUG_TOOLBAR_CONFIG = {
     # "DISABLE_PANELS": {"debug_toolbar.panels.staticfiles.StaticFilesPanel"}
+    "SHOW_TOOLBAR_CALLBACK": lambda request: request.META.get("HTTP_HOST")
+    != "scan.h2x.no",
 }
 
+# django-crispy-forms / crispy-bootstrap5
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# django-bootstrap5
+
+BOOTSTRAP5 = {  # We need bootstrap >= 5.3 for dark mode
+    "css_url": {
+        "url": "/static/bootstrap/bootstrap.min.css",
+    },
+    "javascript_url": {
+        "url": "/static/bootstrap/bootstrap.bundle.min.js",
+    },
+}
+
+## django-bootstrap-icons
+MD_ICONS_BASE_PATH = "node_modules/@mdi/svg/"
+BS_ICONS_BASE_PATH = "node_modules/bootstrap-icons/"
 
 BS_ICONS_CACHE: Path = (MEDIA_ROOT / Path("icon_cache")).resolve()
 if not BS_ICONS_CACHE.is_dir():
     BS_ICONS_CACHE.mkdir(exist_ok=True)
-
-BARCODE_CACHE: Path = (MEDIA_ROOT / Path("barcode_cache")).resolve()
-if not BARCODE_CACHE.is_dir():
-    BARCODE_CACHE.mkdir(exist_ok=True)
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 
