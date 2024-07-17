@@ -137,7 +137,7 @@ INSTALLED_APPS: list[str] = [
     "haystack",
     "rest_framework",
     "django_filters",
-    "hlo.django_bootstrap_icons",
+    "django_bootstrap_icons",
     "django_extensions",
     "taggit",
     "django_bootstrap5",
