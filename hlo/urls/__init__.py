@@ -1,6 +1,7 @@
 from django.urls import path
 from django.views.generic.base import TemplateView
 
+from hlo import views
 from hlo.urls import commontree, items, label, scan, utils
 from hlo.urls.utils import handler404
 from hlo.views import (
@@ -28,6 +29,11 @@ urlpatterns = [
         path(
             "about",
             AboutView.as_view(),
+            name="about",
+        ),
+        path(
+            "test",
+            views.test,
             name="about",
         ),
     ],

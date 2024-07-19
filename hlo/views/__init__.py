@@ -1,5 +1,7 @@
 import logging
 
+from django.shortcuts import render
+
 from .combined_search import item_search
 from .commontree import (
     CategoryCreateView,
@@ -47,7 +49,24 @@ from .stockitems import (
     stockitem_list,
 )
 
+
+def test(request):
+    import magic
+
+    content_type = "unkown"
+    if request.FILES:
+        content_type = magic.from_buffer(request.FILES["img"].read(), mime=True)
+
+    context = {
+        "postdata": request.POST,
+        "filedata": request.FILES,
+        "content_type": content_type,
+    }
+    return render(request=request, template_name="test.html", context=context)
+
+
 __all__ = [
+    "test",
     "render404",
     "index",
     "no_access",
