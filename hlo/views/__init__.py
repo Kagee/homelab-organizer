@@ -54,8 +54,10 @@ def test(request):
     import magic
 
     content_type = "unkown"
-    if request.FILES:
-        content_type = magic.from_buffer(request.FILES["img"].read(), mime=True)
+    if request.FILES and "uploadFile" in request.FILES:
+        content_type = magic.from_buffer(
+            request.FILES["uploadFile"].read(), mime=True
+        )
 
     context = {
         "postdata": request.POST,

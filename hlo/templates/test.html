@@ -7,134 +7,137 @@
     <link rel="stylesheet" href="{% static 'cropperjs/cropper.min.css' %}">
     <script src="{% static 'cropperjs/cropper.min.js' %}"></script>
     <script type="text/javascript">
-    $(window).on('load', function() {
-        const isTouchCapable = 'ontouchstart' in window ||
-        (window.DocumentTouch && document instanceof window.DocumentTouch) ||
-        navigator.maxTouchPoints > 0 ||
-        window.navigator.msMaxTouchPoints > 0;
-        $("#touch").text(isTouchCapable ? "touch": "notouch")
-    });
-    document.addEventListener('paste', async (e) => {
-        e.preventDefault();
-      
-        for (const clipboardItem of e.clipboardData.files) {
-          if (clipboardItem.type.startsWith('image/')) {
-                console.log(clipboardItem)
-                previewFile(clipboardItem)
-          }
+        let setErrorCallback = set_error;
+        let clearErrorCallback = unset_error;
+        let displayElement = "#display";
+        let hiddenClass = "d-none";
+        let fileInputElement = "#uploadFile";
+        let dropzoneElement = "#drop_zone";
+
+        function is_acceptable_mimetype(str) {
+            acceptable_mimetypes = ['image/png', 'image/jpeg'];
+            for (i = 0; i < acceptable_mimetypes.length; i++) {
+                s = acceptable_mimetypes[i];
+                if (s == str) {
+                    console.log(`is_acceptable_mimetype: Accepted mimetype ${str}`)
+                    return true;
+                }
+            }
+            console.log(`is_acceptable_mimetype: Did not accept mimetype ${str}`)
+            return false;
         }
-      });
 
-      function dropHandler(ev) {
-        console.log("File(s) dropped");
-      
-        // Prevent default behavior (Prevent file from being opened)
-        ev.preventDefault();
-      
-        if (ev.dataTransfer.items) {
-          // Use DataTransferItemList interface to access the file(s)
-          console.log("DataTransferItemList");
-
-          [...ev.dataTransfer.items].every((item, i) => {
-            // If dropped items aren't files, reject them
-            if (item.kind === "file") {
-              const file = item.getAsFile();
-              previewFile(file)
-              setUploadFile(file)
-              console.log(file.type)
-            } else {
-                console.log("")
-                console.log(`${i}: Ignored data transfer of type ${item.kind}`)
-                f = item.getAsFile()
-                /*if (f) {
-                    previewFile(f)
-                    return false;
-                }*/
-                item.getAsString(function(data) {
-                    console.log(`${i}:getAsString: ${data} (${item.type})`)
-                })
-                w = item.webkitGetAsEntry()
-                console.log(`${i}:webkitGetAsEntry: ${w} (${item.type})`)
-                console.log(`${i}:getAsFile: ${f} (${item.type})`)
-                console.log(`${i}:item:`, item)
+        function use_file(file) {
+            if (is_acceptable_mimetype(file.type)) {
+                setUploadFile(file)
+                previewFile(file)
+                console.log("Returning true in use_file")
                 return true;
             }
-          });
-        } else {
-            console.log("DataTransfer interface");
-          // Use DataTransfer interface to access the file(s)
-          [...ev.dataTransfer.files].every((file, i) => {
-            previewFile(file)
-            console.log(file.type)
-            console.log(`… file[${i}].name = ${file.name}`);
-            return true;
-          });
+            console.log("Returning false in use_file")
+            return false;
         }
-      }
-      
-      function dragOverHandler(ev) {
-        ev.preventDefault();
-      }
-      
-      async function fileFieldChange(event) {
-        const file = event.target.files.item(0)
-        console.log(file.type)
-      }
 
-      function setUploadFile(file) {
-        document.querySelector("#uploadFile").value = file
-      }
+        $(window).on('load', function() {
+            const isTouchCapable = 'ontouchstart' in window ||
+            (window.DocumentTouch && document instanceof window.DocumentTouch) ||
+            navigator.maxTouchPoints > 0 ||
+            window.navigator.msMaxTouchPoints > 0;
+            $("#touch").text(isTouchCapable ? "touch": "notouch")
+            dze = document.querySelector(dropzoneElement);
+            dze.ondrop = dropHandler;
+            dze.ondragover = dragOverHandler;
+        });
 
-      async function processImg(event) {
-        const file = event.target.files.item(0)
-        if (file.type != 'image/png' && file.type != 'image/jpeg') {
-            event.target.value = null
-            console.log(file.type)
-            $("#msg").text(`${file.type} is not a vaild mimetype.`)
-            $("#msg").removeClass("d-none")
-        } else {
-            $("#msg").text("")
-            $("#msg").addClass("d-none")
-            previewFile(file)
-            console.log(file)
-            console.log()
-            //const text = await file.text();
-            
-            //document.getElementById("output").innerText = text
+        document.addEventListener('paste', async (e) => {
+            e.preventDefault();
+        
+            for (const clipboardItem of e.clipboardData.files) {
+            if (clipboardItem.type.startsWith('image/')) {
+                    use_file(clipboardItem)
+            }
+            }
+        });
+
+        function dropHandler(ev) {
+            // Prevent default behavior (Prevent file from being opened)
+            ev.preventDefault();
+            if (ev.dataTransfer.items) {
+            for (i=0; i < ev.dataTransfer.items.length; i++) {
+                item = ev.dataTransfer.items[i]
+                if (item.kind === "file") {
+                    console.log("Drophandler item kind file:")
+                    const file = item.getAsFile();
+                    if (use_file(file)) {
+                        break;
+                    }
+                }
+            }
+            } else {
+                for (i=0; i < ev.dataTransfer.files.length; i++) {
+                    file = ev.dataTransfer.files[i];
+                    if (use_file(file)) {
+                        break;
+                    }
+                }
+            }
         }
-      }
-
-      function previewFile(file) {
-        const preview = document.querySelector("#display");
-        // const file = document.querySelector("input[type=file]").files[0];
-        const reader = new FileReader();
-      
-        reader.addEventListener(
-          "load",
-          () => {
-            preview.src = reader.result;
-          },
-          false,
-        );
-
-        if (file) {
-          reader.readAsDataURL(file);
+        
+        function dragOverHandler(ev) {
+            ev.preventDefault();
         }
-      }
-      
+        
+        async function fileFieldChange(event) {
+            console.log("File field change event")
+            const file = event.target.files.item(0)
+            if (!use_file(file)) {
+                event.target.value = null;
+                set_error(`Invalid mimetype: ${file.type}`)
+                
+            } else {
+                unset_error();
+            }
+        }
+        function unset_error() {
+            e = document.querySelector("#msg");
+            e.innerHTML = "";
+            e.classList.add(hiddenClass);
+        }
+        function set_error(msg) {
+            e = document.querySelector("#msg");
+            e.innerHTML = msg;
+            e.classList.remove(hiddenClass);
+        }
 
+        function setUploadFile(file) {
+            let container = new DataTransfer();
+            container.items.add(file);
+            document.querySelector(fileInputElement).files = container.files;
+        }
+
+        function previewFile(file) {
+            const preview = document.querySelector(displayElement);
+            const reader = new FileReader();
+            reader.addEventListener(
+            "load",
+            () => {
+                preview.src = reader.result;
+            },
+            false,
+            );
+            reader.readAsDataURL(file);
+        }
     </script>
 {% endblock head %}
 {% block content %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" name="uploadFile" id="uploadFile"  onchange="fileFieldChange(event);">
+        <input type="file" name="uploadFile" id="uploadFile" onchange="fileFieldChange(event);">
         <div class="alert alert-warning d-none" role="alert" id="msg">some alert text</div>
         <button type="submit" class="btn btn-primary">TEst</button>
     </form>
     <div id="drop_zone"
-         ondrop="dropHandler(event);"
-         ondragover="dragOverHandler(event);"
+        
          style="border: 1px solid red">
         <p>
             Drag one or more files to this <i>drop zone</i>.
