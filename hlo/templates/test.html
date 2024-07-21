@@ -6,6 +6,7 @@
 {% block head %}
     <link rel="stylesheet" href="{% static 'cropperjs/cropper.min.css' %}">
     <script src="{% static 'cropperjs/cropper.min.js' %}"></script>
+    <script src="{% static 'js/select-drop-paste.js' %}"></script>
     <script type="text/javascript">
         let setErrorCallback = set_error;
         let clearErrorCallback = unset_error;
@@ -64,7 +65,7 @@
             ev.preventDefault();
             if (ev.dataTransfer.items) {
             for (i=0; i < ev.dataTransfer.items.length; i++) {
-                item = ev.dataTransfer.items[i]
+                item = ev.dataTransfer.items[i];
                 if (item.kind === "file") {
                     console.log("Drophandler item kind file:")
                     const file = item.getAsFile();
@@ -132,13 +133,14 @@
 {% block content %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" name="uploadFile" id="uploadFile" onchange="fileFieldChange(event);">
+        <input type="file"
+               name="uploadFile"
+               id="uploadFile"
+               onchange="fileFieldChange(event);">
         <div class="alert alert-warning d-none" role="alert" id="msg">some alert text</div>
         <button type="submit" class="btn btn-primary">TEst</button>
     </form>
-    <div id="drop_zone"
-        
-         style="border: 1px solid red">
+    <div id="drop_zone"  style="border: 1px solid red">
         <p>
             Drag one or more files to this <i>drop zone</i>.
         </p>
