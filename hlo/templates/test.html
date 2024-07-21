@@ -15,18 +15,7 @@
         let fileInputElement = "#uploadFile";
         let dropzoneElement = "#drop_zone";
 
-        function is_acceptable_mimetype(str) {
-            acceptable_mimetypes = ['image/png', 'image/jpeg'];
-            for (i = 0; i < acceptable_mimetypes.length; i++) {
-                s = acceptable_mimetypes[i];
-                if (s == str) {
-                    console.log(`is_acceptable_mimetype: Accepted mimetype ${str}`)
-                    return true;
-                }
-            }
-            console.log(`is_acceptable_mimetype: Did not accept mimetype ${str}`)
-            return false;
-        }
+       
 
         function use_file(file) {
             if (is_acceptable_mimetype(file.type)) {
@@ -50,43 +39,9 @@
             dze.ondragover = dragOverHandler;
         });
 
-        document.addEventListener('paste', async (e) => {
-            e.preventDefault();
-        
-            for (const clipboardItem of e.clipboardData.files) {
-            if (clipboardItem.type.startsWith('image/')) {
-                    use_file(clipboardItem)
-            }
-            }
-        });
+      
 
-        function dropHandler(ev) {
-            // Prevent default behavior (Prevent file from being opened)
-            ev.preventDefault();
-            if (ev.dataTransfer.items) {
-            for (i=0; i < ev.dataTransfer.items.length; i++) {
-                item = ev.dataTransfer.items[i];
-                if (item.kind === "file") {
-                    console.log("Drophandler item kind file:")
-                    const file = item.getAsFile();
-                    if (use_file(file)) {
-                        break;
-                    }
-                }
-            }
-            } else {
-                for (i=0; i < ev.dataTransfer.files.length; i++) {
-                    file = ev.dataTransfer.files[i];
-                    if (use_file(file)) {
-                        break;
-                    }
-                }
-            }
-        }
-        
-        function dragOverHandler(ev) {
-            ev.preventDefault();
-        }
+
         
         async function fileFieldChange(event) {
             console.log("File field change event")
