@@ -8,62 +8,19 @@
     <script src="{% static 'cropperjs/cropper.min.js' %}"></script>
     <script src="{% static 'js/select-drop-paste.js' %}"></script>
     <script type="text/javascript">
-        let setErrorCallback = set_error;
-        let clearErrorCallback = unset_error;
-        let displayElement = "#display";
-        let hiddenClass = "d-none";
-        let fileInputElement = "#uploadFile";
-        let dropzoneElement = "#drop_zone";
-
-       
-
-        function use_file(file) {
-            if (is_acceptable_mimetype(file.type)) {
-                setUploadFile(file)
-                previewFile(file)
-                console.log("Returning true in use_file")
-                return true;
-            }
-            console.log("Returning false in use_file")
-            return false;
-        }
-
-        $(window).on('load', function() {
-            const isTouchCapable = 'ontouchstart' in window ||
-            (window.DocumentTouch && document instanceof window.DocumentTouch) ||
-            navigator.maxTouchPoints > 0 ||
-            window.navigator.msMaxTouchPoints > 0;
-            $("#touch").text(isTouchCapable ? "touch": "notouch")
-            dze = document.querySelector(dropzoneElement);
-            dze.ondrop = dropHandler;
-            dze.ondragover = dragOverHandler;
-        });
-
-      
-
-
+        let sdpConfig = {
+            // showErrorCallback: SDP._logError,
+            // hideErrorCallback: null,
+            // newFileCallback: SDP._logNewFile,
+            // autoAssignFileToInput: true,
+            fileInputElement: "#uploadfile",
+            dropzoneElement: "#dropzone",
+            // acceptedMimeTypes: ['image/png', 'image/jpeg'],
+            acceptedMimeTypes: [''],
+            debug: true,
+        };
         
-        async function fileFieldChange(event) {
-            console.log("File field change event")
-            const file = event.target.files.item(0)
-            if (!use_file(file)) {
-                event.target.value = null;
-                set_error(`Invalid mimetype: ${file.type}`)
-                
-            } else {
-                unset_error();
-            }
-        }
-        function unset_error() {
-            e = document.querySelector("#msg");
-            e.innerHTML = "";
-            e.classList.add(hiddenClass);
-        }
-        function set_error(msg) {
-            e = document.querySelector("#msg");
-            e.innerHTML = msg;
-            e.classList.remove(hiddenClass);
-        }
+        let sdp = new SDP(sdpConfig);
 
         function setUploadFile(file) {
             let container = new DataTransfer();
@@ -88,21 +45,14 @@
 {% block content %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file"
-               name="uploadFile"
-               id="uploadFile"
-               onchange="fileFieldChange(event);">
+        <input type="file" name="uploadfile" id="uploadfile">
         <div class="alert alert-warning d-none" role="alert" id="msg">some alert text</div>
         <button type="submit" class="btn btn-primary">TEst</button>
     </form>
-    <div id="drop_zone"  style="border: 1px solid red">
+    <div id="dropzone" style="border: 1px solid red; height: 200px;">
         <p>
             Drag one or more files to this <i>drop zone</i>.
         </p>
-        <br>
-        <br>
-        <br>
-        <br>
     </div>
     <h3>Image</h3>
     <img src="" height="200" alt="Image preview" id="display" />
