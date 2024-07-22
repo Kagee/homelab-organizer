@@ -9,17 +9,23 @@
     <script src="{% static 'js/select-drop-paste.js' %}"></script>
     <script type="text/javascript">
         new SDP({
-            // showErrorCallback: SDP._logError,
-            // hideErrorCallback: null,
-            // newFileCallback: SDP._logNewFile,
-            // autoAssignFileToInput: true,
+            showErrorCallback: showError,
+            hideErrorCallback: hideError,
             fileInputElement: "#uploadfile",
             dropzoneElement: "#dropzone",
             acceptedMimeTypes: ['image/png', 'image/jpeg'],
             debug: true,
             newFileCallback: previewFile
         });
-
+        function showError(msg) {
+            const preview = document.querySelector("#msg");
+            preview.innerHTML = msg
+            preview.classList.remove("d-none");
+        }
+        function hideError() {
+            const preview = document.querySelector("#msg");
+            preview.classList.add("d-none");
+        }
         function previewFile(file) {
             const preview = document.querySelector("#display");
             const reader = new FileReader();
@@ -34,7 +40,7 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="file" name="uploadfile" id="uploadfile">
-        <div class="alert alert-warning d-none" role="alert" id="msg">some alert text</div>
+        <div class="alert alert-warning d-none" role="alert" id="msg"><!-- No current error --></div>
         <button type="submit" class="btn btn-primary">TEst</button>
     </form>
     <div id="dropzone" style="border: 1px solid red; height: 200px;">

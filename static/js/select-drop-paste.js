@@ -50,24 +50,21 @@ class SDP {
                constructor so the elements are loaded. */
             this.dze = document.querySelector(this._config.dropzoneElement);
             this.fie = document.querySelector(this._config.fileInputElement);
-
             this.dze.addEventListener('drop', this._dropEventHandler.bind(this));
             this.dze.addEventListener('dragover', (ev) => { ev.preventDefault() });
-
             this.fie.addEventListener('change', this._fileFieldChange.bind(this));
-
             document.addEventListener('paste', this._pastEventHandler.bind(this));
         }.bind(this));
     }
 
     _fileFieldChange(ev) {
         const file = ev.target.files.item(0)
-        if (this._isAcceptableMIMEType(file.type)) {
+        if (this._isAcceptableMIMEType(file)) {
             this._newFile(file);
         } else {
             ev.target.value = null;
             if (this._config.showErrorCallback) {
-                this._config.showErrorCallback('Invalid MIME type for selected file:', file.type)
+                this._config.showErrorCallback(`Invalid MIME type for selected file: '${file.type}' '${file.name}'`)
             }
         }
     }
@@ -75,21 +72,25 @@ class SDP {
     _dropEventHandler(ev) {
         // Prevent default behavior (Prevent file from being opened)
         ev.preventDefault();
-        if (ev.dataTransfer.items) {
+        if (ev.dataTransfer.files) {
+            for (let file of ev.dataTransfer.files) {
+                if (this._isAcceptableMIMEType(file)) {
+                    this._newFile(file);
+                    break;
+                } else if (this._config.showErrorCallback) {
+                    this._config.showErrorCallback(`Invalid MIME type for dropped file: '${file.type}' '${file.name}'`)
+                }
+            }
+        } else if (ev.dataTransfer.items) {
             for (let item of ev.dataTransfer.items) {
                 if (item.kind === "file") {
                     const file = item.getAsFile();
-                    if (this._isAcceptableMIMEType(file.type)) {
+                    if (this._isAcceptableMIMEType(file)) {
                         this._newFile(file);
                         break;
                     }
-                }
-            }
-        } else if (ev.dataTransfer.files) {
-            for (let file of ev.dataTransfer.files) {
-                if (this._isAcceptableMIMEType(file.type)) {
-                    this._newFile(file);
-                    break;
+                } else if (this._config.showErrorCallback) {
+                    this._config.showErrorCallback(`Invalid MIME type for dropped file: '${file.type}' '${file.name}'`)
                 }
             }
         }
@@ -97,9 +98,11 @@ class SDP {
 
     async _pastEventHandler(ev) {
         ev.preventDefault();
-        for (const clipboardItem of ev.clipboardData.files) {
-            if (this._isAcceptableMIMEType(clipboardItem.type)) {
-                this._newFile(clipboardItem)
+        for (const file of ev.clipboardData.files) {
+            if (this._isAcceptableMIMEType(file)) {
+                this._newFile(file)
+            } else if (this._config.showErrorCallback) {
+                this._config.showErrorCallback(`Invalid MIME type pasted file: '${file.type}' '${file.name}'`)
             }
         }
     }
@@ -132,14 +135,14 @@ class SDP {
         return c
     }
 
-    _isAcceptableMIMEType(str) {
+    _isAcceptableMIMEType(file) {
         for (let mimeType of this._config.acceptedMimeTypes) {
-            if (str.startsWith(mimeType)) {
-                this._log(`Accepted MIME type: ${str}`)
+            if (file.type.startsWith(mimeType)) {
+                this._log(`Accepted MIME type: '${file.type}'`)
                 return true;
             }
         }
-        this._log(`Rejected MIME type: ${str}`)
+        this._log(`Rejected MIME type: '${file.type}'`)
         return false;
     }
 
@@ -164,5 +167,5 @@ class SDP {
     _logNewFile(file) {
         this._log(`A new file has been accepted: `, file)
     }
-    
+
 }
