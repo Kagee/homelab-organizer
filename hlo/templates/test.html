@@ -8,36 +8,24 @@
     <script src="{% static 'cropperjs/cropper.min.js' %}"></script>
     <script src="{% static 'js/select-drop-paste.js' %}"></script>
     <script type="text/javascript">
-        let sdpConfig = {
+        new SDP({
             // showErrorCallback: SDP._logError,
             // hideErrorCallback: null,
             // newFileCallback: SDP._logNewFile,
             // autoAssignFileToInput: true,
             fileInputElement: "#uploadfile",
             dropzoneElement: "#dropzone",
-            // acceptedMimeTypes: ['image/png', 'image/jpeg'],
-            acceptedMimeTypes: [''],
+            acceptedMimeTypes: ['image/png', 'image/jpeg'],
             debug: true,
-        };
-        
-        let sdp = new SDP(sdpConfig);
-
-        function setUploadFile(file) {
-            let container = new DataTransfer();
-            container.items.add(file);
-            document.querySelector(fileInputElement).files = container.files;
-        }
+            newFileCallback: previewFile
+        });
 
         function previewFile(file) {
-            const preview = document.querySelector(displayElement);
+            const preview = document.querySelector("#display");
             const reader = new FileReader();
-            reader.addEventListener(
-            "load",
-            () => {
+            reader.addEventListener("load", () => {
                 preview.src = reader.result;
-            },
-            false,
-            );
+            }, false);
             reader.readAsDataURL(file);
         }
     </script>

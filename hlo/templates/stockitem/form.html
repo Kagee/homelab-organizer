@@ -9,6 +9,32 @@
 {% block head %}
     <link rel="stylesheet"
           href="{% static 'js/multiselect-dropdown/multiselect-dropdown.css' %}">
+    <script src="{% static 'js/select-drop-paste.js' %}"></script>
+    <script type="text/javascript">
+        new SDP({
+            showErrorCallback: showError,
+            hideErrorCallback: hideError,
+            fileInputElement: "#uploadfile",
+            dropzoneElement: "#dropzone",
+            acceptedMimeTypes: ['image/png', 'image/jpeg'],
+            debug: true,
+            newFileCallback: previewFile
+        });
+        function showError(msg) {
+
+        }
+        function hideError() {
+
+        }
+        function previewFile(file) {
+            const preview = document.querySelector("#display");
+            const reader = new FileReader();
+            reader.addEventListener("load", () => {
+                preview.src = reader.result;
+            }, false);
+            reader.readAsDataURL(file);
+        }
+    </script>
 {% endblock head %}
 {% block modals %}
     <div class="modal" tabindex="-1" id="keyboardModel">

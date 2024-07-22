@@ -7,7 +7,7 @@ class SDP {
            up2u. Default is to print data to console
            based on `debug`.
         */
-        showErrorCallback: SDP._logError,
+        showErrorCallback: SDP._log,
         /* function() to hide error message.
            Useful when you i.e. have to
            hide the error message once it
@@ -31,7 +31,7 @@ class SDP {
         fileInputElement: "#uploadfile",
         /* Element to use as drop zone */
         dropzoneElement: "#dropzone",
-        /* Acceptable mimetypes for files. Will be used 
+        /* Acceptable MIME types for files. Will be used 
            in String.startsWith(), so "image/" will match
            among others, image/png, image/jpeg and image/svg+xml.
         */
@@ -40,17 +40,21 @@ class SDP {
         */
         debug: false,
     };
-
+    dze = null;
+    fie = null;
     constructor(config) {
         this._config = this._mergeConfig(config);
+
         window.addEventListener("load", function () {
+            /* This must happen here and not in the 
+               constructor so the elements are loaded. */
+            this.dze = document.querySelector(this._config.dropzoneElement);
+            this.fie = document.querySelector(this._config.fileInputElement);
 
-            let dze = document.querySelector(this._config.dropzoneElement);
-            dze.addEventListener('drop', this._dropEventHandler.bind(this));
-            dze.addEventListener('dragover', (ev) => { ev.preventDefault() });
+            this.dze.addEventListener('drop', this._dropEventHandler.bind(this));
+            this.dze.addEventListener('dragover', (ev) => { ev.preventDefault() });
 
-            let fie = document.querySelector(this._config.fileInputElement);
-            fie.addEventListener('change', this._fileFieldChange.bind(this));
+            this.fie.addEventListener('change', this._fileFieldChange.bind(this));
 
             document.addEventListener('paste', this._pastEventHandler.bind(this));
         }.bind(this));
@@ -59,7 +63,7 @@ class SDP {
     _fileFieldChange(ev) {
         const file = ev.target.files.item(0)
         if (this._isAcceptableMIMEType(file.type)) {
-            this._useFile(file);
+            this._newFile(file);
         } else {
             ev.target.value = null;
             if (this._config.showErrorCallback) {
@@ -76,7 +80,7 @@ class SDP {
                 if (item.kind === "file") {
                     const file = item.getAsFile();
                     if (this._isAcceptableMIMEType(file.type)) {
-                        this._useFile(file);
+                        this._newFile(file);
                         break;
                     }
                 }
@@ -84,7 +88,7 @@ class SDP {
         } else if (ev.dataTransfer.files) {
             for (let file of ev.dataTransfer.files) {
                 if (this._isAcceptableMIMEType(file.type)) {
-                    this._useFile(file);
+                    this._newFile(file);
                     break;
                 }
             }
@@ -95,7 +99,7 @@ class SDP {
         ev.preventDefault();
         for (const clipboardItem of ev.clipboardData.files) {
             if (this._isAcceptableMIMEType(clipboardItem.type)) {
-                this._useFile(clipboardItem)
+                this._newFile(clipboardItem)
             }
         }
     }
@@ -109,12 +113,12 @@ class SDP {
             new_config = {}
         }
         this.D = SDP.defaultConfig.debug || !!new_config.debug
-        this.D && console.log("Debug output is enabled")
+        this._log("Debug output is enabled")
         let c = {}
         for (let option in SDP.defaultConfig) {
             if (option in new_config) {
                 c[option] = new_config[option]
-                this.D && console.log(`Non-default config for option ${option}:`, new_config[option])
+                this._log(`Non-default config for option ${option}:`, new_config[option])
                 delete new_config[option];
             } else {
                 c[option] = SDP.defaultConfig[option]
@@ -122,7 +126,7 @@ class SDP {
         }
         if (!!new_config) {
             for (let option in new_config) {
-                console.log(`Unknown config option '${option}' for SDP config:`, new_config[option])
+                this._log(`Unknown config option '${option}' for SDP config:`, new_config[option])
             }
         }
         return c
@@ -131,24 +135,34 @@ class SDP {
     _isAcceptableMIMEType(str) {
         for (let mimeType of this._config.acceptedMimeTypes) {
             if (str.startsWith(mimeType)) {
-                this.D && console.log(`Accepted MIME type`, str)
+                this._log(`Accepted MIME type: ${str}`)
                 return true;
             }
         }
-        this.D && console.log(`Rejected MIME type`, str)
+        this._log(`Rejected MIME type: ${str}`)
         return false;
     }
 
-    _useFile(file) {
-        console.log("_useFile:", file)
+    _newFile(file) {
+        if (this._config.hideErrorCallback) {
+            this._config.hideErrorCallback()
+        }
+        if (this._config.autoAssignFileToInput) {
+            let container = new DataTransfer();
+            container.items.add(file);
+            this.fie.files = container.files;
+        }
+        if (this._config.newFileCallback) {
+            this._config.newFileCallback(file)
+        }
     }
 
-    _logError(msg) {
+    _log(msg) {
         this.D && console.log(msg)
     }
 
     _logNewFile(file) {
-        this.D && console.log(`A new file has been accepted: `, file)
+        this._log(`A new file has been accepted: `, file)
     }
-
+    
 }
