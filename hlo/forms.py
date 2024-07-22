@@ -12,7 +12,7 @@ from crispy_forms.layout import (
     Submit,
 )
 from django import forms
-from django.forms import ModelForm, inlineformset_factory, modelformset_factory
+from django.forms import ModelForm, modelformset_factory
 from django.forms.widgets import DateInput, HiddenInput
 from django_bootstrap_icons.templatetags.bootstrap_icons import bs_icon
 from django_select2.forms import ModelSelect2TagWidget
@@ -323,7 +323,46 @@ class StockItemForm(ModelForm):
             ),
             Field("tags"),
             Field("comment"),
+            HTML("""
+                    <div id="dropzone">
+                    {% if stockitem.thumbnail_url or  orderitem.thumbnail %}
+                        <div id="div_id_thumbnail_render" class="mb-3 row">
+                            <div class="col-form-label pt-0 col-2">
+                                {% if stockitem.thumbnail_url %}
+                                    Stock item thumbnail
+                                {% elif orderitem.thumbnail %}
+                                    Order item thumbnail
+                                {% endif %}
+                            </div>
+                            <div class="col-10">
+                                {% if stockitem.thumbnail_url %}
+                                    <img alt="Image thumbnail"
+                                        src="{{ stockitem.thumbnail_url }}"
+                                        class="img-fluid"
+                                        style="max-width: 50%" id="thumbnail" />
+                                {% elif orderitem.thumbnail %}
+                                    <img alt="Image thumbnail"
+                                        src="{{ orderitem.thumbnail.url }}"
+                                        class="img-fluid"
+                                        style="max-width: 50%" id="thumbnail" />
+                                {% else %}
+                                    <!-- Hidden img for preview -->
+                                    <img alt="Image thumbnail"
+                                        src="#"
+                                        class="img-fluid d-none"
+                                        style="max-width: 50%" id="thumbnail" />
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+            """),
             Field("thumbnail"),
+            StrictButton(
+                bs_icon("x-circle"),
+                css_id="id_thumbnail_btnclear",
+                css_class="btn btn-primary",
+            ),
+            HTML("</div><!-- id=dropzone -->"),
             Field(
                 "category",
                 css_class="multiselect-dropdown-upgrade multiselect-search",

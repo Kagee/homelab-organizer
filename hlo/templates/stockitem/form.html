@@ -14,7 +14,7 @@
         new SDP({
             showErrorCallback: showError,
             hideErrorCallback: hideError,
-            fileInputElement: "#uploadfile",
+            fileInputElement: "#id_thumbnail",
             dropzoneElement: "#dropzone",
             acceptedMimeTypes: ['image/png', 'image/jpeg'],
             debug: true,
@@ -27,13 +27,30 @@
 
         }
         function previewFile(file) {
-            const preview = document.querySelector("#display");
+            const preview = document.querySelector("#thumbnail");
+            preview.classList.remove("d-none");
             const reader = new FileReader();
             reader.addEventListener("load", () => {
                 preview.src = reader.result;
             }, false);
             reader.readAsDataURL(file);
         }
+        window.addEventListener("load", () => {
+            document.querySelector("#id_thumbnail_btnclear").addEventListener(
+                'click', 
+                () => { 
+                    document.querySelector('#id_thumbnail').value=null;
+                    const preview = document.querySelector("#thumbnail");
+                    const original_url = "{% if stockitem.thumbnail_url %}{{ stockitem.thumbnail_url }}{% elif orderitem.thumbnail %}{{ orderitem.thumbnail.url }}{% endif %}";
+                    if (original_url) {
+                        preview.src = original_url;
+                    } else {
+                        preview.classList.add("d-none");
+                    }
+                    
+                }
+                );
+        });
     </script>
 {% endblock head %}
 {% block modals %}
@@ -75,12 +92,12 @@
                 <img alt="Image thumbnail"
                      src="{{ stockitem.thumbnail_url }}"
                      class="img-fluid"
-                     style="max-width: 90%" />
+                     style="max-width: 90%" id="thumbnail" />
             {% elif orderitem.thumbnail %}
                 <img alt="Image thumbnail"
                      src="{{ orderitem.thumbnail.url }}"
                      class="img-fluid"
-                     style="max-width: 90%" />
+                     style="max-width: 90%" id="thumbnail" />
             {% else %}
                 {% md_icon 'image-off' color='grey' size="10em" %}
             {% endif %}
