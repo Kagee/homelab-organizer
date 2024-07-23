@@ -252,5 +252,8 @@ def stockitem_list(request):
     return render(
         request,
         "stockitem/filter.html",
-        {"stockitems": response, "filter": f},
+        {
+            "page_obj": response,
+            "filter": f,
+        },
     )

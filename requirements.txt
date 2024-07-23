@@ -12,9 +12,6 @@ Whoosh>=2.7.4
 Django-haystack>=3.2.1
 djangorestframework>=3.14.0
 django-filter>=23.3
-# https://pypi.org/project/django-bootstrap-icons/
-# https://pictogrammers.com/library/mdi/
-# https://icons.getbootstrap.com/
 django-bootstrap-icons>=0.8.6
 zipp>=3.17.0
 django-select2>=8.1.2
@@ -23,7 +20,7 @@ django-mptt>=0.15.0
 django-crispy-forms>=2.1
 crispy-bootstrap5>=2023.10
 # Possibly upgrade when https://github.com/django-import-export/django-import-export/pull/1805 is merged
-django-import-export>=3.3.7, <4.0.0
+# not used anymore django-import-export>=3.3.7, <4.0.0
 environs>=11.0.0
 colored>=2.2.4
 qrcode[pil]>=7.4.2
@@ -31,3 +28,4 @@ openai>=1.25.2
 django-widget-tweaks>=1.5.0
 psycopg[binary,pool]>=3.1.19
 python-magic>=0.4.27
+gunicorn>=22.0.0

@@ -1,6 +1,7 @@
 {% extends "common/base.html" %}
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
+{% load crispy_forms_tags %}
 {% block title %}
   Find stock items
 {% endblock title %}
@@ -8,50 +9,87 @@
   .table-row{
   cursor:pointer;
   }
+  .name-outside-modal select {
+  display: none;
+  }
+  .name-outside-modal input {
+  /* reimplement of form-control */
+  width: 100%;
+  background-color: var(--bs-body-bg);
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  padding: .375rem .75rem;
+  }
 {% endblock css %}
 {% block javascript %}
-  $(document).ready(function($) {
-  $(".table-row").click(function() {
-  window.document.location = $(this).data("href");
-  });
+  function trLink() {
+  window.document.location = this.dataset.href;
+  }
+  window.addEventListener("load", () => {
+  const preview = document.querySelectorAll(".table-row");
+  for (let tr of preview) {
+  tr.addEventListener("click", trLink.bind(tr));
+  }
   });
 {% endblock javascript %}
-{% block modal %}
-  <div class="modal" tabindex="-1" id="filterModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Filter results</h5>
-          <button type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form method="get">
+{% block modals %}
+{% endblock modals %}
+{% block content %}
+  <form method="get" id="modal-form">
+    <div class="modal" tabindex="-1" id="filterModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Filter results</h5>
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
             <!--   order__shop name date_range order  -->
-            {% for field in filter.form.visible_fields %}{{ field }}{% endfor %}
+            {% for field in filter.form.visible_fields %}
+              {% if field.name != "name" %}{{ field | as_crispy_field }}{% endif %}
+            {% endfor %}
             <!-- modal body ends here, buttons im modal footer -->
           </div>
           <div class="modal-footer">
             {% for field in filter.form.hidden_fields %}{{ field }}{% endfor %}
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
-            <a href="{{ request.path }}" class="btn btn-secondary">Clear</a>
             <button type="submit" class="btn btn-primary">Filter</button>
-          </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-{% endblock modal %}
-{% block content %}
-  <div class="row">
-    <div class="col-12 d-lg-none d-xl-none d-xxl-none">
-      <button type="button"
-              class="btn btn-primary w-100"
-              data-bs-toggle="modal"
-              data-bs-target="#filterModal">Filter</button>
-    </div>
+    <div class="row">
+      <div class="col-12 d-lg-none d-xl-none d-xxl-none">
+        <div class="row mb-2">
+          <div class="col-6 ">
+            <span class="name-outside-modal">
+              {% for field in filter.form.visible_fields %}
+                {% if field.name == "name" %}{{ field }}{% endif %}
+              {% endfor %}
+            </span>
+          </div>
+          <div class="col-6">
+            <button class="btn btn-primary w-100" type="submit">Search</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <button type="button"
+                    class="btn btn-primary w-100"
+                    data-bs-toggle="modal"
+                    data-bs-target="#filterModal">More</button>
+          </div>
+          <div class="col-6">
+            <a href="{{ request.path }}" class="btn btn-secondary w-100">Clear</a>
+          </div>
+
+        </div>
+      </div>
+    </form>
+    <!-- id="modal-form" -->
     <div class="col-12 d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
       <!-- CRISPY FORM START -->
       {% load crispy_forms_tags %}
@@ -59,6 +97,7 @@
       <!-- CRISPY FORM END -->
     </div>
   </div>
+  
   <div class="row">
     <div class="col">
       <table class="table table-sm table-bordered table-striped table-hover table-sm">
@@ -66,16 +105,10 @@
           <tr>
             <th scope="col" style="min-width: 6em;"></th>
             <th scope="col">Name</th>
-            <!-- Hide shop col on small screens -->
-            <!--
-            <th scope="col" class="d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell">
-                Categories
-              </th>
-            -->
           </tr>
         </thead>
         <tbody>
-          {% for stockitem in stockitems %}
+          {% for stockitem in page_obj %}
             <!-- transform as a hack to stop .stretched-link -->
             <tr class="table-row" data-href="{{ stockitem.get_absolute_url }}">
               {% with thumb_link=stockitem.thumbnail_url %}
@@ -89,12 +122,6 @@
               <td class="align-middle">
                 <a href="{{ stockitem.get_absolute_url }}">{{ stockitem.name }}</a>
               </td>
-              <!-- Hide shop col on small screens -->
-              <!--
-              <td>
-                {% for project in stockitem.project.all %}{{ project }}{% endfor %}
-              </td>
-              -->
             </tr>
           {% endfor %}
         </tbody>
@@ -102,53 +129,5 @@
     </div>
   </div>
   <hr>
-  {% load hlo_tags %}
-  <nav aria-label="Pagination"
-       class="navbar fixed-bottom navbar-light bg-light justify-content-center pb-0 pt-1 clearfix">
-    <ul class="pagination mb-1">
-      <li class="page-item{% if not stockitems.has_previous %} disabled{% endif %}">
-        <a class="page-link"
-           {% if stockitems.has_previous %} href="?{% url_replace_parameter page=1 %}" {% endif %}
-           aria-label="First">
-          <span class="d-lg-none d-xl-none d-xxl-none">«</span>
-          <span class="d-none d-lg-block d-xl-block d-xxl-block">«&nbsp;First</span>
-        </a>
-      </li>
-      <li class="page-item{% if not stockitems.has_previous %} disabled{% endif %}">
-        <a class="page-link"
-           {% if stockitems.has_previous %} href="?{% url_replace_parameter page=stockitems.previous_page_number %}" {% endif %}
-           aria-label="Previous">
-          <span class="d-lg-none d-xl-none d-xxl-none">‹</span>
-          <span class="d-none d-lg-block d-xl-block d-xxl-block">‹&nbsp;Previous</span>
-        </a>
-      </li>
-      {% for num in stockitems.paginator.page_range %}
-        {% if stockitems.number == num %}
-          <li class="page-item">
-            <a class="page-link disabled">{{ stockitems.number }}</a>
-          </li>
-        {% elif num > stockitems.number|add:'-3' and num < stockitems.number|add:'3' %}
-          <li class="page-item d-none d-lg-block d-xl-block d-xxl-block">
-            <a class="page-link" href="?{% url_replace_parameter page=num %}">{{ num }}</a>
-          </li>
-        {% endif %}
-      {% endfor %}
-      <li class="page-item{% if not stockitems.has_next %} disabled{% endif %}">
-        <a class="page-link"
-           {% if stockitems.has_next %} href="?{% url_replace_parameter page=stockitems.next_page_number %}" {% endif %}
-           aria-label="Next">
-          <span class="d-lg-none d-xl-none d-xxl-none">›</span>
-          <span class="d-none d-lg-block d-xl-block d-xxl-block">Next&nbsp;›</span>
-        </a>
-      </li>
-      <li class="page-item{% if not stockitems.has_next %} disabled{% endif %}">
-        <a class="page-link"
-           {% if stockitems.has_next %} href="?{% url_replace_parameter page=stockitems.paginator.num_pages %}" {% endif %}
-           aria-label="Last">
-          <span class="d-lg-none d-xl-none d-xxl-none">»</span>
-          <span aria-hidden="true" class="d-none d-lg-block d-xl-block d-xxl-block">Last&nbsp;»</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
+  {% include "common/pagination.html" %}
 {% endblock content %}

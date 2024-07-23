@@ -1,0 +1,2 @@
+#! /bin/bash
+HLO_PROD=true gunicorn --reload --workers 4 --bind 0.0.0.0:8000 hlo.wsgi

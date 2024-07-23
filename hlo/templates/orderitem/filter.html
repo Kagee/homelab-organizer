@@ -4,6 +4,11 @@
 {% block title %}
   Find order items
 {% endblock title %}
+{% block css %}
+  .table-row{
+  cursor:pointer;
+  }
+{% endblock css %}
 {% block javascript %}
   $(document).ready(function($) {
     $(".table-row").click(function() {
@@ -11,33 +16,8 @@
     });
   });
 {% endblock javascript %}
-{% block modals %}
-  <div class="modal" tabindex="-1" id="filterModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Filter results</h5>
-          <button type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form method="get">
-            <!--   order__shop name date_range order  -->
-            {% for field in filter.form.visible_fields %}{{ field }}{% endfor %}
-            <!-- modal body ends here, buttons im modal footer -->
-          </div>
-          <div class="modal-footer">
-            {% for field in filter.form.hidden_fields %}{{ field }}{% endfor %}
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
-            <a href="{{ request.path }}" class="btn btn-secondary">Clear</a>
-            <button type="submit" class="btn btn-primary">Apply</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+<form method="get" id="modal-form">{% block modals %}
+{% include "common/filter_modal.html" %}
 {% endblock modals %}
 {% block content %}
   <div class="row">
@@ -47,6 +27,7 @@
               data-bs-toggle="modal"
               data-bs-target="#filterModal">Filter</button>
     </div>
+  </form>
     <div class="col-12 d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
       <!-- CRISPY FORM START -->
       {% load crispy_forms_tags %}
@@ -104,53 +85,5 @@
     </div>
   </div>
   <hr>
-  {% load hlo_tags %}
-  <nav aria-label="Pagination"
-       class="navbar fixed-bottom navbar-light bg-light justify-content-center pb-0 pt-1 clearfix">
-    <ul class="pagination mb-1">
-      <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
-        <a class="page-link"
-           {% if page_obj.has_previous %} href="?{% url_replace_parameter page=1 %}" {% endif %}
-           aria-label="First">
-          <span class="d-lg-none d-xl-none d-xxl-none">«</span>
-          <span class="d-none d-lg-block d-xl-block d-xxl-block">«&nbsp;First</span>
-        </a>
-      </li>
-      <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
-        <a class="page-link"
-           {% if page_obj.has_previous %} href="?{% url_replace_parameter page=page_obj.previous_page_number %}" {% endif %}
-           aria-label="Previous">
-          <span class="d-lg-none d-xl-none d-xxl-none">‹</span>
-          <span class="d-none d-lg-block d-xl-block d-xxl-block">‹&nbsp;Previous</span>
-        </a>
-      </li>
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-          <li class="page-item">
-            <a class="page-link disabled">{{ page_obj.number }}</a>
-          </li>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <li class="page-item d-none d-lg-block d-xl-block d-xxl-block">
-            <a class="page-link" href="?{% url_replace_parameter page=num %}">{{ num }}</a>
-          </li>
-        {% endif %}
-      {% endfor %}
-      <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
-        <a class="page-link"
-           {% if page_obj.has_next %} href="?{% url_replace_parameter page=page_obj.next_page_number %}" {% endif %}
-           aria-label="Next">
-          <span class="d-lg-none d-xl-none d-xxl-none">›</span>
-          <span class="d-none d-lg-block d-xl-block d-xxl-block">Next&nbsp;›</span>
-        </a>
-      </li>
-      <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
-        <a class="page-link"
-           {% if page_obj.has_next %} href="?{% url_replace_parameter page=page_obj.paginator.num_pages %}" {% endif %}
-           aria-label="Last">
-          <span class="d-lg-none d-xl-none d-xxl-none">»</span>
-          <span class="d-none d-lg-block d-xl-block d-xxl-block">Last&nbsp;»</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
+  {% include "common/pagination.html" %}
 {% endblock content %}

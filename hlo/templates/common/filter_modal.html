@@ -1,0 +1,24 @@
+<div class="modal" tabindex="-1" id="filterModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Filter results</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <!--   order__shop name date_range order  -->
+            {% for field in filter.form.visible_fields %}{{ field }}{% endfor %}
+            <!-- modal body ends here, buttons im modal footer -->
+          </div>
+          <div class="modal-footer">
+            {% for field in filter.form.hidden_fields %}{{ field }}{% endfor %}
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+            <a href="{{ request.path }}" class="btn btn-secondary">Clear</a>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -126,6 +126,8 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+STATIC_ROOT: str = env("STATIC_ROOT")
+
 INSTALLED_APPS: list[str] = [
     "django.contrib.admin",
     "django.contrib.auth",
