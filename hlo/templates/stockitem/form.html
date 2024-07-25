@@ -7,6 +7,8 @@
     {{ title }}
 {% endblock title %}
 {% block head %}
+    <link rel="stylesheet" href="{% static 'select2-bootstrap-5-theme/select2-bootstrap-5-theme.css' %}" />
+ 
     <link rel="stylesheet"
           href="{% static 'js/multiselect-dropdown/multiselect-dropdown.css' %}">
     <script src="{% static 'js/select-drop-paste.js' %}"></script>
@@ -52,7 +54,11 @@
                 );
         });
     </script>
+    <link href="{% static 'css/select2-bootstrap5-dark.css' %}" media="screen" rel="stylesheet">
 {% endblock head %}
+{% block css %}
+
+{% endblock css %}
 {% block modals %}
     <div class="modal" tabindex="-1" id="keyboardModel">
         <div class="modal-dialog modal-dialog-centered">
@@ -86,7 +92,9 @@
         </div>
     </div>
     <div class="row">
+        <link href="{% static 'css/select2-bootstrap5-dark.css' %}" media="screen" rel="stylesheet">
         <div class="col-9">{% crispy form %}</div>
+        <link href="{% static 'css/select2-bootstrap5-dark.css' %}" media="screen" rel="stylesheet">
         <div class="col-3 ">
             {% if stockitem.thumbnail_url %}
                 <img alt="Image thumbnail"
@@ -124,4 +132,6 @@
         })
         </script>
         <script src="{% static 'js/multiselect-dropdown/multiselect-dropdown.js' %}"></script>
+        <link rel="stylesheet" href="" media="screen" />
+
     {% endblock bodybottom %}
