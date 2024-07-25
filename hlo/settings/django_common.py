@@ -261,7 +261,8 @@ def show_toolbar_callback(request: HttpRequest) -> bool:
 DEBUG_TOOLBAR_CONFIG = {
     # "DISABLE_PANELS": {"debug_toolbar.panels.staticfiles.StaticFilesPanel"}
     "SHOW_TOOLBAR_CALLBACK": lambda request: request.META.get("HTTP_HOST")
-    != "scan.h2x.no",
+    != "scan.h2x.no"
+    and not PROD,
 }
 
 # django-crispy-forms / crispy-bootstrap5
@@ -270,7 +271,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # django-bootstrap5
 
-BOOTSTRAP5 = {  # We need bootstrap >= 5.3 for dark mode
+BOOTSTRAP5 = {  # We use local copies of bootstrap
     "css_url": {
         "url": "/static/bootstrap/bootstrap.min.css",
     },
