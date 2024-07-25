@@ -22,4 +22,4 @@ class StockItemAdmin(admin.ModelAdmin):
         return [OrderItemStockItemLinkInlineAdmin]
 
     def get_readonly_fields(self, request, obj=None):
-        return ["sha1", *super().get_readonly_fields(request, obj)]
+        return ["sha1_id", *super().get_readonly_fields(request, obj)]

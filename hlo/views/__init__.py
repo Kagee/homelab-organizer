@@ -48,6 +48,7 @@ from .stockitems import (
     TagAutoResponseView,
     stockitem_list,
 )
+from .tags import TagDetailView, TagListView, items_with_tags
 
 
 def test(request):
@@ -111,6 +112,9 @@ __all__ = [
     "ShopListView",
     "ShopCreateView",
     "ShopUpdateView",
+    "TagDetailView",
+    "TagListView",
+    "items_with_tags",
 ]
 
 

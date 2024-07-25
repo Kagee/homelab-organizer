@@ -1,0 +1,37 @@
+{% extends "common/base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+    Tags
+{% endblock title %}
+{% block css %}
+.h-inline-flex {
+    display: inline-flex;
+ }
+{% endblock css %}
+{% block javascript %}
+    // Scale input value to inverted 1-6
+    function scaleValue(value) {
+        var scale = (1 - 6) / ({{ max_item_count }} - 0);
+        var capped = Math.min({{ max_item_count }}, Math.max(0, value)) - 0;
+        return ~~(capped * scale + 6);
+    }
+    window.addEventListener("load", () => {
+        for (let span of document.querySelectorAll("#tags span")) {
+            let count = span.dataset.itemCount;
+            console.log(count, scaleValue(count) )
+            var parent = span.parentNode;
+            var h = document.createElement(`h${scaleValue(count)}`);
+            h.classList.add("h-inline-flex", "pe-2");
+            // set the h as child (instead of the span)
+            parent.replaceChild(h, span);
+            // set span as child of h
+            h.appendChild(span);
+        }
+    })
+{% endblock javascript %}
+{% block content %}
+<span id="tags">
+        {% for tag in page_obj %}<span class="badge text-bg-info rounded-pill" data-pk="{{ tag.pk }}" data-item-count="{{ tag.item_count }}">{{ tag.name }}</span>{% endfor %}
+    </span>
+{% endblock content %}

@@ -1,4 +1,16 @@
 {% load static %}
+
+{% url 'shop-list' as shop_list %}
+{% url 'shop-create' as shop_create %}
+{% url 'order-list' as order_list %}
+{% url 'order-create' as order_create %}
+{% url 'orderitem-list' as orderitem_list %}
+{% url 'orderitem-create' as orderitem_create %}
+{% url 'stockitem-list' as stockitem_list %}
+{% url 'stockitem-create' as stockitem_create %}
+{% url 'storage-list' as storage_list %}
+{% url 'storage-create' as storage_create %}
+{% url 'tag-list' as tag_list %}
 <header>
   {% load bootstrap_icons %}
   <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
@@ -20,117 +32,82 @@
       </button>
       <div class="collapse navbar-collapse" id="navbar">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item dropdown">
-            {% url 'shop-list' as link_list %}
-            {% url 'shop-create' as link_create %}
-            <a class="nav-link dropdown-toggle{% if request.path == link_list or request.path == link_create %} active{% endif %}"
-               href="#"
-               id="navbarShopDropdown"
-               role="button"
-               data-bs-toggle="dropdown"
-               aria-expanded="false">Shop</a>
-            <ul class="dropdown-menu" aria-labelledby="navbarShopDropdown">
-              <li>
-                <a class="nav-link{% if request.path == link_list %} active{% endif %}"
-                   aria-current="page"
-                   href="{{ link_list }}">List</a>
-              </li>
-              <li>
-                <a class="nav-link{% if request.path == link_create %} active{% endif %}"
-                   aria-current="page"
-                   href="{{ link_create }}">Create</a>
-              </li>
-            </ul>
-            <!-- navbarShopDropdown -->
-          </li>
-          <li class="nav-item dropdown">
-            {% url 'order-list' as link_list %}
-            {% url 'order-create' as link_create %}
-            <a class="nav-link dropdown-toggle{% if request.path == link_list or request.path == link_create or request.path == link_create_simple %} active{% endif %}"
-               href="#"
-               id="navbarOrderDropdown"
-               role="button"
-               data-bs-toggle="dropdown"
-               aria-expanded="false">Order</a>
-            <ul class="dropdown-menu" aria-labelledby="navbarOrderDropdown">
-              <li>
-                <a class="nav-link{% if request.path == link_list %} active{% endif %}"
-                   aria-current="page"
-                   href="{{ link_list }}">List</a>
-              </li>
-              <li>
-                <a class="nav-link{% if request.path == link_create %} active{% endif %}"
-                   aria-current="page"
-                   href="{{ link_create }}">Create</a>
-              </li>
-            </ul>
-            <!-- navbarOrderDropdown -->
-          </li>
-          <li class="nav-item dropdown">
-            {% url 'orderitem-list' as link_list %}
-            {% url 'orderitem-create' as link_create %}
-            <a class="nav-link dropdown-toggle{% if request.path == link_list or request.path == link_create %} active{% endif %}"
-               href="#"
-               id="navbarOrderItemDropdown"
-               role="button"
-               data-bs-toggle="dropdown"
-               aria-expanded="false">Order items</a>
-            <ul class="dropdown-menu" aria-labelledby="navbarOrderItemDropdown">
-
-              <li>
-                <a class="nav-link{% if request.path == link_list %} active{% endif %}"
-                   aria-current="page"
-                   href="{{ link_list }}">List</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link{% if request.path == link_create %} active{% endif %}"
-                   aria-current="page"
-                   href="{{ link_create }}">Create</a>
-              </li>
-            </ul>
-            <!-- navbarOrderItemDropdown -->
-          </li>
+          <!-- List Orderitems -->
           <li>
-            {% url 'stockitem-list' as link %}
-            <a class="nav-link{% if request.path == link %} active{% endif %}"
+            <a class="nav-link{% if request.path == orderitem_list %} active{% endif %}"
                aria-current="page"
-               href="{{ link }}">Stock items</a>
+               href="{{ orderitem_list }}">Items</a>
           </li>
+          <!-- List Stockitems -->
+          <li>
+            <a class="nav-link{% if request.path == stockitem_list %} active{% endif %}"
+               aria-current="page"
+               href="{{ stockitem_list }}">Stock</a>
+          </li>
+          <!-- List Storages -->
+          <li>
+            <a class="nav-link{% if request.path == storage_list %} active{% endif %}"
+               aria-current="page"
+               href="{{ storage_list }}">Storage</a>
+          </li>
+          <!-- List different stuff -->
           <li class="nav-item dropdown">
-            {% url 'storage-list' as link_list %}
-            {% url 'storage-create' as link_create %}
-            <a class="nav-link dropdown-toggle{% if request.path == link_list or request.path == link_create %} active{% endif %}"
+            <a class="nav-link dropdown-toggle{% if request.path == shop_list or request.path == order_list %} active{% endif %}"
                href="#"
-               id="navbarStorageDropdown"
+               id="navbarList"
                role="button"
                data-bs-toggle="dropdown"
-               aria-expanded="false">Storage</a>
-            <ul class="dropdown-menu" aria-labelledby="navbarStorageDropdown">
+               aria-expanded="false">List</a>
+            <ul class="dropdown-menu" aria-labelledby="navbarList">
               <li>
-                <a class="nav-link{% if request.path == link_list %} active{% endif %}"
+                <a class="nav-link{% if request.path == shop_list %} active{% endif %}"
                    aria-current="page"
-                   href="{{ link_list }}">List</a>
+                   href="{{ shop_list }}">Shops</a>
               </li>
               <li>
-                <a class="nav-link{% if request.path == link_create %} active{% endif %}"
+                <a class="nav-link{% if request.path == order_list %} active{% endif %}"
                    aria-current="page"
-                   href="{{ link_create }}">Create</a>
+                   href="{{ order_list }}">Orders</a>
+              </li>
+              <li>
+                <a class="nav-link{% if request.path == tag_list %} active{% endif %}"
+                   aria-current="page"
+                   href="{{ tag_list }}">Tags</a>
               </li>
             </ul>
-            <!-- navbarStorageDropdown -->
+            <!-- navbarList -->
           </li>
+          <!-- Create different stuff -->
           <li class="nav-item dropdown">
-          
-            <a class="nav-link dropdown-toggle{% if request.path == link_I or request.path == link_A %} active{% endif %}"
+            <a class="nav-link dropdown-toggle{% if request.path == shop_create or request.path == order_create %} active{% endif %}"
                href="#"
-               id="navbarSearchDropdown"
+               id="navbarCreate"
                role="button"
                data-bs-toggle="dropdown"
-               aria-expanded="false">Search</a>
-            <ul class="dropdown-menu" aria-labelledby="navbarSearchDropdown">
-          
+               aria-expanded="false">Create</a>
+            <ul class="dropdown-menu" aria-labelledby="navbarCreate">
+              <li>
+                <a class="nav-link{% if request.path == shop_create %} active{% endif %}"
+                   aria-current="page"
+                   href="{{ shop_create }}">Shops</a>
+              </li>
+              <li>
+                <a class="nav-link{% if request.path == order_create %} active{% endif %}"
+                   aria-current="page"
+                   href="{{ order_create }}">Orders</a>
+              </li>
+              <li>
+                <a class="nav-link{% if request.path == orderitem_create %} active{% endif %}"
+                   aria-current="page"
+                   href="{{ orderitem_create }}">Item</a>
+              </li>
+              <li>
+                <a class="nav-link{% if request.path == storage_create %} active{% endif %}"
+                   aria-current="page"
+                   href="{{ storage_create }}">Storage</a>
+              </li>
             </ul>
-            <!-- navbarSearchDropdown -->
+            <!-- navbarCreate -->
           </li>
 
           <li class="nav-item dropdown">
@@ -143,7 +120,7 @@
                id="navbarUtilsAbout"
                role="button"
                data-bs-toggle="dropdown"
-               aria-expanded="false">Utils / About</a>
+               aria-expanded="false">Utils</a>
             <ul class="dropdown-menu" aria-labelledby="navbarUtilsAbout">
 
               <li>
@@ -171,10 +148,8 @@
             </ul>
             <!-- navbarUtilsAbout -->
           </li>
-
-
-
           {% if request.user.is_staff %}
+          <!-- Show admin link for admins -->
             <li class="nav-item">
               <a class="nav-link{% if request.path == link %} active{% endif %}"
                  aria-current="page"
@@ -183,6 +158,7 @@
             </li>
           {% endif %}
         </ul>
+          <!-- Show username and optionally logout link -->
           <span class="navbar-text "> <!-- d-none d-lg-block d-xl-block d-xxl-block -->
             {{ user.get_username }}{% if not user.is_authenticated %}(not autenticated){% endif %}
             {% comment %}TODO: Use env var or simmilar{% endcomment %}

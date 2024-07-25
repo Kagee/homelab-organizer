@@ -15,3 +15,5 @@ HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
 CURRENCIES = ("USD", "EUR", "NOK", "JPY")
 # djmoney currencies labels
 CURRENCY_CHOICES = [("USD", "$"), ("EUR", "€"), ("NOK", "kr"), ("JPY", "¥")]
+
+SELECT2_THEME = "bootstrap-5"

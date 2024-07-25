@@ -19,6 +19,12 @@
             <a class="btn btn-outline-secondary btn-sm"
                href="{% url 'stockitem-update' stockitem.id %}"
                role="button">edit</a>
+               {% if request.user.is_staff %}
+               <a class="btn btn-outline-secondary btn-sm"
+               href="{% url 'admin:hlo_stockitem_change' stockitem.id %}"
+               role="button">admin view</a>
+             </li>
+           {% endif %}
           </h3>
         </div>
       </div>
@@ -41,21 +47,10 @@
           <div class="table-responsive">
             <table class="table">
               <tr class="table-dark">
-                <td colspan="2">Tags</td>
-              </tr>
-              <tr>
-                <td colspan="2">
-                  <ul class="list-inline">
-                    {% for tag in stockitem.tags.all %}
-                      <li class="list-inline-item">{{ tag.name }}</li>
-                    {% empty %}
-                      <li class="list-inline-item">No tags applied</li>
-                    {% endfor %}
-                  </ul>
+                <td>Tags</td>
+                <td>
+                  {% for tag in stockitem.tags.all %}<span class="badge text-bg-dark rounded-pill pe-2">{{ tag.name }}</span>{% endfor %}
                 </td>
-              </tr>
-              <tr class="table-dark">
-                <td colspan="2">Metadata</td>
               </tr>
               <tr>
                 <td>Categories</td>
@@ -129,7 +124,7 @@
                   {% endfor %}
                 </td>
               </tr>
-              <tr>
+              <tr class="d-none d-sm-none d-md-none d-lg-table-row d-xl-table-row d-xxl-table-row">
                 <td class="table-secondary">Label</td>
                 <td>
                   <p>
