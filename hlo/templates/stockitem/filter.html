@@ -9,125 +9,64 @@
   .table-row{
   cursor:pointer;
   }
-  .name-outside-modal select {
-  display: none;
-  }
-  .name-outside-modal input {
-  /* reimplement of form-control */
-  width: 100%;
-  background-color: var(--bs-body-bg);
-  border: var(--bs-border-width) solid var(--bs-border-color);
-  border-radius: var(--bs-border-radius);
-  padding: .375rem .75rem;
-  }
   td.thumbnail {
-  min-height: 12em;
-  height: 6em;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position-y: center;
+    min-height: 12em;
+    height: 6em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position-y: center;
   }
 {% endblock css %}
 {% block javascript %}
   function trLink() {
-  window.document.location = this.dataset.href;
+    window.document.location = this.dataset.href;
   }
   window.addEventListener("load", () => {
-  const preview = document.querySelectorAll(".table-row");
-  for (let tr of preview) {
-  tr.addEventListener("click", trLink.bind(tr));
-  }
+    const preview = document.querySelectorAll(".table-row");
+    for (let tr of preview) {
+      tr.addEventListener("click", trLink.bind(tr));
+    }
   });
 {% endblock javascript %}
 {% block modals %}
 {% endblock modals %}
 {% block content %}
-  <form method="get" id="modal-form">
-    <div class="modal" tabindex="-1" id="filterModal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <!--
-          <div class="modal-header">
-            <h5 class="modal-title">Filter results</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          -->
-          <div class="modal-body">
-            <!--   order__shop name date_range order  -->
-            {% for field in filter.form.visible_fields %}
-              {% if field.name != "name" %}{{ field | as_crispy_field }}{% endif %}
-            {% endfor %}
-            <!-- modal body ends here, buttons im modal footer -->
-          </div>
-          <div class="modal-footer">
-            {% for field in filter.form.hidden_fields %}{{ field }}{% endfor %}
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">{% bs_icon 'search' size='1em' %}</button>
-          </div>
-        </div>
-      </div>
+{% include "common/filter_modal.html" %}
+  <div class="row pb-3 d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block" id="searchfieldFull">
+    <div class="col-12 ">
+      <!-- CRISPY FORM START -->
+      {% load crispy_forms_tags %}
+      {% crispy filter.form %}
+      <!-- CRISPY FORM END -->
     </div>
-    <div class="row pb-3">
-      <div class="col d-lg-none d-xl-none d-xxl-none btn-group" role="group">
-            <span class="name-outside-modal">
-              {% for field in filter.form.visible_fields %}
-                {% if field.name == "name" %}{{ field }}{% endif %}
-              {% endfor %}
-            </span>
-            <button type="submit" class="btn btn-primary">{% bs_icon 'search' size='1em' %}</button>
-            <button type="button"
-                    class="btn btn-primary dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"></button>
-            <ul class="dropdown-menu">
-              <li>
-                <a href="#"
-                   class="dropdown-item"
-                   data-bs-toggle="modal"
-                   data-bs-target="#filterModal">Filter</a>
-              </li>
-              <li>
-                <a href="{{ request.path }}" class="dropdown-item">Clear</a>
-              </li>
-            </ul>
-      </div>
-    </div>
-  </form>
-  <!-- id="modal-form" -->
-  <div class="col-12 d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
-    <!-- CRISPY FORM START -->
-    {% load crispy_forms_tags %}
-    {% crispy filter.form %}
-    <!-- CRISPY FORM END -->
   </div>
-</div>
-<div class="row">
-  <div class="col">
-    <table class="table table-sm table-bordered table-striped table-hover table-sm">
-      <thead>
-        <tr>
-          <th scope="col" style="min-width: 6em;"></th>
-          <th scope="col">Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for stockitem in page_obj %}
-          <!-- transform as a hack to stop .stretched-link -->
-          <tr class="table-row" data-href="{{ stockitem.get_absolute_url }}">
-            {% with thumb_link=stockitem.thumbnail_url %}
-              <td class="p-2 thumbnail"
-                  style="{% if thumb_link %}background-image: url({{ thumb_link }});
-                         {% endif %}"></td>
-            {% endwith %}
-            <td class="align-middle">
-              <a href="{{ stockitem.get_absolute_url }}">{{ stockitem.name }}</a>
-            </td>
+  <div class="row">
+    <div class="col">
+      <table class="table table-sm table-bordered table-striped table-hover table-sm">
+        <thead>
+          <tr>
+            <th scope="col" style="min-width: 6em;"></th>
+            <th scope="col">Name</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for stockitem in page_obj %}
+            <!-- transform as a hack to stop .stretched-link -->
+            <tr class="table-row" data-href="{{ stockitem.get_absolute_url }}">
+              {% with thumb_link=stockitem.thumbnail_url %}
+                <td class="p-2 thumbnail"
+                    style="{% if thumb_link %}background-image: url({{ thumb_link }});
+                           {% endif %}"></td>
+              {% endwith %}
+              <td class="align-middle">
+                <a href="{{ stockitem.get_absolute_url }}">{{ stockitem.name }}</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
-<hr>
-{% include "common/pagination.html" %}
+  <hr>
+  {% include "common/pagination.html" %}
 {% endblock content %}
