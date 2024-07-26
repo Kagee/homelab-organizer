@@ -124,8 +124,8 @@ class OrderItem(models.Model):
     def __str__(self) -> str:
         return (
             # pylint: disable=no-member
-            f"{self.order.shop.branch_name} item"
-            f" #{self.item_id}"
+            f"{self.pk}: {self.order.shop.branch_name} "
+            f" #{self.order.order_id}#{self.item_id}"
             f"/{self.item_variation if len(self.item_variation) else ''}"
             f": {self.name}"
         )
