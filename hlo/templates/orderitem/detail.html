@@ -23,6 +23,11 @@
                                <a href="{% url 'stockitem-create-from' orderitem.id %}"
                                class="btn btn-outline-secondary btn-sm">Add to stock item</a>
                         {% endif %}
+                        {% if request.user.is_staff %}
+                        <a class="btn btn-outline-secondary btn-sm"
+                        href="{% url 'admin:hlo_orderitem_change' orderitem.id %}"
+                        role="button">admin view</a>
+                       {% endif %}
                     </h3>
                 </div>
             </div>
