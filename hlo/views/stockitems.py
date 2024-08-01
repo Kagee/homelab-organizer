@@ -189,6 +189,11 @@ class StockItemDetail(DetailView):
     template_name = "stockitem/detail.html"
     context_object_name = "stockitem"
 
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        ctx = super().get_context_data(**kwargs)
+        ctx["range"] = list(range(13))
+        return ctx
+
 
 def stockitem_list(request):
     qs_stockitems = StockItem.objects.all()

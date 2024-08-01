@@ -5,6 +5,61 @@
 {% block title %}
   Details for {{ stock_item.name }}
 {% endblock title %}
+{% block head %}
+  <script type="text/javascript">
+    var print_urls = {
+      {% for num in range %}{{ num }}: "{% url 'label-print-item-size' num stockitem.orderitems.first.id %}",
+      {% endfor %}
+    };
+    var render_urls = {
+      {% for num in range %}{{ num }}: "{% url 'label-render-item-size' num stockitem.orderitems.first.id %}",
+      {% endfor %}
+    };
+    
+    async function printLabelWithSize(size) {
+      let url = print_urls[size]
+      console.log("Printing with size, url", size, url)
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            'X-CSRFToken': window.csrftoken,
+          },
+        });
+        if (!response.ok) {
+          const json = await response.json();
+          alert(json["reason"] + ": " + json["text"] )
+        } else {
+          document.querySelector('#print-label').innerHTML = "Reprint label";
+        }
+      } catch (error) {
+        alert(`Serverside error: ${error.message}`)
+        console.error(error.message);
+      }
+    }
+    
+
+    window.addEventListener("load", () => { 
+      window.csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      console.log("CSRF token", csrftoken)
+      document.querySelector('#print-label').addEventListener("click", (event) => {
+        if ({{ stockitem.orderitems.first.meta.label_printed | yesno:"true,false" }}) {
+          if (confirm("A label for this item has already been printed.\n\nAre you sure you want to print a new label?") != true) {
+              return
+          }
+        }
+        printLabelWithSize(document.querySelector("#print_multiplier").value)
+      });
+
+      document.querySelector('#print_multiplier').addEventListener("change", (event) => {
+        document.querySelector('#label_img').onload = function (){
+          window.scrollTo(0, document.body.scrollHeight); /* large images */
+        };
+        document.querySelector('#label_img').src = render_urls[event.target.value];
+      });
+    });
+  </script>
+{% endblock head %}
 {% block content %}
   <div class="row mt-3">
     <div class="col-12 col-lg-7 col-xl-7 col-xxl-7">
@@ -19,11 +74,11 @@
             <a class="btn btn-outline-secondary btn-sm"
                href="{% url 'stockitem-update' stockitem.id %}"
                role="button">edit</a>
-               {% if request.user.is_staff %}
-               <a class="btn btn-outline-secondary btn-sm"
-               href="{% url 'admin:hlo_stockitem_change' stockitem.id %}"
-               role="button">admin view</a>
-              {% endif %}
+            {% if request.user.is_staff %}
+              <a class="btn btn-outline-secondary btn-sm"
+                 href="{% url 'admin:hlo_stockitem_change' stockitem.id %}"
+                 role="button">admin view</a>
+            {% endif %}
           </h3>
         </div>
       </div>
@@ -48,7 +103,9 @@
               <tr class="table-dark">
                 <td>Tags</td>
                 <td>
-                  {% for tag in stockitem.tags.all %}<span class="badge text-bg-dark rounded-pill pe-2">{{ tag.name }}</span>{% endfor %}
+                  {% for tag in stockitem.tags.all %}
+                    <span class="badge text-bg-dark rounded-pill pe-2">{{ tag.name }}</span>
+                  {% endfor %}
                 </td>
               </tr>
               <tr>
@@ -127,18 +184,34 @@
                 <td class="table-secondary">Label</td>
                 <td>
                   <p>
-                    <img src="{% url 'label-render-orderitem' stockitem.orderitems.first.id %}"
-                         width="400" />
+                    <img src="{% url 'label-render-item-size' 4 stockitem.orderitems.first.id %}"
+                         width="400"
+                         id="label_img" />
                   </p>
-                  <p>
-                    <a id="print-label" class="btn btn-primary btn-sm">
-                      {% if stockitem.orderitems.first.meta.label_printed %}
-                        Reprint label
-                      {% else %}
-                        Print label
-                      {% endif %}
-                    </a>
-                  </p>
+
+                    <div class="input-group mb-3">
+                      <select class="form-control" id="print_multiplier" name="print_multiplier" style="flex: unset; width: auto;">
+                        <option value="1">55mm (QR)</option>
+                        <option value="2">27.4mm (QR)</option>
+                        <option value="3">18.5mm (QR))</option>
+                        <option value="4" selected>Stock (13.7mm)</option>
+                        <option value="5">10.8 mm</option>
+                        <option value="6">8.9 mm</option>
+                        <option value="7">7.7 mm</option>
+                        <option value="8">6.8 mm</option>
+                        <option value="9">5.7 mm (MicroSD)</option>
+                        <option value="10">5.4 mm</option>
+                        <option value="11">4.7 mm</option>
+                        <option value="12">4.4 mm</option>
+                      </select>
+                        <a id="print-label" class="btn btn-primary">
+                          {% if stockitem.orderitems.first.meta.label_printed %}
+                            Reprint label
+                          {% else %}
+                            Print label
+                          {% endif %}
+                        </a>
+                    </div>
                 </td>
               </tr>
             </table>
@@ -159,33 +232,4 @@
     </div>
   </div>
   {% csrf_token %}
-  <script type="text/javascript">
-      $('#print-label').click(function() 
-      {
-          const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-          url = "{% url 'label-print-orderitem' stockitem.orderitems.first.id %}"
-          if ({{ stockitem.orderitems.first.meta.label_printed | yesno:"true,false" }}) {
-              if (confirm("A label for this item has already been printed.\n\nAre you sure you want to print a new label?") != true) {
-                  return
-              }
-          }
-          $.ajax
-          ({ 
-              url: url,
-              type: 'post',
-              headers: {'X-CSRFToken': csrftoken},
-              success: function()
-              {
-                  $('#print-label').hide()
-              },
-              error: function(jqXHR, textStatus, errorThrown) {
-                  if (Object.hasOwn(jqXHR, 'responseJSON')) {
-                      alert(jqXHR.responseJSON["reason"] + ": " + jqXHR.responseJSON["text"] )
-                  } else {
-                      alert("Serverside error: \nHTTP " +jqXHR.status + " " + errorThrown)
-                  }
-              }
-          });
-      });
-  </script>
 {% endblock content %}
