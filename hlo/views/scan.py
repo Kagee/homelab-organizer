@@ -7,13 +7,24 @@ from django.http import (
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import TemplateView
 
-from hlo.models import OrderItem, StockItem, Storage
+from hlo.models import OrderItem, Storage
 
 logger = logging.getLogger(__name__)
 
 
 class WebappView(TemplateView):
     template_name = "scan/webapp.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        logger.debug(self.request)
+        if "result" in self.request.GET:
+            ctx["scanned_code_1"] = self.request.GET["result"].split("/")[-1]
+            logger.debug(ctx["scanned_code_1"])
+        if "result2" in self.request.GET:
+            ctx["scanned_code_2"] = self.request.GET["result2"].split("/")[-1]
+            logger.debug(ctx["scanned_code_2"])
+        return ctx
 
 
 def scan_json_error(msg):
@@ -35,9 +46,7 @@ def get_item(sha1: str):
             stockitem_count=Count("stockitems"),
         ).get(sha1_id=sha1.upper())
         if orderitem.stockitem_count:
-            stockitem = orderitem.stockitems.first()
-            return stockitem
-        # return orderitem
+            return orderitem.stockitems.first()
         return scan_json_error("Order item #{obj.pk} has no stockitem")
     except OrderItem.DoesNotExist:
         try:
