@@ -70,10 +70,9 @@ class Attachement(models.Model):
                 super().save(*args, **kwargs)
         else:
             self.sha1 = self.sha1 if self.sha1 else None
-            logger.warning("SHA1 was None?")
         super().save(*args, **kwargs)
 
-    def text_ornot(self):
+    def text_or_not(self):
         if len(self.text):
             return "There is text"
         return "There is no text"

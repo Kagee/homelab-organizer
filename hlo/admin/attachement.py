@@ -6,7 +6,7 @@ from hlo.models import Attachement
 @admin.register(Attachement)
 class AttachementAdmin(admin.ModelAdmin):
     search_fields = ["name", "comment", "file"]
-    readonly_fields = ["used_by", "text_ornot"]
+    readonly_fields = ["used_by", "text_or_not"]
 
     def get_fields(self, _request, obj=None):
         if (
@@ -19,7 +19,7 @@ class AttachementAdmin(admin.ModelAdmin):
                 "file",
                 "sha1",
                 "used_by",
-                "text_ornot",
+                "text_or_not",
                 "text",
             ]
         return [
