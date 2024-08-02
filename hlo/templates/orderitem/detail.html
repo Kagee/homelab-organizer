@@ -10,25 +10,23 @@
             <div class="row">
                 <!-- title -->
                 <div class="col-12">
-                    <h3>
-                        {{ orderitem.name }}
-                        {% if orderitem.manual_input %}
-                            <a class="btn btn-outline-secondary btn-sm"
-                               href="{% url 'orderitem-update' orderitem.id %}"
-                               role="button">edit</a>
-                        {% endif %}
-                        {% if not orderitem.stockitems.count %}
-                            <a href="{% url 'stockitem-create-from' orderitem.id %}"
-                               class="btn btn-outline-secondary btn-sm">Create stock item</a>
-                               <a href="{% url 'stockitem-create-from' orderitem.id %}"
-                               class="btn btn-outline-secondary btn-sm">Add to stock item</a>
-                        {% endif %}
-                        {% if request.user.is_staff %}
+                    <h3>{{ orderitem.name }}</h3>
+                    {% if orderitem.manual_input %}
                         <a class="btn btn-outline-secondary btn-sm"
-                        href="{% url 'admin:hlo_orderitem_change' orderitem.id %}"
-                        role="button">admin view</a>
-                       {% endif %}
-                    </h3>
+                           href="{% url 'orderitem-update' orderitem.id %}"
+                           role="button">edit</a>
+                    {% endif %}
+                    {% if not orderitem.stockitems.count %}
+                        <a href="{% url 'stockitem-create-from' orderitem.id %}"
+                           class="btn btn-outline-secondary btn-sm">Create stock item</a>
+                        <a href="{% url 'stockitem-create-from' orderitem.id %}"
+                           class="btn btn-outline-secondary btn-sm">Add to stock item</a>
+                    {% endif %}
+                    {% if request.user.is_staff %}
+                        <a class="btn btn-outline-secondary btn-sm"
+                           href="{% url 'admin:hlo_orderitem_change' orderitem.id %}"
+                           role="button">admin view</a>
+                    {% endif %}
                 </div>
             </div>
             <div class="row d-lg-none d-xl-none d-xxl-none">
@@ -49,9 +47,6 @@
                 <div class="col-12">
                     <div class="table-responsive">
                         <table class="table">
-                            <tr class="table-dark">
-                                <td colspan="2">Metadata</td>
-                            </tr>
                             <tr>
                                 <td>Internal order</td>
                                 <td>
@@ -71,45 +66,50 @@
                                 <td>{{ orderitem.order.date }}</td>
                             </tr>
                             <tr>
-                                <td>Item number</td>
+                                <td>Item listing</td>
                                 <td>
                                     <a href="{{ orderitem.get_orderitem_url }}"
                                        title="View original item listing on {{ orderitem.order.shop.branch_name }}"
                                        target="_blank">🛪 {{ orderitem.order.shop.name }} #{{ orderitem.item_id }}</a>
                                 </td>
                             </tr>
-                            <tr class="table-dark">
-                                <td colspan="2">Related items and attachements</td>
-                            </tr>
-                            <tr>
-                                <td class="table-secondary">Stock items</td>
-                                <td>
-                                    {% for stockitem in orderitem.stockitems.all %}
-                                        <a href="{% url "stockitem-detail" stockitem.pk %}">{{ stockitem }} ({{ stockitem.pk }})</a>
-                                        <br>
-                                        {% if stockitem.attachements.all %}<ul>{% endif %}
-                                            {% for attachement in stockitem.attachements.all %}
+                            {% if orderitem.stockitems.all %}
+                                <tr>
+                                    <td>Stock item(s)</td>
+                                    <td>
+                                        {% for stockitem in orderitem.stockitems.all %}
+                                            <a href="{% url "stockitem-detail" stockitem.pk %}">{{ stockitem }} ({{ stockitem.pk }})</a>
+                                            <br>
+                                            {% if stockitem.attachements.all %}<ul>{% endif %}
+                                                {% for attachement in stockitem.attachements.all %}
+                                                    <li>
+                                                        <a href="{{ attachement.file.url }}" target="_blank">{{ attachement.name }}</a>
+                                                    </li>
+                                                {% endfor %}
+                                                {% if stockitem.attachements.all %}</ul>{% endif %}
+                                        {% empty %}
+                                            No linked stock items
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if orderitem.attachements.all %}
+                                <tr>
+                                    <td>Attachement(s)</td>
+                                    <td>
+                                        <ul class="mb-0">
+                                            {% for attachement in orderitem.attachements.all %}
                                                 <li>
                                                     <a href="{{ attachement.file.url }}" target="_blank">{{ attachement.name }}</a>
                                                 </li>
+                                            {% empty %}
+                                                No attachements
                                             {% endfor %}
-                                            {% if stockitem.attachements.all %}</ul>{% endif %}
-                                    {% empty %}
-                                        No linked stock items
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="table-secondary">Attachements</td>
-                                <td>
-                                    {% for attachement in stockitem.attachements.all %}
-                                        {{ attachement }}
-                                        <br>
-                                    {% empty %}
-                                        No attachements
-                                    {% endfor %}
-                                </td>
-                            </tr>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% comment %}
                             <tr>
                                 <td class="table-secondary">Label</td>
                                 <td>
@@ -127,6 +127,7 @@
                                     </p>
                                 </td>
                             </tr>
+                            {% endcomment %}
                         </table>
                     </div>
                 </div>
