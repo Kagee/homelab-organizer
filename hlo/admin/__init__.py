@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 
 from hlo.models import User
 
-from .attachement import AttachmentAdmin
+from .attachment import AttachmentAdmin
 from .commontree import CategoryAdmin, ProjectAdmin, StorageAdmin
 from .order import OrderAdmin
 from .orderitem import (

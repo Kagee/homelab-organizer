@@ -13,7 +13,7 @@ __all__ = [
 ]
 from django.contrib.auth.models import AbstractUser
 
-from .attachement import Attachment
+from .attachment import Attachment
 from .commontree import Category, Project, Storage
 from .order import Order
 from .orderitem import OrderItem, OrderItemMeta

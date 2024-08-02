@@ -11,7 +11,7 @@ import mptt.fields
 import taggit.managers
 from django.db import migrations, models
 
-import hlo.models.attachement
+import hlo.models.attachment
 import hlo.models.orderitem
 import hlo.utils.overwritingfilestorage
 
@@ -164,7 +164,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         max_length=255,
                         storage=hlo.utils.overwritingfilestorage.OverwritingFileSystemStorage(),
-                        upload_to=hlo.models.attachement.attachment_file_path,
+                        upload_to=hlo.models.attachment.attachment_file_path,
                     ),
                 ),
                 ("sha1", models.CharField(max_length=40)),

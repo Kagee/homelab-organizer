@@ -23,8 +23,8 @@ def attachment_file_path(instance, filename):
 
 
 class Attachment(models.Model):
-    DEFAULT_ATTACHEMENT_TYPE = "other"
-    ATTACHEMENT_TYPE_CHOICES = [
+    DEFAULT_ATTACHMENT_TYPE = "other"
+    ATTACHMENT_TYPE_CHOICES = [
         ("datasheet", "Datasheet"),
         ("scrape", "Scraped page"),
         ("thumbnail", "Thumbnail"),
@@ -34,8 +34,8 @@ class Attachment(models.Model):
     comment = models.CharField(max_length=255, blank=True, default="")
     type = models.CharField(
         max_length=50,
-        choices=ATTACHEMENT_TYPE_CHOICES,
-        default=DEFAULT_ATTACHEMENT_TYPE,
+        choices=ATTACHMENT_TYPE_CHOICES,
+        default=DEFAULT_ATTACHMENT_TYPE,
     )
     text = models.TextField(blank="", default="")
 

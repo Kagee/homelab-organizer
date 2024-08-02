@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.html import escape, format_html, format_html_join, mark_safe
 from djmoney.models.fields import MoneyField
 
-from .attachement import Attachment
+from .attachment import Attachment
 from .shop import Shop
 
 
