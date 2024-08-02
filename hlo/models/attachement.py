@@ -28,7 +28,7 @@ class Attachement(models.Model):
     ATTACHEMENT_TYPE_CHOICES = [
         ("datasheet", "Datasheet"),
         ("scrape", "Scraped page"),
-        ("thumnail", "Thumbnail"),
+        ("thumbnail", "Thumbnail"),
         ("other", "Other"),
     ]
     name = models.CharField(max_length=255, blank=True, default="")

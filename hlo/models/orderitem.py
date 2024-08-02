@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def thumnail_path(instance: OrderItem, filename: str) -> str:
+def thumbnail_path(instance: OrderItem, filename: str) -> str:
     if len(instance.thumbnail_sha1) != 40:  # noqa: PLR2004
         msg = f"SHA1 sum is not 40 chars: {instance.thumbnail_sha1}"
         raise ValueError(msg)
@@ -91,7 +91,7 @@ class OrderItem(models.Model):
     )
 
     thumbnail = models.ImageField(
-        upload_to=thumnail_path,
+        upload_to=thumbnail_path,
         storage=OverwritingFileSystemStorage(),
         blank=True,
     )
