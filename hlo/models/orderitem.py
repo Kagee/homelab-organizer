@@ -205,8 +205,8 @@ class OrderItem(models.Model):
             f' src="{self.thumbnail.url}" />',
         )
 
-    @admin.display(description="Attachements")
-    def attachements_tag(self) -> SafeString:
+    @admin.display(description="Attachments")
+    def attachments_tag(self) -> SafeString:
         # pylint: disable=no-member
         if self.attachements.count() == 0:
             return "No attachements"

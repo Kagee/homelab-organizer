@@ -29,7 +29,7 @@ class OrderItemAdmin(admin.ModelAdmin):
                     "item_variation",
                     "item_ref",
                     "attachements",
-                    "attachements_tag",
+                    "attachments_tag",
                     "indent_extra_data",
                 ]
             else:
@@ -49,7 +49,7 @@ class OrderItemAdmin(admin.ModelAdmin):
                     "item_variation",
                     "item_ref",
                     "attachements",
-                    "attachements_tag",
+                    "attachments_tag",
                     "indent_extra_data",
                 ]
         return []
@@ -72,7 +72,7 @@ class OrderItemAdmin(admin.ModelAdmin):
                 "admin_image_tag",
                 "thumbnail",
                 "text_manual_input",
-                "attachements_tag",
+                "attachments_tag",
                 "order",
                 "count",
                 "total",

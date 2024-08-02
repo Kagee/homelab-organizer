@@ -62,9 +62,9 @@ urlpatterns = [
             name="item-search",
         ),
         path(
-            "search/attachements",
+            "search/attachments",
             AttachementSearchView.as_view(),
-            name="attachement-search",
+            name="attachment-search",
         ),
         path(
             "about",

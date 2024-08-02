@@ -14,7 +14,7 @@
     #id_total_0 {
     flex-grow: 10;
     }
-    #div_id_attachements div {
+    #div_id_attachments div {
     width: unset;
     }
 {% endblock css %}
@@ -38,21 +38,21 @@
             <div class="col-10">
                 <a class="link-underline link-underline-opacity-0 text-reset"
                    data-bs-toggle="collapse"
-                   href="#collapseOrderAttachements"
+                   href="#collapseOrderAttachments"
                    role="button"
                    aria-expanded="false"
-                   aria-controls="collapseOrderAttachements">Order attachements{% bs_icon 'caret-down-fill' %}</a>
+                   aria-controls="collapseOrderAttachments">Order attachments{% bs_icon 'caret-down-fill' %}</a>
             </div>
             <div class="col-2">
-                <div class="collapse text-end" id="collapseOrderAttachements">
+                <div class="collapse text-end" id="collapseOrderAttachments">
                     <a class="link-underline link-underline-opacity-0 text-reset"
-                        id="btn_add_attachement"
+                        id="btn_add_attachment"
                        href="#"
-                       role="button">{% bs_icon 'plus' %} add attachement</a>
+                       role="button">{% bs_icon 'plus' %} add attachment</a>
                 </div>
             </div>
         </div>
-        <div class="collapse" id="collapseOrderAttachements">
+        <div class="collapse" id="collapseOrderAttachments">
             <div class="row  border rounded m-1 pt-2">
                 <div class="row" id="formset-container">
                     <div class="col">{% crispy formset formset_helper %}</div>

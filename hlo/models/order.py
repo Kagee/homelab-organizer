@@ -102,10 +102,10 @@ class Order(models.Model):
         return "Yes" if self.manual_input else "No"
 
     @admin.display(description="Items")
-    def attachements_tag(self):
+    def attachments_tag(self):
         # pylint: disable=no-member
         if self.attachements.count() == 0:
-            return "No attachements"
+            return "No attachments"
         html = '<ul style="margin: 0;">'
         for attachement in self.attachements.all():
             html += (
@@ -115,7 +115,7 @@ class Order(models.Model):
         html += "</ul>"
         return mark_safe(html)  # noqa: S308
 
-    attachements_tag.short_description = "Attachements"
+    attachments_tag.short_description = "Attachments"
 
     @admin.display(description="Items")
     def items_count(self):

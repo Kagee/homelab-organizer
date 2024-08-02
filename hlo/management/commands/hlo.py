@@ -47,9 +47,9 @@ class Command(BaseCommand):
         )
 
         scraper.add_argument(
-            "--skip-attachements",
+            "--skip-attachments",
             action="store_true",
-            help=("Skip attachements when importing."),
+            help=("Skip attachments when importing."),
         )
 
     def setup_logger(self, options):

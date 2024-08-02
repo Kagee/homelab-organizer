@@ -34,7 +34,7 @@ class AttachementAdmin(admin.ModelAdmin):
 
 class AttachementInlineAdmin(admin.TabularInline):
     model = Attachement
-    verbose_name_plural = "Attachements"
+    verbose_name_plural = "Attachments"
     extra = 1
     fields = ["attachements"]
     # autocomplete_fields = ['orderitem',]  # noqa: ERA001

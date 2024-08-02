@@ -19,8 +19,7 @@ def attachement_file_path(instance, filename):
     suffix = Path(filename).suffix
     prefix = instance.sha1[:2]
     filename = instance.sha1[2:]
-    path = f"attachements/hashed/{prefix}/{filename}{suffix}"
-    return path
+    return f"attachments/hashed/{prefix}/{filename}{suffix}"
 
 
 class Attachement(models.Model):

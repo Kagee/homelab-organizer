@@ -30,7 +30,7 @@ class OrderAdmin(admin.ModelAdmin):
                     "items_list",
                     "indent_extra_data",
                     "attachements",
-                    "attachements_tag",
+                    "attachments_tag",
                     "shop_name",
                     "extra_data",
                     "indent_extra_data",
@@ -43,7 +43,7 @@ class OrderAdmin(admin.ModelAdmin):
                 "items_list",
                 "indent_extra_data",
                 "attachements",
-                "attachements_tag",
+                "attachments_tag",
                 "shop_name",
                 "extra_data",
                 "indent_extra_data",
@@ -65,7 +65,7 @@ class OrderAdmin(admin.ModelAdmin):
             ]
 
             if obj.manual_input or obj.attachements.all():
-                fields += ["attachements_tag"]
+                fields += ["attachments_tag"]
 
             fields += ["items_list"]
 

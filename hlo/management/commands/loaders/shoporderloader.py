@@ -80,13 +80,21 @@ class ShopOrderLoader:
                     defaults=defaults,
                 )
 
-                if "attachements" in order:
-                    if not options["skip_attachements"]:
-                        order_attachements = order["attachements"]
+                if (
+                    "attachements" in order  # keep
+                    or "attachments" in order
+                ):
+                    if not options["skip_attachments"]:
+                        if "attachments" in order:
+                            order_attachments = order["attachments"]
+                        else:
+                            order_attachments = order[
+                                "attachements"  # keep
+                            ]
                         existing_sha1s = [
                             x.sha1 for x in order_object.attachements.all()
                         ]
-                        for attachement in order_attachements:
+                        for attachement in order_attachments:
                             attachement_path = Path(
                                 attachement["path"],
                             ).as_posix()
@@ -160,7 +168,10 @@ class ShopOrderLoader:
                                     sha1,
                                     attachement_path,
                                 )
-                    del order["attachements"]
+                    if "attachments" in order:
+                        del order["attachments"]
+                    else:
+                        del order["attachements"]  # keep
 
                 del order["date"]
 
@@ -220,11 +231,15 @@ class ShopOrderLoader:
                     if "thumbnail" in item:
                         item_thumbnail = item["thumbnail"]
                         del item["thumbnail"]
-                    item_attachements = []
-                    if "attachements" in item:
-                        if not options["skip_attachements"]:
-                            item_attachements = item["attachements"]
-                        del item["attachements"]
+                    item_attachments = []
+                    if "attachements" in item:  # keep
+                        if not options["skip_attachments"]:
+                            item_attachments = item["attachements"]  # keep
+                        del item["attachements"]  # keep
+                    if "attachments" in item:
+                        if not options["skip_attachments"]:
+                            item_attachments = item["attachments"]
+                        del item["attachments"]
 
                     if item != {}:
                         msg = f"Item object not empty: {item}"
@@ -283,7 +298,7 @@ class ShopOrderLoader:
                     ]
                     self.log.debug("Got existing sha1s: %s ", existing_sha1s)
 
-                    for attachement in item_attachements:
+                    for attachement in item_attachments:
                         attachement_path = Path(
                             attachement["path"],
                         ).as_posix()
