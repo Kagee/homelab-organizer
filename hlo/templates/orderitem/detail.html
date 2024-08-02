@@ -80,25 +80,25 @@
                                         {% for stockitem in orderitem.stockitems.all %}
                                             <a href="{% url "stockitem-detail" stockitem.pk %}">{{ stockitem }} ({{ stockitem.pk }})</a>
                                             <br>
-                                            {% if stockitem.attachements.all %}<ul>{% endif %}
-                                                {% for attachement in stockitem.attachements.all %}
+                                            {% if stockitem.attachments.all %}<ul>{% endif %}
+                                                {% for attachement in stockitem.attachments.all %}
                                                     <li>
                                                         <a href="{{ attachement.file.url }}" target="_blank">{{ attachement.name }}</a>
                                                     </li>
                                                 {% endfor %}
-                                                {% if stockitem.attachements.all %}</ul>{% endif %}
+                                                {% if stockitem.attachments.all %}</ul>{% endif %}
                                         {% empty %}
                                             No linked stock items
                                         {% endfor %}
                                     </td>
                                 </tr>
                             {% endif %}
-                            {% if orderitem.attachements.all %}
+                            {% if orderitem.attachments.all %}
                                 <tr>
                                     <td>Attachement(s)</td>
                                     <td>
                                         <ul class="mb-0">
-                                            {% for attachement in orderitem.attachements.all %}
+                                            {% for attachement in orderitem.attachments.all %}
                                                 <li>
                                                     <a href="{{ attachement.file.url }}" target="_blank">{{ attachement.name }}</a>
                                                 </li>

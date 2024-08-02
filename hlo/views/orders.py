@@ -85,7 +85,7 @@ class OrderSimpleCreateView(CreateView):
         self.object = form.save()
         instances = formset.save(commit=False)
         for instance in instances:
-            self.object.attachements.add(instance)
+            self.object.attachments.add(instance)
         self.object.save()
 
         return HttpResponseRedirect(self.get_success_url())

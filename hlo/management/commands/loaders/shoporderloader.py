@@ -92,7 +92,7 @@ class ShopOrderLoader:
                                 "attachements"  # keep
                             ]
                         existing_sha1s = [
-                            x.sha1 for x in order_object.attachements.all()
+                            x.sha1 for x in order_object.attachments.all()
                         ]
                         for attachement in order_attachments:
                             attachement_path = Path(
@@ -144,18 +144,18 @@ class ShopOrderLoader:
                                 )
 
                                 (
-                                    attachement_object,
+                                    attachment_object,
                                     created,
                                 ) = Attachement.objects.update_or_create(
                                     sha1=sha1,
                                     defaults=defaults,
                                 )
-                                order_object.attachements.add(
-                                    attachement_object,
+                                order_object.attachments.add(
+                                    attachment_object,
                                 )
                                 order_object.save()
-                                attachement_object.file = attachement_file
-                                attachement_object.save()
+                                attachment_object.file = attachement_file
+                                attachment_object.save()
                                 for key in [
                                     "attachement_count",
                                     "attachement_pdf",
@@ -294,7 +294,7 @@ class ShopOrderLoader:
 
                     self.log.debug("Getting existing sha1s")
                     existing_sha1s = [
-                        x.sha1 for x in item_object.attachements.all()
+                        x.sha1 for x in item_object.attachments.all()
                     ]
                     self.log.debug("Got existing sha1s: %s ", existing_sha1s)
 
@@ -373,16 +373,16 @@ class ShopOrderLoader:
                                     text += page.get_text()
                                 defaults["text"] = text
                             (
-                                attachement_object,
+                                attachment_object,
                                 created,
                             ) = Attachement.objects.update_or_create(
                                 sha1=sha1,
                                 defaults=defaults,
                             )
-                            item_object.attachements.add(attachement_object)
+                            item_object.attachments.add(attachment_object)
                             item_object.save()
-                            attachement_object.file = attachement_file
-                            attachement_object.save()
+                            attachment_object.file = attachement_file
+                            attachment_object.save()
                             for key in [
                                 "orderitem_count",
                                 "attachement_count",

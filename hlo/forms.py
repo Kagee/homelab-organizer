@@ -146,7 +146,7 @@ class AttachementFormSetHelper(FormHelper):
 class OrderFormSimple(ModelForm):
     class Meta:
         model = Order
-        exclude = ["manual_input", "extra_data", "attachements"]  # noqa: DJ006
+        exclude = ["manual_input", "extra_data", "attachments"]  # noqa: DJ006
         widgets = {
             "shop": HiddenInput(),
             "date": RealDateInput(),
@@ -246,7 +246,7 @@ class StockItemForm(ModelForm):
             "project",
             "storage",
             "orderitems",
-            "attachements",
+            "attachments",
             "thumbnail",
         ]
 
@@ -377,7 +377,7 @@ class StockItemForm(ModelForm):
             ),
             Field("orderitems"),
             Field(
-                "attachements",
+                "attachments",
                 css_class="multiselect-dropdown-upgrade multiselect-search",
             ),
             HTML('<p class="text-end">'),

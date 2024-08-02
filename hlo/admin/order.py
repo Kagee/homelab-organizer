@@ -17,7 +17,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = [
         "shop__name",
     ]
-    filter_horizontal = ["attachements"]
+    filter_horizontal = ["attachments"]
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
@@ -29,7 +29,7 @@ class OrderAdmin(admin.ModelAdmin):
                     "order_id",
                     "items_list",
                     "indent_extra_data",
-                    "attachements",
+                    "attachments",
                     "attachments_tag",
                     "shop_name",
                     "extra_data",
@@ -42,7 +42,7 @@ class OrderAdmin(admin.ModelAdmin):
                 "order_id",
                 "items_list",
                 "indent_extra_data",
-                "attachements",
+                "attachments",
                 "attachments_tag",
                 "shop_name",
                 "extra_data",
@@ -64,7 +64,7 @@ class OrderAdmin(admin.ModelAdmin):
                 "order_url",
             ]
 
-            if obj.manual_input or obj.attachements.all():
+            if obj.manual_input or obj.attachments.all():
                 fields += ["attachments_tag"]
 
             fields += ["items_list"]

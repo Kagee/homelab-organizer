@@ -84,7 +84,7 @@ class OrderItem(models.Model):
         blank=True,
         null=True,
     )
-    attachements = models.ManyToManyField(
+    attachments = models.ManyToManyField(
         Attachement,
         related_name="orderitem",
         blank=True,
@@ -208,10 +208,10 @@ class OrderItem(models.Model):
     @admin.display(description="Attachments")
     def attachments_tag(self) -> SafeString:
         # pylint: disable=no-member
-        if self.attachements.count() == 0:
-            return "No attachements"
+        if self.attachments.count() == 0:
+            return "No attachments"
         html = '<ul style="margin: 0;">'
-        for attachement in self.attachements.all():
+        for attachement in self.attachments.all():
             html += (
                 f'<li><a href="{attachement.file.url}"'
                 f' target="_blank">{attachement}</a></li>'

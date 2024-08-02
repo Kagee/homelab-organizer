@@ -67,7 +67,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% for attachement in order.attachements.all %}
+        {% for attachement in order.attachments.all %}
             Attachement: <a href="{{ attachement.file.url }}">{{ attachement }}</a>
             <br>
         {% endfor %}

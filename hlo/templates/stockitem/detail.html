@@ -157,13 +157,13 @@
                   {% for orderitem in stockitem.orderitems.all %}
                     <a href="{% url "orderitem-detail" orderitem.pk %}">{{ orderitem }} ({{ orderitem.pk }})</a>
                     <br>
-                    {% if orderitem.attachements.all %}<ul>{% endif %}
-                      {% for attachement in orderitem.attachements.all %}
+                    {% if orderitem.attachments.all %}<ul>{% endif %}
+                      {% for attachement in orderitem.attachments.all %}
                         <li>
                           <a href="{{ attachement.file.url }}" target="_blank">{{ attachement.name }}</a>
                         </li>
                       {% endfor %}
-                      {% if orderitem.attachements.all %}</ul>{% endif %}
+                      {% if orderitem.attachments.all %}</ul>{% endif %}
                   {% empty %}
                     No linked order items
                   {% endfor %}
@@ -172,7 +172,7 @@
               <tr>
                 <td class="table-secondary">Attachments</td>
                 <td>
-                  {% for attachement in stockitem.attachements.all %}
+                  {% for attachement in stockitem.attachments.all %}
                     {{ attachement }}
                     <br>
                   {% empty %}

@@ -31,7 +31,7 @@ class Order(models.Model):
     date = models.DateField(
         "Order date",
     )
-    attachements = models.ManyToManyField(
+    attachments = models.ManyToManyField(
         Attachement,
         related_name="order",
         blank=True,
@@ -104,10 +104,10 @@ class Order(models.Model):
     @admin.display(description="Items")
     def attachments_tag(self):
         # pylint: disable=no-member
-        if self.attachements.count() == 0:
+        if self.attachments.count() == 0:
             return "No attachments"
         html = '<ul style="margin: 0;">'
-        for attachement in self.attachements.all():
+        for attachement in self.attachments.all():
             html += (
                 f'<li><a href="{attachement.file.url}"'
                 f' target="_blank">{attachement}</a></li>'

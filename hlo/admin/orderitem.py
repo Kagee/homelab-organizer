@@ -28,7 +28,7 @@ class OrderItemAdmin(admin.ModelAdmin):
                     "item_id",
                     "item_variation",
                     "item_ref",
-                    "attachements",
+                    "attachments",
                     "attachments_tag",
                     "indent_extra_data",
                 ]
@@ -48,13 +48,13 @@ class OrderItemAdmin(admin.ModelAdmin):
                     "count",
                     "item_variation",
                     "item_ref",
-                    "attachements",
+                    "attachments",
                     "attachments_tag",
                     "indent_extra_data",
                 ]
         return []
 
-    filter_horizontal = ["attachements"]
+    filter_horizontal = ["attachments"]
     formfield_overrides = {
         models.CharField: {"widget": TextInput(attrs={"size": "80"})},
         models.JSONField: {
@@ -85,7 +85,7 @@ class OrderItemAdmin(admin.ModelAdmin):
             "count",
             "thumbnail",
             "text_manual_input",
-            "attachements",
+            "attachments",
             "order",
             "item_id",
             "item_variation",
