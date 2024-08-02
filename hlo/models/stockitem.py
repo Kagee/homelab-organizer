@@ -71,7 +71,7 @@ class StockItem(models.Model):
     )
     attachments = models.ManyToManyField(
         Attachment,
-        related_name="attachements",  # TODO: fix to be `stockitem`
+        related_name="stockitem",
         blank=True,
     )
 
