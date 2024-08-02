@@ -16,7 +16,7 @@ from taggit.managers import TaggableManager  # type: ignore[import-untyped]
 
 from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
 
-from . import Attachement
+from . import Attachment
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ class StockItem(models.Model):
         blank=True,
     )
     attachments = models.ManyToManyField(
-        Attachement,
+        Attachment,
         related_name="attachements",  # TODO: fix to be `stockitem`
         blank=True,
     )

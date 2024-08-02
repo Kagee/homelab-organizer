@@ -17,7 +17,7 @@ from djmoney.models.fields import MoneyField
 
 from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
 
-from . import Attachement, Order
+from . import Attachment, Order
 
 if TYPE_CHECKING:
     from django.utils.safestring import SafeString
@@ -85,7 +85,7 @@ class OrderItem(models.Model):
         null=True,
     )
     attachments = models.ManyToManyField(
-        Attachement,
+        Attachment,
         related_name="orderitem",
         blank=True,
     )
@@ -211,10 +211,10 @@ class OrderItem(models.Model):
         if self.attachments.count() == 0:
             return "No attachments"
         html = '<ul style="margin: 0;">'
-        for attachement in self.attachments.all():
+        for attachment in self.attachments.all():
             html += (
-                f'<li><a href="{attachement.file.url}"'
-                f' target="_blank">{attachement}</a></li>'
+                f'<li><a href="{attachment.file.url}"'
+                f' target="_blank">{attachment}</a></li>'
             )
         html += "</ul>"
         return mark_safe(html)  # noqa: S308

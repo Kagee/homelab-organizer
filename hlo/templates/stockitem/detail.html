@@ -158,9 +158,9 @@
                     <a href="{% url "orderitem-detail" orderitem.pk %}">{{ orderitem }} ({{ orderitem.pk }})</a>
                     <br>
                     {% if orderitem.attachments.all %}<ul>{% endif %}
-                      {% for attachement in orderitem.attachments.all %}
+                      {% for attachment in orderitem.attachments.all %}
                         <li>
-                          <a href="{{ attachement.file.url }}" target="_blank">{{ attachement.name }}</a>
+                          <a href="{{ attachment.file.url }}" target="_blank">{{ attachment.name }}</a>
                         </li>
                       {% endfor %}
                       {% if orderitem.attachments.all %}</ul>{% endif %}
@@ -172,8 +172,8 @@
               <tr>
                 <td class="table-secondary">Attachments</td>
                 <td>
-                  {% for attachement in stockitem.attachments.all %}
-                    {{ attachement }}
+                  {% for attachment in stockitem.attachments.all %}
+                    {{ attachment }}
                     <br>
                   {% empty %}
                     No attachments

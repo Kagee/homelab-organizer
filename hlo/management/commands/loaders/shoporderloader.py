@@ -15,7 +15,7 @@ from django.core.files import File
 from djmoney.money import Money
 
 # pylint: disable=relative-beyond-top-level
-from hlo.models import Attachement, Order, OrderItem, Shop
+from hlo.models import Attachment, Order, OrderItem, Shop
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -94,33 +94,33 @@ class ShopOrderLoader:
                         existing_sha1s = [
                             x.sha1 for x in order_object.attachments.all()
                         ]
-                        for attachement in order_attachments:
-                            attachement_path = Path(
-                                attachement["path"],
+                        for attachment in order_attachments:
+                            attachment_path = Path(
+                                attachment["path"],
                             ).as_posix()
-                            attachement_file = None
-                            order_attachement_zip_file = zipp.Path(
+                            attachment_file = None
+                            order_attachment_zip_file = zipp.Path(
                                 zip_data,
-                                attachement_path,
+                                attachment_path,
                             )
-                            if order_attachement_zip_file.is_file():
-                                attachement_file = File(
-                                    order_attachement_zip_file.open("rb"),
-                                    attachement_path,
+                            if order_attachment_zip_file.is_file():
+                                attachment_file = File(
+                                    order_attachment_zip_file.open("rb"),
+                                    attachment_path,
                                 )
                             else:
                                 msg = (
                                     "Thumbnail "
-                                    f"{order_attachement_zip_file.name}"
+                                    f"{order_attachment_zip_file.name}"
                                     f" not in {zip_file.name}"
                                 )
                                 raise AttributeError(msg)
                             sha1hash = hashlib.sha1()  # noqa: S324
-                            if attachement_file.multiple_chunks():
-                                for chunk in attachement_file.chunks():
+                            if attachment_file.multiple_chunks():
+                                for chunk in attachment_file.chunks():
                                     sha1hash.update(chunk)
                             else:
-                                sha1hash.update(attachement_file.read())
+                                sha1hash.update(attachment_file.read())
 
                             sha1 = sha1hash.hexdigest()
 
@@ -132,21 +132,21 @@ class ShopOrderLoader:
                                     "sha1": sha1,
                                     "manual_input": False,
                                 }
-                                if "name" in attachement:
-                                    defaults["name"] = attachement["name"]
-                                if "comment" in attachement:
-                                    defaults["comment"] = attachement["comment"]
+                                if "name" in attachment:
+                                    defaults["name"] = attachment["name"]
+                                if "comment" in attachment:
+                                    defaults["comment"] = attachment["comment"]
 
                                 self.log.debug(
-                                    "Creating Attachement.object for %s (%s)",
-                                    attachement_file,
+                                    "Creating Attachment.object for %s (%s)",
+                                    attachment_file,
                                     defaults,
                                 )
 
                                 (
                                     attachment_object,
                                     created,
-                                ) = Attachement.objects.update_or_create(
+                                ) = Attachment.objects.update_or_create(
                                     sha1=sha1,
                                     defaults=defaults,
                                 )
@@ -154,19 +154,19 @@ class ShopOrderLoader:
                                     attachment_object,
                                 )
                                 order_object.save()
-                                attachment_object.file = attachement_file
+                                attachment_object.file = attachment_file
                                 attachment_object.save()
                                 for key in [
-                                    "attachement_count",
-                                    "attachement_pdf",
-                                    "attachement_html",
+                                    "attachment_count",
+                                    "attachment_pdf",
+                                    "attachment_html",
                                 ]:
                                     cache.delete(key)
                             else:
                                 self.log.debug(
                                     "Found hash %s for %s",
                                     sha1,
-                                    attachement_path,
+                                    attachment_path,
                                 )
                     if "attachments" in order:
                         del order["attachments"]
@@ -298,23 +298,23 @@ class ShopOrderLoader:
                     ]
                     self.log.debug("Got existing sha1s: %s ", existing_sha1s)
 
-                    for attachement in item_attachments:
-                        attachement_path = Path(
-                            attachement["path"],
+                    for attachment in item_attachments:
+                        attachment_path = Path(
+                            attachment["path"],
                         ).as_posix()
-                        attachement_file = None
+                        attachment_file = None
                         self.log.debug(
-                            "Looking for item attachement %s",
-                            attachement_path,
+                            "Looking for item attachment %s",
+                            attachment_path,
                         )
-                        attachement_zip_file = zipp.Path(
+                        attachment_zip_file = zipp.Path(
                             zip_data,
-                            attachement_path,
+                            attachment_path,
                         )
-                        if attachement_zip_file.is_file():
-                            attachement_file = File(
-                                attachement_zip_file.open("rb"),
-                                attachement_path,
+                        if attachment_zip_file.is_file():
+                            attachment_file = File(
+                                attachment_zip_file.open("rb"),
+                                attachment_path,
                             )
                         else:
                             # Can' understand why it can not find this file
@@ -322,18 +322,18 @@ class ShopOrderLoader:
                             # orders\76061\item-voron-0-2-s1-kit-fra-ldo.pdf
                             # orders\76061\item-voron-0-2-s1-kit-fra-ldo.pdf
                             msg = (
-                                f"Attachement {attachement_zip_file.name} "
-                                f"({attachement_path} / {attachement['path']})"
+                                f"Attachment {attachment_zip_file.name} "
+                                f"({attachment_path} / {attachment['path']})"
                                 f" not in {zip_file.name}"
                             )
                             self.log.error(msg)
                             continue
                         sha1hash = hashlib.sha1()  # noqa: S324
-                        if attachement_file.multiple_chunks():
-                            for chunk in attachement_file.chunks():
+                        if attachment_file.multiple_chunks():
+                            for chunk in attachment_file.chunks():
                                 sha1hash.update(chunk)
                         else:
-                            sha1hash.update(attachement_file.read())
+                            sha1hash.update(attachment_file.read())
                         sha1 = sha1hash.hexdigest()
                         if (
                             len(existing_sha1s) == 0
@@ -343,28 +343,28 @@ class ShopOrderLoader:
                                 "sha1": sha1,
                                 "manual_input": False,
                             }
-                            if "name" in attachement:
-                                defaults["name"] = attachement["name"]
-                            if "comment" in attachement:
-                                defaults["comment"] = attachement["comment"]
+                            if "name" in attachment:
+                                defaults["name"] = attachment["name"]
+                            if "comment" in attachment:
+                                defaults["comment"] = attachment["comment"]
 
                             self.log.debug(
-                                "Creating Attachement.object for %s (%s)",
-                                attachement_file,
+                                "Creating Attachment.object for %s (%s)",
+                                attachment_file,
                                 defaults,
                             )
 
                             self.log.debug(
                                 "Processing %s for text extraction",
-                                attachement_file,
+                                attachment_file,
                             )
-                            if attachement_path.endswith(".pdf"):
-                                attachement_ziped_pdf_file = zipp.Path(
+                            if attachment_path.endswith(".pdf"):
+                                attachment_zipped_pdf_file = zipp.Path(
                                     zip_data,
-                                    attachement_path,
+                                    attachment_path,
                                 )
                                 doc = fitz.open(
-                                    stream=attachement_ziped_pdf_file.open(
+                                    stream=attachment_zipped_pdf_file.open(
                                         "rb",
                                     ).read(),
                                 )
@@ -375,26 +375,26 @@ class ShopOrderLoader:
                             (
                                 attachment_object,
                                 created,
-                            ) = Attachement.objects.update_or_create(
+                            ) = Attachment.objects.update_or_create(
                                 sha1=sha1,
                                 defaults=defaults,
                             )
                             item_object.attachments.add(attachment_object)
                             item_object.save()
-                            attachment_object.file = attachement_file
+                            attachment_object.file = attachment_file
                             attachment_object.save()
                             for key in [
                                 "orderitem_count",
-                                "attachement_count",
-                                "attachement_pdf",
-                                "attachement_html",
+                                "attachment_count",
+                                "attachment_pdf",
+                                "attachment_html",
                             ]:
                                 cache.delete(key)
                         else:
                             self.log.debug(
                                 "Found hash %s for %s",
                                 sha1,
-                                attachement_path,
+                                attachment_path,
                             )
                     self.log.debug(
                         "Item %s %s",

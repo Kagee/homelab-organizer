@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 
 from hlo.models import User
 
-from .attachement import AttachementAdmin
+from .attachement import AttachmentAdmin
 from .commontree import CategoryAdmin, ProjectAdmin, StorageAdmin
 from .order import OrderAdmin
 from .orderitem import (
@@ -19,7 +19,7 @@ from .stockitem import StockItemAdmin
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    "AttachementAdmin",
+    "AttachmentAdmin",
     "CategoryAdmin",
     "CategoryResource",
     "OrderAdmin",

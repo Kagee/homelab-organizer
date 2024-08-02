@@ -7,9 +7,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from hlo.forms import (
-    AttachementForm,
-    AttachementFormSet,
-    AttachementFormSetHelper,
+    AttachmentForm,
+    AttachmentFormSet,
+    AttachmentFormSetHelper,
     OrderForm,
     OrderFormSimple,
 )
@@ -35,20 +35,9 @@ class OrderSimpleCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["formset"] = AttachementFormSet()
-        context["formset_helper"] = AttachementFormSetHelper()
-        context["single_form"] = AttachementForm()
-        # context["formset_template"] = context["formset_helper"].render_layout(
-        #    context["formset"]._construct_form(99),  # noqa: SLF001
-        #    context,
-        # )
-        # logger.error(AttachementFormSet()._construct_form(99))
-        # logger.warning(
-        #    AttachementFormSetHelper().render_layout(
-        #        AttachementFormSet()._construct_form(99),
-        #        context,
-        #    )
-        # )
+        context["formset"] = AttachmentFormSet()
+        context["formset_helper"] = AttachmentFormSetHelper()
+        context["single_form"] = AttachmentForm()
         return context
 
     def get_form(self, form_class=None):
@@ -59,7 +48,7 @@ class OrderSimpleCreateView(CreateView):
         return form
 
     def post(self, request, *_args, **_kwargs):
-        formset = AttachementFormSet(request.POST)
+        formset = AttachmentFormSet(request.POST)
         form = OrderFormSimple(request.POST)
         if formset.is_valid():
             logger.warning("Formset is valid")

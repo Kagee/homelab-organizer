@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.html import escape, format_html, format_html_join, mark_safe
 from djmoney.models.fields import MoneyField
 
-from .attachement import Attachement
+from .attachement import Attachment
 from .shop import Shop
 
 
@@ -32,7 +32,7 @@ class Order(models.Model):
         "Order date",
     )
     attachments = models.ManyToManyField(
-        Attachement,
+        Attachment,
         related_name="order",
         blank=True,
     )
@@ -107,10 +107,10 @@ class Order(models.Model):
         if self.attachments.count() == 0:
             return "No attachments"
         html = '<ul style="margin: 0;">'
-        for attachement in self.attachments.all():
+        for attachment in self.attachments.all():
             html += (
-                f'<li><a href="{attachement.file.url}"'
-                f' target="_blank">{attachement}</a></li>'
+                f'<li><a href="{attachment.file.url}"'
+                f' target="_blank">{attachment}</a></li>'
             )
         html += "</ul>"
         return mark_safe(html)  # noqa: S308

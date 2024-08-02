@@ -40,7 +40,7 @@ from .orders import (
     OrderSimpleCreateView,
     OrderUpdateView,
 )
-from .search import AttachementSearchView
+from .search import AttachmentSearchView
 from .shop import ShopCreateView, ShopDetailView, ShopListView, ShopUpdateView
 from .stockitems import (
     StockItemCreate,
@@ -82,7 +82,7 @@ __all__ = [
     "label_print_item_size",
     "label_render_item_size",
     "sha1_redirect",
-    "AttachementSearchView",
+    "AttachmentSearchView",
     "StockItemCreate",
     "StockItemDetail",
     "StockItemFilter",

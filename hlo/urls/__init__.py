@@ -10,7 +10,7 @@ from hlo import views
 from hlo.urls import commontree, items, label, scan, utils
 from hlo.urls.utils import handler404
 from hlo.views import (
-    AttachementSearchView,
+    AttachmentSearchView,
     TagDetailView,
     TagListView,
     item_search,
@@ -63,7 +63,7 @@ urlpatterns = [
         ),
         path(
             "search/attachments",
-            AttachementSearchView.as_view(),
+            AttachmentSearchView.as_view(),
             name="attachment-search",
         ),
         path(

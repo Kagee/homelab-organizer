@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.cache import cache
 from django.shortcuts import render
 
-from hlo.models import Attachement, OrderItem, StockItem
+from hlo.models import Attachment, OrderItem, StockItem
 
 logger = logging.getLogger(__name__)
 
@@ -20,11 +20,11 @@ def index(request):
     keys: dict = {
         "orderitem_count": OrderItem.objects.count,
         "stockitem_count": StockItem.objects.count,
-        "attachement_count": Attachement.objects.count,
-        "attachement_pdf": Attachement.objects.filter(
+        "attachment_count": Attachment.objects.count,
+        "attachment_pdf": Attachment.objects.filter(
             file__endswith=".pdf",
         ).count,
-        "attachement_html": Attachement.objects.filter(
+        "attachment_html": Attachment.objects.filter(
             file__endswith=".html",
         ).count,
     }

@@ -12,7 +12,7 @@ from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
 logger = logging.getLogger(__name__)
 
 
-def attachement_file_path(instance, filename):
+def attachment_file_path(instance, filename):
     if len(instance.sha1) != 40:  # noqa: PLR2004
         msg = f"SHA1 sum is not 40 chars: {instance.sha1}"
         raise ValueError(msg)
@@ -22,7 +22,7 @@ def attachement_file_path(instance, filename):
     return f"attachments/hashed/{prefix}/{filename}{suffix}"
 
 
-class Attachement(models.Model):
+class Attachment(models.Model):
     DEFAULT_ATTACHEMENT_TYPE = "other"
     ATTACHEMENT_TYPE_CHOICES = [
         ("datasheet", "Datasheet"),
@@ -41,7 +41,7 @@ class Attachement(models.Model):
 
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#filefield
     file = models.FileField(
-        upload_to=attachement_file_path,
+        upload_to=attachment_file_path,
         storage=OverwritingFileSystemStorage(),
         max_length=255,
         blank=True,
@@ -65,7 +65,7 @@ class Attachement(models.Model):
                 else:
                     sha1hash.update(f.read())
                 self.sha1 = sha1hash.hexdigest()
-                logger.debug("Attachement SHA1 was %s", self.sha1)
+                logger.debug("Attachment SHA1 was %s", self.sha1)
                 super().save(*args, **kwargs)
         else:
             self.sha1 = self.sha1 if self.sha1 else None

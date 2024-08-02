@@ -18,7 +18,7 @@ from django_bootstrap_icons.templatetags.bootstrap_icons import bs_icon
 from django_select2.forms import ModelSelect2TagWidget
 from taggit.models import Tag
 
-from hlo.models import Attachement, Order, OrderItem, Shop, StockItem
+from hlo.models import Attachment, Order, OrderItem, Shop, StockItem
 
 logger = logging.getLogger(__name__)
 
@@ -105,23 +105,23 @@ class RealDateInput(DateInput):
         self.input_type = "date"
 
 
-class AttachementForm(ModelForm):
+class AttachmentForm(ModelForm):
     class Meta:
-        model = Attachement
+        model = Attachment
         exclude = ["comment", "text", "manual_input", "sha1"]  # noqa: DJ006
         widgets = {}
         labels = {}
         help_texts = {}
 
 
-AttachementFormSet = modelformset_factory(
-    model=Attachement,
-    form=AttachementForm,
+AttachmentFormSet = modelformset_factory(
+    model=Attachment,
+    form=AttachmentForm,
     extra=1,
 )
 
 
-class AttachementFormSetHelper(FormHelper):
+class AttachmentFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.form_method = "POST"

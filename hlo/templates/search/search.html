@@ -3,7 +3,7 @@
 {% block content %}
   <div class="row">
     <h2>
-      Search attachement contents
+      Search attachment contents
       {% if query %}
         ({{ page_obj.paginator.count }} results
         {% if page_obj.paginator.count %}, page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}{% endif %}
@@ -41,7 +41,7 @@
           <thead>
             <tr>
               <th scope="col" style="min-width: 6em;"></th>
-              <th scope="col">Attachement</th>
+              <th scope="col">Attachment</th>
               <th scope="col">Item</th>
               <th scope="col">Link</th>
             </tr>

@@ -81,7 +81,7 @@
         total_forms_value = parseInt(total_forms.value)-1;
         $(window).on("load", function() {
 
-            $("#btn_add_attachement").on("click", () => {
+            $("#btn_add_attachment").on("click", () => {
                 formset_increment_regexp = /((?:id|for)="[^"]+_|name=")([^"]+")/gi
                 next_formset = formset_template.replaceAll(
                     formset_increment_regexp,

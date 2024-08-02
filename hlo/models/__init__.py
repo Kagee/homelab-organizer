@@ -1,5 +1,5 @@
 __all__ = [
-    "Attachement",
+    "Attachment",
     "Category",
     "Order",
     "OrderItem",
@@ -13,7 +13,7 @@ __all__ = [
 ]
 from django.contrib.auth.models import AbstractUser
 
-from .attachement import Attachement
+from .attachement import Attachment
 from .commontree import Category, Project, Storage
 from .order import Order
 from .orderitem import OrderItem, OrderItemMeta
