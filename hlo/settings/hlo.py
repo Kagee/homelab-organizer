@@ -15,6 +15,11 @@ JSON_SCHEMA: Path = Path(
     env("JSON_SCHEMA", default="./schema/webshop-orders.json"),
 ).resolve()
 
+JSON_SCHEMAS_DEPRECATED: list = env.list(
+    "JSON_SCHEMAS_DEPRECATED",
+    default=["./schema/webshop-orders-2-0-0.json"],
+)
+
 # Instance of https://github.com/dersimn/brother_ql_web or a fork
 # with a simmilar api endpoint for printing images
 BQW_ENDPOINT: str = env("BQW_ENDPOINT", default=None)

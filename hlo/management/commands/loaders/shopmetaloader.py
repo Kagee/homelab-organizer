@@ -82,10 +82,27 @@ class ShopMetaLoader:
             try:
                 validate(instance=structure, schema=schema)
             except ValidationError as vde:
-                log.exception(
+                log.warning(
                     "JSON failed validation: %s at %s",
                     vde.message,
                     vde.json_path,
                 )
+                for deprecated in settings.JSON_SCHEMAS_DEPRECATED:
+                    schema_file_path = Path(deprecated).resolve()
+                    with schema_file_path.open(
+                        encoding="utf-8"
+                    ) as schema_file_deprecated:
+                        schema = json.load(schema_file_deprecated)
+                        try:
+                            validate(instance=structure, schema=schema)
+
+                        except ValidationError as vde:
+                            pass
+                        else:
+                            log.warning(
+                                "Validated using deprecated schema: %s",
+                                schema_file_path.name,
+                            )
+                            return True
                 return False
         return True
