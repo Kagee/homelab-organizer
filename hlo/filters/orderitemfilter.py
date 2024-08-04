@@ -16,7 +16,7 @@ class NonOrderingOrderItemFilter(django_filters.FilterSet):
     )
 
     date_range = OrderDateRangeFilter(
-        label="Timerange",
+        label="Time range",
         empty_label="All time",
         field_name="order__date",
     )
@@ -39,8 +39,10 @@ class OrderItemFilter(NonOrderingOrderItemFilter):
         empty_label=None,
         null_label=None,
         # tuple-mapping retains order
-        fields=(
-            ("name", "name"),
-            ("order__date", "order__date"),
+        choices=(
+            ("name", "Name (ABZ)"),
+            ("-name", "Name (ZYX)"),
+            ("order__date", "Oldest order first"),
+            ("-order__date", "Newest order first"),
         ),
     )

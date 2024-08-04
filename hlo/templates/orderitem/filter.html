@@ -4,81 +4,116 @@
 {% block title %}
   Find order items
 {% endblock title %}
-{% block css %}
+{% block head %}
+  <style>
   .table-row{
-  cursor:pointer;
+    cursor:pointer;
   }
-{% endblock css %}
-{% block javascript %}
-  $(document).ready(function($) {
-  $(".table-row").click(function() {
-  window.document.location = $(this).data("href");
-  });
-  });
-{% endblock javascript %}
+  </style>
+  <script type="text/javascript">
+    function isElementInViewport (el) {
+      var rect = el.getBoundingClientRect();
+      return (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+          rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+      );
+    }  
+    console.log("1");
+    window.addEventListener("load", function($) {
+      console.log("2");
+      if (!(new URL(document.location).search)) {
+        console.log("calc wis");
+        let visible = 0;
+        rows = document.querySelectorAll("tr.table-row")
+        for (let row of rows) {
+          if (isElementInViewport(row)) {
+            visible = visible + 1;
+          }
+        }
+        if (rows.length > visible) {
+          console.log("New page size", visible);
+          document.location = document.location + `?per_page=${visible}`
+        }
+      } else {
+        console.log("not calculating page size");
+      }
+
+      document.querySelectorAll(".table-row").forEach((e) => {
+        e.addEventListener("click", function(ev) {
+          console.log(ev)
+          // window.document.location = ev.target.getAttribute("data-href");
+        });
+      });
+      console.log("3");
+    });
+      console.log("4");
+  </script>
+{% endblock head %}
 {% block content %}
   {% include "common/filter_modal.html" %}
   <div class="row d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
-  <div class="col">
-    <!-- CRISPY FORM START -->
-    {% load crispy_forms_tags %}
-    {% crispy filter.form %}
-    <!-- CRISPY FORM END -->
+    <div class="col">
+      <!-- CRISPY FORM START -->
+      {% load crispy_forms_tags %}
+      {% crispy filter.form %}
+      <!-- CRISPY FORM END -->
+    </div>
   </div>
-</div>
-<div class="row">
-  <div class="col">
-    <table class="table  table-sm table-bordered table-striped table-hover table-sm">
-      <thead>
-        <tr>
-          <th scope="col" style="min-width: 6em;"></th>
-          <th scope="col">Name</th>
-          <!-- Hide shop col on small screens -->
-          <th scope="col"
-              class="d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell">Shop</th>
-          <th scope="col">Stock</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for orderitem in page_obj %}
-          <tr class="table-row" data-href="{{ orderitem.get_absolute_url }}">
-            <td class="p-2"
-                style="min-height: 12em;
-                       height: 6em;
-                       background-size: contain;
-                       background-repeat: no-repeat;
-                       {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>
-            <td class="align-middle">
-              <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
-            </td>
+  <div class="row">
+    <div class="col">
+      <table class="table  table-sm table-bordered table-striped table-hover table-sm">
+        <thead>
+          <tr>
+            <th scope="col" style="min-width: 6em;"></th>
+            <th scope="col">Name</th>
             <!-- Hide shop col on small screens -->
-            <td class="text-center d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell align-middle">
-              <div class="align-items-center h-100">
-                {% if orderitem.order.shop.icon %}
-                  <img src="{{ orderitem.order.shop.icon.url }}"
-                       style="max-height: 4em;
-                              max-width: 4em" />
-                {% else %}
-                  {% md_icon 'image-off' color='grey' size='4em' %}
-                {% endif %}
-              </div>
-            </td>
-            <!-- {{ orderitem.order.date | slice:"0:7" }} -->
-            <td class="text-center align-middle">
-              {% if not orderitem.stockitems.count %}
-                <a href="{% url 'stockitem-create-from' orderitem.id %}"
-                   class="btn btn-success btn-sm w-100 text-middle"
-                   style="height: 4em">
-                  <div class="h-100 align-middle" style="vertical-align: centre;">{% bs_icon 'box-arrow-in-right' %}</div>
-                </a>
-              {% endif %}
-            </td>
+            <th scope="col"
+                class="d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell">Shop</th>
+            <th scope="col">Stock</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for orderitem in page_obj %}
+            <tr class="table-row" data-href="{{ orderitem.get_absolute_url }}">
+              <td class="p-2"
+                  style="min-height: 12em;
+                         height: 6em;
+                         background-size: contain;
+                         background-repeat: no-repeat;
+                         {% if orderitem.thumbnail %}background-image: url({{ orderitem.thumbnail.url }});{% endif %}"></td>
+              <td class="align-middle">
+                <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
+              </td>
+              <!-- Hide shop col on small screens -->
+              <td class="text-center d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell align-middle">
+                <div class="align-items-center h-100">
+                  {% if orderitem.order.shop.icon %}
+                    <img src="{{ orderitem.order.shop.icon.url }}"
+                         style="max-height: 4em;
+                                max-width: 4em" />
+                  {% else %}
+                    {% md_icon 'image-off' color='grey' size='4em' %}
+                  {% endif %}
+                </div>
+              </td>
+              <!-- {{ orderitem.order.date | slice:"0:7" }} -->
+              <td class="text-center align-middle">
+                {% if not orderitem.stockitems.count %}
+                  <a href="{% url 'stockitem-create-from' orderitem.id %}"
+                     class="btn btn-success btn-sm w-100 text-middle"
+                     style="height: 4em">
+                    <div class="h-100 align-middle" style="vertical-align: centre;">{% bs_icon 'box-arrow-in-right' %}</div>
+                  </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
-<hr>
-{% include "common/pagination.html" %}
+  <hr>
+  {% include "common/pagination.html" %}
 {% endblock content %}

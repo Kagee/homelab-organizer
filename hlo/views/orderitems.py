@@ -10,6 +10,7 @@ from crispy_forms.layout import (
     Row,
     Submit,
 )
+from django import forms
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse
@@ -34,13 +35,25 @@ def orderitem_filtered_list(
         .prefetch_related("stockitems")
         .order_by("-order__date", "name")
     )
-    f = OrderItemFilter(request.GET, queryset=qs_orderitems)
-    paginator = Paginator(f.qs, 10)
+    per_page_choices = [5, 10, 20, 50, 100]
+    # per_page_choices = [(5, 5), (10, 10), (20, 20), (50, 50), (100, 100)]
+    per_page = 10
+    if "per_page" in request.GET:
+        per_page = int(request.GET["per_page"])
+        if per_page not in per_page_choices:
+            per_page_choices.append(per_page)
 
+    f = OrderItemFilter(request.GET, queryset=qs_orderitems)
+    paginator = Paginator(f.qs, per_page)
+
+    f.form.fields["per_page"] = forms.fields.ChoiceField(
+        choices=[(choice, choice) for choice in per_page_choices],
+    )
+    logger.debug(f.form.fields["name"].widget.widgets[1])
     # Swap the name and render order for the name fields
     f.form.fields["name"].widget.suffixes = ["lookup", None]
     f.form.fields["name"].widget.widgets = (
-        f.form.fields["name"].widget.widgets[1],
+        forms.widgets.HiddenInput(),
         f.form.fields["name"].widget.widgets[0],
     )
 
@@ -56,8 +69,8 @@ def orderitem_filtered_list(
                 MultiWidgetField(
                     "name",
                     attrs=(
-                        {"style": "width: 30%; display: inline-block;"},
-                        {"style": "width: 70%; display: inline-block;"},
+                        {},  # hidden
+                        {"style": "display: inline-block;"},
                     ),
                 ),
                 css_class="col-4",
@@ -65,7 +78,7 @@ def orderitem_filtered_list(
             *[
                 Column(field, css_class="col")
                 for field in f.form.fields
-                if field != "name"
+                if field != "name"  # and field != "per_page"
             ],
             Column(
                 ButtonHolder(
