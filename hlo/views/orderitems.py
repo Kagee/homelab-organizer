@@ -32,7 +32,7 @@ def orderitem_filtered_list(
         .select_related("order")
         .select_related("order__shop")
         .prefetch_related("stockitems")
-        .order_by("-order__date")
+        .order_by("-order__date", "name")
     )
     f = OrderItemFilter(request.GET, queryset=qs_orderitems)
     paginator = Paginator(f.qs, 10)
@@ -59,7 +59,6 @@ def orderitem_filtered_list(
                         {"style": "width: 30%; display: inline-block;"},
                         {"style": "width: 70%; display: inline-block;"},
                     ),
-                    wrapper_class="hemmelig",
                 ),
                 css_class="col-4",
             ),
@@ -120,7 +119,7 @@ class OrderItemCreateView(CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.helper.add_input(Submit("submit", "Create order item object"))
-        # if get paramenter fromitems is set, lock down orderitem list
+        # if get parameter fromitems is set, lock down orderitem list
         if "order" in self.kwargs:
             form.fields["order"].disabled = True
             form.fields["order"].initial = Order.objects.get(
@@ -145,7 +144,6 @@ class OrderItemUpdateView(UpdateView):
         if not self.object.manual_input:
             for field in form.fields.values():
                 field.disabled = "disabled"
-                # field.widget.attrs["disabled"] = "disabled"
             form.helper.add_input(
                 Submit(
                     "submit",
