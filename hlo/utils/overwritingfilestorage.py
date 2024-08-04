@@ -7,3 +7,6 @@ class OverwritingFileSystemStorage(FileSystemStorage):
         if self.exists(name):
             (settings.MEDIA_ROOT / name).unlink()
         return name
+
+    def delete(self, _name, *_args, **_kwargs):
+        pass  # no-op
