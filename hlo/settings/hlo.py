@@ -21,7 +21,7 @@ JSON_SCHEMAS_DEPRECATED: list = env.list(
 )
 
 # Instance of https://github.com/dersimn/brother_ql_web or a fork
-# with a simmilar api endpoint for printing images
+# with a similar api endpoint for printing images
 BQW_ENDPOINT: str = env("BQW_ENDPOINT", default=None)
 
 BARCODE_CACHE: Path = (MEDIA_ROOT / Path("barcode_cache")).resolve()
@@ -34,8 +34,8 @@ OPENAPI_PROJECT_API_KEY: str = env("OPENAPI_PROJECT_API_KEY", default="")
 OPENAPI_TITLE_CLEANUP_QUERY: str = env(
     "OPENAPI_TITLE_CLEANUP_QUERY",
     default=(
-        "Can you make the title '{title}' shorter and more spesific? "
-        "If possible, mention it's size or dimentions, but do not "
+        "Can you make the title '{title}' shorter and more specific? "
+        "If possible, mention it's size or dimensions, but do not "
         "mention quantity, what it is used for, or how it is used."
     ),
 )
