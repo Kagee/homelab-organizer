@@ -32,6 +32,7 @@ from .orderitems import (
     OrderItemDetailView,
     OrderItemUpdateView,
     orderitem_filtered_list,
+    orderitem_hide,
 )
 from .orders import (
     OrderCreateView,

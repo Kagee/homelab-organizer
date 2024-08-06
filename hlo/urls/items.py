@@ -17,6 +17,7 @@ from hlo.views import (
     StockItemDetail,
     StockItemUpdate,
     orderitem_filtered_list,
+    orderitem_hide,
     stockitem_list,
 )
 
@@ -44,6 +45,11 @@ urls = [
         "orderitem/detail/<int:pk>",
         OrderItemDetailView.as_view(),
         name="orderitem-detail",
+    ),
+    path(
+        "orderitem/hide/<int:pk>",
+        orderitem_hide,
+        name="orderitem-hide",
     ),
     path(
         "orderitem/create",

@@ -1,3 +1,4 @@
+# ruff: noqa: ERA001,N806
 import logging
 
 from crispy_forms.helper import FormHelper
@@ -13,7 +14,7 @@ from crispy_forms.layout import (
 from django import forms
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.generic import CreateView, DetailView, UpdateView
 
@@ -36,10 +37,10 @@ def orderitem_filtered_list(
         .order_by("-order__date", "name")
     )
     per_page_choices = [5, 10, 20, 50, 100]
-    # per_page_choices = [(5, 5), (10, 10), (20, 20), (50, 50), (100, 100)]
     per_page = 10
     if "per_page" in request.GET:
         per_page = int(request.GET["per_page"])
+        #  May be random value calculated by JS
         if per_page not in per_page_choices:
             per_page_choices.append(per_page)
 
@@ -48,13 +49,6 @@ def orderitem_filtered_list(
 
     f.form.fields["per_page"] = forms.fields.ChoiceField(
         choices=[(choice, choice) for choice in per_page_choices],
-    )
-    logger.debug(f.form.fields["name"].widget.widgets[1])
-    # Swap the name and render order for the name fields
-    f.form.fields["name"].widget.suffixes = ["lookup", None]
-    f.form.fields["name"].widget.widgets = (
-        forms.widgets.HiddenInput(),
-        f.form.fields["name"].widget.widgets[0],
     )
 
     f.form.helper = FormHelper()
@@ -108,6 +102,10 @@ def orderitem_filtered_list(
         "orderitem/filter.html",
         {"page_obj": response, "filter": f},
     )
+
+
+def orderitem_hide(_request):
+    return JsonResponse("foo")
 
 
 class OrderItemDetailView(DetailView):

@@ -19,10 +19,22 @@
           rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
           rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
       );
-    }  
-    console.log("1");
+    }
+    function sxp(path, relative) {
+      if (!relative) {
+        relative = document.body;
+      }
+      return document.evaluate(
+      path,
+      relative,
+      null,
+      XPathResult.FIRST_ORDERED_NODE_TYPE
+      ).singleNodeValue;
+    }
+
+
+
     window.addEventListener("load", function($) {
-      console.log("2");
       if (!(new URL(document.location).search)) {
         console.log("calc wis");
         let visible = 0;
@@ -33,6 +45,7 @@
           }
         }
         if (rows.length > visible) {
+          visible = Math.max(visible-1, 5)
           console.log("New page size", visible);
           document.location = document.location + `?per_page=${visible}`
         }
@@ -40,15 +53,14 @@
         console.log("not calculating page size");
       }
 
-      document.querySelectorAll(".table-row").forEach((e) => {
+      document.querySelectorAll(".btn-hide-item").forEach((e) => {
         e.addEventListener("click", function(ev) {
-          console.log(ev)
+          //a[@id='btn-hide2']
+          console.log(sxp('./ancestor::tr', ev.target).getAttribute("data-pk"));
           // window.document.location = ev.target.getAttribute("data-href");
         });
       });
-      console.log("3");
     });
-      console.log("4");
   </script>
 {% endblock head %}
 {% block content %}
@@ -71,12 +83,14 @@
             <!-- Hide shop col on small screens -->
             <th scope="col"
                 class="d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell">Shop</th>
-            <th scope="col">Stock</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
           {% for orderitem in page_obj %}
-            <tr class="table-row" data-href="{{ orderitem.get_absolute_url }}">
+            <tr class="table-row"
+                data-href="{{ orderitem.get_absolute_url }}"
+                data-pk="{{ orderitem.pk }}">
               <td class="p-2"
                   style="min-height: 12em;
                          height: 6em;
@@ -87,33 +101,29 @@
                 <a href="{{ orderitem.get_absolute_url }}">{{ orderitem.name }}</a>
               </td>
               <!-- Hide shop col on small screens -->
-              <td class="text-center d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell align-middle">
-                <div class="align-items-center h-100">
-                  {% if orderitem.order.shop.icon %}
-                    <img src="{{ orderitem.order.shop.icon.url }}"
-                         style="max-height: 4em;
-                                max-width: 4em" />
-                  {% else %}
-                    {% md_icon 'image-off' color='grey' size='4em' %}
-                  {% endif %}
-                </div>
-              </td>
-              <!-- {{ orderitem.order.date | slice:"0:7" }} -->
-              <td class="text-center align-middle">
-                {% if not orderitem.stockitems.count %}
-                  <a href="{% url 'stockitem-create-from' orderitem.id %}"
-                     class="btn btn-success btn-sm w-100 text-middle"
-                     style="height: 4em">
-                    <div class="h-100 align-middle" style="vertical-align: centre;">{% bs_icon 'box-arrow-in-right' %}</div>
-                  </a>
+              <td class="text-center d-none d-lg-table-cell d-xl-table-cell d-xxl-table-cell align-middle"
+                  style="min-height: 12em;
+                         height: 6em;
+                         background-size: contain;
+                         background-repeat: no-repeat;
+                         background-position: center;
+                         {% if orderitem.order.shop.icon %}background-image: url({{ orderitem.order.shop.icon.url }});{% endif %}">
+                {% if not orderitem.order.shop.icon %}
+                  {% md_icon 'image-off' color='grey' size='4em' %}
                 {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+              </div>
+            </td>
+            <td class="text-center align-middle">
+              {% if not orderitem.stockitems.count %}
+                <a href="{% url 'stockitem-create-from' orderitem.id %}"
+                   class="btn btn-success  btn-lg text-middle">Stock</a>
+              {% endif %}
+              <a id="btn-hide" class="btn btn-danger text-middle btn-lg btn-hide-item">Hide</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
-  <hr>
-  {% include "common/pagination.html" %}
+{% include "common/pagination.html" %}
 {% endblock content %}

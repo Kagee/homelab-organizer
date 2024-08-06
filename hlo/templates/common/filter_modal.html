@@ -21,8 +21,7 @@
   <!-- id="filterModal" -->
   <div class="row d-lg-none d-xl-none d-xxl-none" id="searchfield">
     <div class="input-group mb-3">
-      <input name="name_lookup" id="id_name_0" type="hidden" value="icontains" />
-      <input type="text" name="name" id="id_name_1" class="form-control" value="{% for field in filter.form.visible_fields %}{% if field.name == "name" %}{{ field.value.1 }}{% endif %}{% endfor %}">
+      <input type="text" name="name" id="id_name" class="form-control" value="{% for field in filter.form.visible_fields %}{% if field.name == "name" %}{{ field.value }}{% endif %}{% endfor %}">
       <div class="input-group-append">
         <div class="btn-group" role="group">
           <button type="submit" class="btn btn-primary">{% bs_icon 'search' size='1em' %}</button>
