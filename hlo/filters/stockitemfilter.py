@@ -5,14 +5,9 @@ from hlo.models import Shop, StockItem
 
 
 class NonOrderingStockItemFilter(django_filters.FilterSet):
-    name = django_filters.LookupChoiceFilter(
+    name = django_filters.CharFilter(
         label="Name",
-        lookup_choices=[
-            ("icontains", "Contains"),
-            ("istartswith", "Starts with"),
-            ("iexact", "Equals"),
-        ],
-        empty_label=None,
+        lookup_expr="icontains",
     )
 
     date_range = OrderDateRangeFilter(

@@ -200,13 +200,6 @@ def stockitem_list(request):
     f = StockItemFilter(request.GET, queryset=qs_stockitems)
     paginator = Paginator(f.qs, 10)
 
-    # Swap the name and render order for the name fields
-    f.form.fields["name"].widget.suffixes = ["lookup", None]
-    f.form.fields["name"].widget.widgets = (
-        f.form.fields["name"].widget.widgets[1],
-        f.form.fields["name"].widget.widgets[0],
-    )
-
     f.form.helper = FormHelper()
     f.form.helper.form_method = "get"
     f.form.helper.form_class = "align-items-bottom"
