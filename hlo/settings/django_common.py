@@ -185,6 +185,7 @@ TEMPLATES: list[dict[str, Any]] = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "builtins": ["hlo.templatetags.formz"],
         },
     },
 ]
