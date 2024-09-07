@@ -34,9 +34,9 @@ class OrderItemFilter(NonOrderingOrderItemFilter):
         null_label=None,
         # tuple-mapping retains order
         choices=(
+            ("-order__date", "Newest order first"),
+            ("order__date", "Oldest order first"),
             ("name", "Name (ABZ)"),
             ("-name", "Name (ZYX)"),
-            ("order__date", "Oldest order first"),
-            ("-order__date", "Newest order first"),
         ),
     )

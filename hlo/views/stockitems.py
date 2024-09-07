@@ -197,6 +197,7 @@ class StockItemDetail(DetailView):
 
 def stockitem_list(request):
     qs_stockitems = StockItem.objects.all()
+
     f = StockItemFilter(request.GET, queryset=qs_stockitems)
     paginator = Paginator(f.qs, 10)
 

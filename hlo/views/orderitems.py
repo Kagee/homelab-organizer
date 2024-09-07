@@ -34,7 +34,7 @@ def orderitem_filtered_list(
         .select_related("order")
         .select_related("order__shop")
         .prefetch_related("stockitems")
-        .order_by("-order__date", "name")
+        .order_by("-order__date")
     )
     per_page_choices = [5, 10, 20, 50, 100]
     per_page = 10
