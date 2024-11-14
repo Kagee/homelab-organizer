@@ -6,8 +6,8 @@ from crispy_forms.layout import (
     HTML,
     ButtonHolder,
     Column,
+    Field,
     Layout,
-    MultiWidgetField,
     Row,
     Submit,
 )
@@ -60,12 +60,8 @@ def orderitem_filtered_list(
     layout = Layout(
         Row(
             Column(
-                MultiWidgetField(
+                Field(
                     "name",
-                    attrs=(
-                        {},  # hidden
-                        {"style": "display: inline-block;"},
-                    ),
                 ),
                 css_class="col-4",
             ),

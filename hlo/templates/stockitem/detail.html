@@ -73,11 +73,11 @@
             {% endif %}
             <a class="btn btn-outline-secondary btn-sm"
                href="{% url 'stockitem-update' stockitem.id %}"
-               role="button">edit</a>
+               role="button">Edit</a>
             {% if request.user.is_staff %}
               <a class="btn btn-outline-secondary btn-sm"
                  href="{% url 'admin:hlo_stockitem_change' stockitem.id %}"
-                 role="button">admin view</a>
+                 role="button" target="_blank">Open admin view</a>
             {% endif %}
           </h3>
         </div>
@@ -148,6 +148,9 @@
                   </ul>
                 </td>
               </tr>
+              {% if stockitem.comment %}
+              <tr><td>Comment</td><td>{{ stockitem.comment }}</td></tr>
+              {% endif %}
               <tr class="table-dark">
                 <td colspan="2">Related items and attachments</td>
               </tr>

@@ -6,8 +6,8 @@ from crispy_forms.layout import (
     HTML,
     ButtonHolder,
     Column,
+    Field,
     Layout,
-    MultiWidgetField,
     Row,
     Submit,
 )
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 class TagAutoResponseView(AutoResponseView):
     def get(self, request, *_args, **kwargs):
-        """This method is overriden for changing id to name instead of pk."""
+        """This method is overridden for changing id to name instead of pk."""
         # pylint: disable=attribute-defined-outside-init
         self.widget = self.get_widget_or_404()
         self.term = kwargs.get("term", request.GET.get("term", ""))
@@ -210,13 +210,8 @@ def stockitem_list(request):
     layout = Layout(
         Row(
             Column(
-                MultiWidgetField(
+                Field(
                     "name",
-                    attrs=(
-                        {"style": "width: 30%; display: inline-block;"},
-                        {"style": "width: 70%; display: inline-block;"},
-                    ),
-                    wrapper_class="hemmelig",
                 ),
                 css_class="col-4",
             ),

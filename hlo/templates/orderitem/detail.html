@@ -14,18 +14,20 @@
                     {% if orderitem.manual_input %}
                         <a class="btn btn-outline-secondary btn-sm"
                            href="{% url 'orderitem-update' orderitem.id %}"
-                           role="button">edit</a>
+                           role="button">Edit</a>
                     {% endif %}
-                    {% if not orderitem.stockitems.count %}
-                        <a href="{% url 'stockitem-create-from' orderitem.id %}"
-                           class="btn btn-outline-secondary btn-sm">Create stock item</a>
-                        <a href="{% url 'stockitem-create-from' orderitem.id %}"
-                           class="btn btn-outline-secondary btn-sm">Add to stock item</a>
-                    {% endif %}
+                    <a href="{% url 'stockitem-create-from' orderitem.id %}"
+                       class="btn btn-outline-secondary btn-sm">
+                        {% if not orderitem.stockitems.count %}
+                            Create stock item
+                        {% else %}
+                            Create additional stock item
+                        {% endif %}
+                    </a>
                     {% if request.user.is_staff %}
                         <a class="btn btn-outline-secondary btn-sm"
                            href="{% url 'admin:hlo_orderitem_change' orderitem.id %}"
-                           role="button">admin view</a>
+                           role="button" target="_blank">Open admin view</a>
                     {% endif %}
                 </div>
             </div>
