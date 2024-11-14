@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.db.models import Count
 from django.http import (
     JsonResponse,
@@ -7,7 +8,7 @@ from django.http import (
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import TemplateView
 
-from hlo.models import OrderItem, Storage
+from hlo.models import OrderItem, StockItem, Storage
 
 logger = logging.getLogger(__name__)
 
@@ -18,12 +19,35 @@ class WebappView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         logger.debug(self.request)
-        if "result" in self.request.GET:
-            ctx["scanned_code_1"] = self.request.GET["result"].split("/")[-1]
-            logger.debug(ctx["scanned_code_1"])
-        if "result2" in self.request.GET:
-            ctx["scanned_code_2"] = self.request.GET["result2"].split("/")[-1]
-            logger.debug(ctx["scanned_code_2"])
+
+        ctx["binaryeye_url"]: str = (
+            # https:// + settings.WEBAPP_DOMAIN + /scan?
+            "binaryeye://scan?ret=https%3A%2F%2F"
+            + settings.WEBAPP_DOMAIN
+            + "%2Fscan%3F"
+        )
+
+        if "bec1" in self.request.GET:
+            bec1 = self.request.GET["bec1"].split("/")[-1]
+            logger.debug("Binary Eye Code 1: %s", bec1)
+            logger.debug(get_item(bec1))
+
+            # .../scan? + result= + ctx["bec1"] + &result2={RESULT}
+            ctx["binaryeye_url"] += "bec1%3D" + bec1 + "%26bec2%3D{RESULT}"
+            ctx["bec1"] = bec1
+            if "bec2" in self.request.GET:
+                bec2 = self.request.GET["bec2"].split("/")[-1]
+                if bec2 != bec1:
+                    logger.debug("Binary Eye Code 2: %s", bec2)
+                    logger.debug(get_item(bec2))
+                    ctx["bec2"] = bec2
+                else:
+                    logger.debug("Binary Eye Code 2 = 1, ignored: %s", bec1)
+
+        else:
+            # .../scan? + result={RESULT}
+            ctx["binaryeye_url"] += "bec1%3D{RESULT}"
+
         return ctx
 
 
@@ -39,6 +63,35 @@ def scan_json_error(msg):
 
 
 def get_item(sha1: str):
+    sha1 = sha1.upper()
+    obj_type = ""
+    try:
+        obj = Storage.objects.get(sha1_id=sha1)
+        obj_type = "Storage"
+        logger.debug("Found storage")
+    except Storage.DoesNotExist:
+        try:
+            obj = StockItem.objects.get(sha1_id=sha1)
+            obj_type = "Stockitem"
+            logger.debug("Found stockitem")
+        except StockItem.DoesNotExist:
+            try:
+                obj = OrderItem.objects.get(sha1_id=sha1)
+                obj_type = "Orderitem"
+                logger.debug("Found orderitem")
+            except OrderItem.DoesNotExist:
+                logger.debug("SHA1 did not match anything: %s", sha1)
+                return None
+    thumbnail = ""
+    if hasattr(obj, "thumbnail_url"):
+        thumbnail = obj.thumbnail_url()
+    elif hasattr(obj, "thumbnail"):
+        thumbnail = obj.thumbnail.url
+
+    return {"name": obj.name, "thumbnail": thumbnail, "type": obj_type}
+
+
+def get_item2(sha1: str):
     sha1 = sha1.split("/")
     sha1 = sha1[len(sha1) - 1]
     try:
@@ -57,7 +110,7 @@ def get_item(sha1: str):
 
 
 def get_storage(sha1: str):
-    sha1 = sha1.split("/")
+    sha1 = sha1.split("/")[-1]
     sha1 = sha1[len(sha1) - 1]
     try:
         return Storage.objects.get(sha1_id=sha1.upper())

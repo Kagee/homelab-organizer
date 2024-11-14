@@ -33,40 +33,89 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
             integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
             crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{% static 'html5-qrcode/html5-qrcode.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/setup-wake-lock.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/setup-scanner.js' %}"></script>
     <script type="text/javascript">
-      window.addEventListener("load", function () {
-            cancel_btn = document.querySelector("#cancel-btn");
-            debug_btn = document.querySelector("#debug-btn");
-            // this.dze.addEventListener('drop', this._dropEventHandler.bind(this));
-
-
-
+        $(window).on('load', function() {
             init_wakeLock()
+            init_scanner()
             move_item_to_storage_url = "{% url 'move-item-to-storage' %}"
             move_storage_into_storage_url = "{% url 'move-store-into-storage' %}"
-            {% if bec1 or bec2 %}
-              {% if bec1 %}bec1 = "{{ bec1 }}";
-              {% endif %}
-              {% if bec2 %}bec2 = "{{ bec2 }}";
-              {% endif %}
-              cancel_btn.removeAttribute("disabled");
+            {% if scanned_code_1 %}scanned_code_1 = "{{ scanned_code_1 }}";
             {% endif %}
-            cancel_btn.addEventListener('click', () => { 
-              document.location = document.location.protocol 
-                + "//" + document.location.hostname 
-                + document.location.pathname; 
-            });
-            debug_btn.addEventListener('click', () => { 
-              msg = document.location + "\n\n" + document.location.protocol + "//" 
-              msg += document.location.hostname + document.location.pathname; 
-              alert(msg); });
+            $("#url-btn").on('click', () => { msg = document.location + "\n\n" + document.location.protocol + "//" + document.location.hostname + document.location.pathname; alert(msg); });
         });
     </script>
   </head>
   <body>
     {% csrf_token %}
     <div class="container text-center">
+      <div class="row mt-1">
+        <div class="col">
+          <div style="margin: auto;" id="reader"></div>
+        </div>
+      </div>
+      <!-- 
+      <div class="row" id="scan-div">
+        <div class="col d-grid">
+          <button id="scan-is-btn" type="button" class="btn btn-primary btn-lg mt-1">
+            item
+            into
+            storage
+          </button>
+        </div>
+        <div class="col d-grid">
+          <button id="scan-ss-btn" type="button" class="btn btn-primary btn-lg mt-1">
+            storage
+            into
+            storage
+          </button>
+        </div>
+      </div>
+      <div class="row" id="scan-div">
+        <div class="col d-grid">
+          <button id="scan-is-btn" type="button" class="btn btn-primary btn-lg mt-1">
+            lookup item
+          </button>
+        </div>
+        <div class="col d-grid">
+          <button id="scan-ss-btn" type="button" class="btn btn-primary btn-lg mt-1">
+            lookup storage
+          </button>
+        </div>
+      </div>
+
+      <div class="row" style="display: none" id="waiting-div">
+        <div class="col d-grid">
+          <button id="waiting-btn"
+                  type="button"
+                  class="btn btn-outline-success btn-lg mt-1"
+                  style="pointer-events: none">
+            &nbsp;
+            <br />
+            Waiting for match...
+            <br />
+            &nbsp;
+          </button>
+        </div>
+      </div>
+
+      <div class="row" style="display: none" id="result-div">
+        <div class="col d-grid">
+          <button id="result-btn"
+                  type="button"
+                  class="btn btn-outline-danger btn-lg mt-1"
+                  style="pointer-events: none">
+            &nbsp;
+            <br />
+            Last result ....
+            <br />
+            &nbsp;
+          </button>
+        </div>
+      </div>
+            -->
       <div class="row">
         <div class="col d-grid">
           <button id="cancel-btn"
@@ -77,10 +126,10 @@
       </div>
       <div class="row">
         <div class="col d-grid">
-          <button id="debug-btn"
+          <button id="url-btn"
                   type="button"
                   class="btn btn-primary btn-lg mt-1"
-                  >Debug</button>
+                  >Popup current url</button>
         </div>
       </div>
       <div class="row" id="wake-lock-div">
@@ -95,7 +144,7 @@
         </div>
       </div>
     </div>
-    CODE1: {{ bec1 }}<br>
-    CODE2: {{ bec2 }}
+    CODE1: {{ scanned_code_1 }}<br>
+    CODE2: {{ scanned_code_2 }}
   </body>
 </html>

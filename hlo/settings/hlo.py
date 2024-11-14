@@ -24,6 +24,8 @@ JSON_SCHEMAS_DEPRECATED: list = env.list(
 # with a similar api endpoint for printing images
 BQW_ENDPOINT: str = env("BQW_ENDPOINT", default=None)
 
+WEBAPP_DOMAIN: str = env("WEBAPP_DOMAIN", default=None)
+
 BARCODE_CACHE: Path = (MEDIA_ROOT / Path("barcode_cache")).resolve()
 if not BARCODE_CACHE.is_dir():
     BARCODE_CACHE.mkdir(exist_ok=True)

@@ -32,6 +32,9 @@ class StorageAdmin(
     list_display_links = ("indented_title_color",)
     resource_class = StorageResource
 
+    def get_readonly_fields(self, request, obj=None):
+        return ["sha1_id", *super().get_readonly_fields(request, obj)]
+
     def get_form(self, request, obj=None, change=False, **kwargs):  # noqa: FBT002
         form = super().get_form(request, obj, change, **kwargs)
         form.base_fields["name"].widget = TextInput(
