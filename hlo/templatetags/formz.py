@@ -19,6 +19,8 @@ def formz_value(form, field_name, *_args, **_kwargs):
 
 class FormzFieldValueNode(template.Node):
     def __init__(self, tokens):
+        # Consider assuming form_variable_name == form
+        # if len(tokens) == 1
         self.form_variable_name = tokens[0]
         self.form_variable = template.Variable(self.form_variable_name)
         self.field_name = tokens[1]
