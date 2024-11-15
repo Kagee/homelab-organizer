@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from django.contrib import admin
-from django.core.cache import cache
 from django.core.files.images import ImageFile
 from django.db import models
 from django.urls import reverse
@@ -43,7 +42,7 @@ class OrderItem(models.Model):
         default="",
         help_text=(
             "The original item id from the shop. Not to be "
-            "cofused with the internal database id."
+            "confused with the internal database id."
         ),
         blank=False,
     )
@@ -136,18 +135,18 @@ class OrderItem(models.Model):
         buf = BytesIO()
         if self.thumbnail:
             with self.thumbnail.open("rb") as f:
-                tbhash = hashlib.sha1()  # noqa: S324
+                thumbnail_hash = hashlib.sha1()  # noqa: S324
                 if f.multiple_chunks():
                     for chunk in f.chunks():
-                        tbhash.update(chunk)
+                        thumbnail_hash.update(chunk)
                         buf.write(chunk)
                 else:
                     data = f.read()
-                    tbhash.update(data)
+                    thumbnail_hash.update(data)
                     buf.write(data)
-                self.thumbnail_sha1 = tbhash.hexdigest()
-            buffile = ImageFile(buf)
-            self.thumbnail.file = buffile
+                self.thumbnail_sha1 = thumbnail_hash.hexdigest()
+            buffer_file = ImageFile(buf)
+            self.thumbnail.file = buffer_file
 
         item_variation = "novariation"
         if len(self.item_variation):
@@ -268,4 +267,4 @@ class OrderItemMeta(models.Model):
     def __str__(self) -> str:
         if self.parent:
             return str(self.parent.name)
-        return "Parent is currently not in avaliable in database."
+        return "Parent is currently not in available in database."
