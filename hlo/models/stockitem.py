@@ -16,7 +16,7 @@ from taggit.managers import TaggableManager  # type: ignore[import-untyped]
 
 from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
 
-from . import Attachment
+from . import Attachment, OrderItem
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class StockItem(models.Model):
     count = models.PositiveIntegerField("Count", default=0)
     count_unit = models.CharField("Unit", default="items", max_length=50)
     comment = models.TextField(blank=True, default="")
-    tags = TaggableManager(verbose_name="Tags", help_text=None, blank=True)
+    tags = TaggableManager(verbose_name="Tags", help_text="", blank=True)
     sha1_id = models.CharField(
         max_length=40,
         blank=False,
@@ -48,6 +48,8 @@ class StockItem(models.Model):
         default=make_uuid_sha1,
         editable=False,
     )
+    "Unique SHA1 (based on UUID) for stockitem. Used for QR codes and lookup."
+
     category = TreeManyToManyField(
         "Category",
         blank=True,
@@ -63,23 +65,29 @@ class StockItem(models.Model):
         blank=True,
         related_name="stockitems",
     )
+    "Storages item may be found in"
+
     orderitems = models.ManyToManyField(  # type: ignore[var-annotated]
         "OrderItem",
         through="OrderStockItemLink",
         related_name="stockitems",
         blank=True,
     )
+    "Parent OrderItems"
+
     attachments = models.ManyToManyField(
         Attachment,
         related_name="stockitem",
         blank=True,
     )
+    "Stockitem attachements, like datasheets."
 
     thumbnail = models.ImageField(
-        upload_to=thumbnail_path,
+        upload_to=thumbnail_path,  # type: ignore[reportArgumentType]
         storage=OverwritingFileSystemStorage(),
         blank=True,
     )
+    "Stock item thumbnail (more like actual image)"
 
     thumbnail_sha1 = models.CharField(
         max_length=40,
@@ -87,6 +95,11 @@ class StockItem(models.Model):
         default="",
         blank=True,
     )
+    """Hash of thumbnail image. Used to determine if
+    we need to save a new image to disk"""
+
+    label_printed = models.BooleanField(default=False)
+    "Boolean of wether a label has been printed for this object or not"
 
     class Meta:
         ordering = ["name"]
@@ -100,9 +113,14 @@ class StockItem(models.Model):
     def __str__(self):
         if self.name:
             return str(self.name)
-        return str(self.orderitems.all().first().name)
+        obj: OrderItem = self.orderitems.all().first()  # type: ignore[reportAssignmentType]
+        return str(obj.name)
 
     def save(self, *args, **kwargs) -> None:
+        """Override save to also:
+        * Calculate and save the thumbnail SHA1
+        * Update the cache for number of stockitems
+        """
         cache.set(
             "stockitem_count",
             StockItem.objects.count(),
@@ -110,22 +128,21 @@ class StockItem(models.Model):
         )
         # pylint: disable=no-member
         self.thumbnail_sha1 = ""
-
         buf = BytesIO()
         if self.thumbnail:
             with self.thumbnail.open("rb") as f:
-                tbhash = hashlib.sha1()  # noqa: S324
+                thumbnail_hash = hashlib.sha1()  # noqa: S324
                 if f.multiple_chunks():
                     for chunk in f.chunks():
-                        tbhash.update(chunk)
+                        thumbnail_hash.update(chunk)
                         buf.write(chunk)
                 else:
                     data = f.read()
-                    tbhash.update(data)
+                    thumbnail_hash.update(data)
                     buf.write(data)
-                self.thumbnail_sha1 = tbhash.hexdigest()
-            buffile = ImageFile(buf)
-            self.thumbnail.file = buffile
+                self.thumbnail_sha1 = thumbnail_hash.hexdigest()
+            buffer_file = ImageFile(buf)
+            self.thumbnail.file = buffer_file
         super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:

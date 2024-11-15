@@ -65,6 +65,7 @@ def scan_json_error(msg):
 def get_item(sha1: str):
     sha1 = sha1.upper()
     obj_type = ""
+    obj: Storage | StockItem | OrderItem
     try:
         obj = Storage.objects.get(sha1_id=sha1)
         obj_type = "Storage"
@@ -83,16 +84,17 @@ def get_item(sha1: str):
                 logger.debug("SHA1 did not match anything: %s", sha1)
                 return None
     thumbnail = ""
-    if hasattr(obj, "thumbnail_url"):
+    if isinstance(obj, StockItem):
         thumbnail = obj.thumbnail_url()
-    elif hasattr(obj, "thumbnail"):
+    elif isinstance(obj, OrderItem):
         thumbnail = obj.thumbnail.url
 
     return {"name": obj.name, "thumbnail": thumbnail, "type": obj_type}
 
 
+"""
 def get_item2(sha1: str):
-    sha1 = sha1.split("/")
+    sha1: list[str] = sha1.split("/")
     sha1 = sha1[len(sha1) - 1]
     try:
         orderitem: OrderItem = OrderItem.objects.annotate(
@@ -107,6 +109,7 @@ def get_item2(sha1: str):
         except Storage.DoesNotExist:
             return scan_json_error("No item with that hash exists.")
         return scan_json_error("Scan item first, then storage!")
+"""
 
 
 def get_storage(sha1: str):
@@ -171,7 +174,7 @@ def move_storage_into_storage(request):
                     "msg": (
                         f"Putting\nStorage: {child.name}\n"
                         f"into\nStorage: {parent.name}"
-                    )
+                    ),
                 },
             },
         )

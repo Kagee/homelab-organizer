@@ -11,7 +11,8 @@ from django.contrib import admin
 from django.core.files.images import ImageFile
 from django.db import models
 from django.urls import reverse
-from django.utils.html import escape, format_html, mark_safe
+from django.utils.html import escape, format_html
+from django.utils.safestring import mark_safe
 from djmoney.models.fields import MoneyField
 
 from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
@@ -66,7 +67,7 @@ class OrderItem(models.Model):
         default_currency=None,
         blank=True,
         null=True,
-    )
+    )  # type: ignore[reportCallIssue]
     subtotal = MoneyField(
         "Item subtotal",
         max_digits=19,
@@ -74,7 +75,7 @@ class OrderItem(models.Model):
         default_currency=None,
         blank=True,
         null=True,
-    )
+    )  # type: ignore[reportCallIssue]
     tax = MoneyField(
         "Item tax/vat",
         max_digits=19,
@@ -82,7 +83,7 @@ class OrderItem(models.Model):
         default_currency=None,
         blank=True,
         null=True,
-    )
+    )  # type: ignore[reportCallIssue]
     attachments = models.ManyToManyField(
         Attachment,
         related_name="orderitem",
@@ -90,7 +91,7 @@ class OrderItem(models.Model):
     )
 
     thumbnail = models.ImageField(
-        upload_to=thumbnail_path,
+        upload_to=thumbnail_path,  # type: ignore[reportArgumentType]
         storage=OverwritingFileSystemStorage(),
         blank=True,
     )
@@ -205,7 +206,7 @@ class OrderItem(models.Model):
         )
 
     @admin.display(description="Attachments")
-    def attachments_tag(self) -> SafeString:
+    def attachments_tag(self) -> SafeString | str:
         # pylint: disable=no-member
         if self.attachments.count() == 0:
             return "No attachments"
@@ -237,10 +238,10 @@ class OrderItem(models.Model):
     def item_url(self) -> SafeString:
         return format_html(
             '{} (<a href="{}" target="_blank">Open item page on {}}</a>)',
-            self.order_id,
+            self.order_id,  # type: ignore[reportAttributeAccessIssue]
             # pylint: disable=no-member
-            self.shop.order_url_template.format(order_id=self.order_id),
-            self.shop.branch_name,
+            self.shop.order_url_template.format(order_id=self.order_id),  # type: ignore[reportAttributeAccessIssue]
+            self.shop.branch_name,  # type: ignore[reportAttributeAccessIssue]
         )
 
     @admin.display(description="Extra data (indented)")
