@@ -1,9 +1,6 @@
-venv
 prod-db/*
-prod_data_2024_05_29.json
 __pycache__
 *.swp
-chromedriver
 *.sqlite3*
 *.sqlite3-journal
 *.sql
@@ -22,7 +19,11 @@ whoosh_index
 scraper-cache
 input
 schema
+# type checker
 .mypy_cache
-postgresql-data
+# node folders for downloading js
 node_modules
 package-lock.json
+# python virtual env
+venv
+.venv

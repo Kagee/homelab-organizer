@@ -68,9 +68,9 @@ def python_checks():
     if (
         "VIRTUAL_ENV" not in os.environ
         or os.environ["VIRTUAL_ENV"].strip() == ""
-    ) and not os.access("./venv", os.R_OK):
+    ) and not os.access("./.venv", os.R_OK):
         venv_inp = input(
-            "No python python virtual environment. Create one in ./venv?"
+            "No python python virtual environment. Create one in ./.venv?"
             " (Y/n): ",
         )
         print(
@@ -90,7 +90,7 @@ def python_checks():
                 sys.exit(1)
             from venv import create
 
-            create("./venv", with_pip=True)
+            create("./.venv", with_pip=True)
             print("Please activate the new venv,then re-run the script")
         sys.exit()
 
