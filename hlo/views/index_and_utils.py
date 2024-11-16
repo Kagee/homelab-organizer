@@ -1,6 +1,5 @@
 import logging
 
-from django.contrib.auth.decorators import user_passes_test
 from django.core.cache import cache
 from django.shortcuts import render
 
@@ -9,14 +8,18 @@ from hlo.models import Attachment, OrderItem, StockItem
 logger = logging.getLogger(__name__)
 
 
+# from django.contrib.auth.decorators import user_passes_test
 # @user_passes_test(
 #    lambda u: u.is_staff,
 #    login_url="/do_not_have_access",
 #    redirect_field_name=None,
 # )
+
+
 def index(request):
-    # This is basicly a suboptimal implementation of a (currently non-exsisting)
-    # cache.get_or_set_many with callable support
+    # This is basically a suboptimal implementation of a
+    # (currently non-existing)cache.get_or_set_many
+    # with callable support
     keys: dict = {
         "orderitem_count": OrderItem.objects.count,
         "stockitem_count": StockItem.objects.count,

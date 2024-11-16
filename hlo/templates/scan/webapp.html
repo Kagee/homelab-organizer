@@ -39,16 +39,15 @@
             cancel_btn = document.querySelector("#cancel-btn");
             debug_btn = document.querySelector("#debug-btn");
             // this.dze.addEventListener('drop', this._dropEventHandler.bind(this));
-
-
-
             init_wakeLock()
+            {% comment %}
             move_item_to_storage_url = "{% url 'move-item-to-storage' %}"
             move_storage_into_storage_url = "{% url 'move-store-into-storage' %}"
+            {% endcomment %}
             {% if bec1 or bec2 %}
-              {% if bec1 %}bec1 = "{{ bec1 }}";
+              {% if bec1 %}bec1 = "{{ bec1.sha1 }}";
               {% endif %}
-              {% if bec2 %}bec2 = "{{ bec2 }}";
+              {% if bec2 %}bec2 = "{{ bec2.sha1 }}";
               {% endif %}
               cancel_btn.removeAttribute("disabled");
             {% endif %}
@@ -95,7 +94,11 @@
         </div>
       </div>
     </div>
-    CODE1: {{ bec1 }}<br>
-    CODE2: {{ bec2 }}
+    {% if bec1 %}
+     <p>{{ bec1.type }}:{{ bec1.name }}</p>
+    {% endif %}
+    {% if bec2 %}
+    <p>{{ bec2.type }}: {{ bec2.name }}</p>
+    {% endif %}
   </body>
 </html>

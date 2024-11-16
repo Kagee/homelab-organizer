@@ -12,3 +12,4 @@ pydotplus # graph
 daphne # asgi webserver
 ruff
 djlint
+types-requests

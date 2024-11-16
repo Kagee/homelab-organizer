@@ -36,6 +36,7 @@ py-version = "3.9"
 # This makes pyright not mark code behind thinks like
 # os.name != "nt" as unreacable.
 pythonPlatform = ""
+typeCheckingMode = "off"
 
 [tool.pylint.'MESSAGES CONTROL']
 # Please do not use this as an
@@ -78,8 +79,9 @@ lint.ignore = [
   "ANN002",
   "ANN003",
   "ANN101",
-  "D",      # docstrings?
+  #"D",      # docstrings?
   "TD",     # TODOs
+  "ERA001", # Commented out code
   ]
 lint.fixable = ["ALL"]
 # Exclude a variety of commonly ignored directories.

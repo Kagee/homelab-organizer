@@ -8,11 +8,11 @@
 {% block head %}
   <script type="text/javascript">
     var print_urls = {
-      {% for num in range %}{{ num }}: "{% url 'label-print-item-size' num stockitem.orderitems.first.id %}",
+      {% for num in range %}{{ num }}: "{% url 'label-print-sha1-size' stockitem.sha1_id num %}",
       {% endfor %}
     };
     var render_urls = {
-      {% for num in range %}{{ num }}: "{% url 'label-render-item-size' num stockitem.orderitems.first.id %}",
+      {% for num in range %}{{ num }}: "{% url 'label-render-sha1-size' stockitem.sha1_id num %}",
       {% endfor %}
     };
     
@@ -208,7 +208,7 @@
                         <option value="12">4.4 mm</option>
                       </select>
                         <a id="print-label" class="btn btn-primary">
-                          {% if stockitem.orderitems.first.meta.label_printed %}
+                          {% if stockitem.label_printed %}
                             Reprint label
                           {% else %}
                             Print label

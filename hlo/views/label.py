@@ -5,7 +5,7 @@ import re
 import textwrap
 from pathlib import Path
 
-import qrcode
+import qrcode  # type: ignore[import-untyped]
 import requests
 from django.conf import settings
 from django.contrib import messages
@@ -21,8 +21,15 @@ from django.http import (
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.cache import patch_cache_control
 from PIL import Image, ImageDraw, ImageFont
+from PIL.Image import Image as ImageType
 
-from hlo.models import OrderItem, OrderItemMeta, Storage
+from hlo.models import (
+    OrderItem,
+    OrderItemMeta,
+    StockItem,
+    Storage,
+    get_object_from_sha1,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +42,98 @@ __all__ = [
     "label_render_storage",
     "label_print_storage",
     "sha1_redirect",
+    "label_render_sha1_size",
 ]
+
+
+def label_render_sha1_size(
+    _request: WSGIRequest,
+    sha1: str,
+    multiplier: int,
+) -> HttpResponse:
+    """Return image with QR and label or HTTP404."""
+    if multiplier < 1:
+        return HttpResponse(
+            f"multiplier must be larger than 1, was {multiplier}",
+            status=400,
+        )
+    obj, _obj_type = get_object_from_sha1(sha1)
+    if not obj:
+        return HttpResponseNotFound(f"No object with SHA1 {sha1} found.")
+
+    qr_data, label_text = _obj_get_label_data(obj)
+    img = _get_label_size(qr_data, label_text, multiplier)
+    return _nocache_png_response(img)
+
+
+def label_print_sha1_size(
+    _request: WSGIRequest,
+    sha1: str,
+    multiplier: int,
+) -> JsonResponse:
+    """Print image with QR and label and return status.
+
+    TODO: Implement.
+    """
+    if multiplier < 1:
+        return JsonResponse(
+            {
+                "status": "error",
+                "reason": f"multiplier must be larger than 1, was {multiplier}",
+            },
+            status=400,
+        )
+
+    obj, _obj_type = get_object_from_sha1(sha1)
+    if not obj:
+        return JsonResponse(
+            {
+                "status": "error",
+                "reason": f"No object with SHA1 {sha1} found.",
+            },
+            status=400,
+        )
+
+    qr_data, label_text = _obj_get_label_data(obj)
+    img = _get_label_size(qr_data, label_text, multiplier)
+
+    # response = _label_print(img)
+    # TODO: Make correct printed set to true
+    if response.ok:
+        oim, created = OrderItemMeta.objects.get_or_create(
+            parent=obj,
+        )
+        oim.label_printed = True
+        oim.save()
+        return JsonResponse({"status": "ok"})
+    return JsonResponse(
+        {
+            "status": "error",
+            "status_code": response.status_code,
+            "reason": response.reason,
+            "text": response.text,
+        },
+        status=500,
+    )
+
+
+def _obj_get_label_data(
+    obj: OrderItem | StockItem | Storage,
+) -> tuple[str, str]:
+    """Return QR data(str) and label based on object."""
+    label_text = obj.name
+    qr_data = f"{settings.QR_URL_PREFIX}{str(obj.sha1_id).upper()}"
+    return qr_data, label_text
+
+
+def _get_label_size(
+    qr_text: str,
+    label_text: str,
+    multiplier: int,
+) -> ImageType:
+    font_path = Path("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf")
+
+    return _make_tiny_label(label_text, qr_text, font_path, multiplier)
 
 
 def label_print_item_size(
@@ -88,14 +186,18 @@ def label_render_item_size(
 
 
 def _get_tiny_label(
-    qr_text: str, label_text: str, _oi: OrderItem | Storage, multiplier: int
-) -> Image:
+    qr_text: str,
+    label_text: str,
+    _oi: OrderItem | Storage,
+    multiplier: int,
+) -> ImageType:
     font_path = Path("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf")
 
     return _make_tiny_label(label_text, qr_text, font_path, multiplier)
 
 
-def _make_tiny_qr_for_text(qr_text: str) -> Image:
+def _make_tiny_qr_for_text(qr_text: str) -> ImageType:
+    """Return QR Image for text."""
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -115,7 +217,7 @@ def _make_tiny_label(
     qr_url: str,
     font_path: Path,
     multiplier: int,
-) -> Image:
+) -> ImageType:
     im = _make_tiny_qr_for_text(qr_url)
 
     # Make text take ut 3/4 of label width
@@ -132,7 +234,10 @@ def _make_tiny_label(
 
     draw = ImageDraw.Draw(text_im)
 
-    def get_reaming_pixels(txt: str, text_im: Image) -> tuple[int, int, int]:
+    def get_reaming_pixels(
+        txt: str,
+        text_im: ImageType,
+    ) -> tuple[float, float, float]:
         font_size = 1  # starting font size
         font = ImageFont.truetype(font_path, font_size)
         _, _, text_width, text_height = draw.textbbox((0, 0), txt, font=font)
@@ -195,7 +300,7 @@ def _make_tiny_label(
 
 
 def label_render(_request: WSGIRequest, hex_hash: str) -> HttpResponse:
-    if len(hash) != 40 or not re.match("^[A-Fa-f0-9]*$", hash):  # noqa: PLR2004
+    if len(hex_hash) != 40 or not re.match("^[A-Fa-f0-9]*$", hex_hash):  # noqa: PLR2004
         return HttpResponseBadRequest("Hash is invalid")
     filename = hex_hash[2:] + ".png"
 
@@ -274,8 +379,9 @@ def label_print_orderitem(request: WSGIRequest, pk: int) -> JsonResponse:
 
 
 def sha1_redirect(request: WSGIRequest, sha1: str) -> HttpResponseRedirect:
+    obj: OrderItem | Storage
     try:
-        obj: OrderItem = OrderItem.objects.annotate(
+        obj = OrderItem.objects.annotate(
             stockitem_count=Count("stockitems"),
         ).get(sha1_id=sha1.upper())
         redir = "orderitem-detail"
@@ -284,7 +390,7 @@ def sha1_redirect(request: WSGIRequest, sha1: str) -> HttpResponseRedirect:
             redir = "stockitem-detail"
     except OrderItem.DoesNotExist:
         try:
-            obj: Storage = Storage.objects.get(sha1_id=sha1.upper())
+            obj = Storage.objects.get(sha1_id=sha1.upper())
             redir = "storage-detail"
         except Storage.DoesNotExist:
             messages.add_message(
@@ -297,8 +403,9 @@ def sha1_redirect(request: WSGIRequest, sha1: str) -> HttpResponseRedirect:
 
 
 def _item_get_label_data(pk: int) -> tuple[str, str, OrderItem]:
-    """
-    Get label text from OrderItem or related StockItem,
+    """-
+
+    Get label text from OrderItem/related StockItem,
     and QR-code for OrderItem.
 
     :param pk: primary key for OrderItem
@@ -324,7 +431,7 @@ def _storage_get_label_data(pk: int) -> tuple[str, str, Storage]:
     return qr_text, label_text, st
 
 
-def _nocache_png_response(im: Image) -> HttpResponse:
+def _nocache_png_response(im: ImageType) -> HttpResponse:
     response = HttpResponse(content_type="image/png")
     patch_cache_control(
         response,
@@ -340,7 +447,7 @@ def _get_label_cache_file(
     qr_text: str,
     label_text: str,
     _oi: OrderItem | Storage,
-) -> Image:
+) -> ImageType:
     font_path = Path("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf")
 
     label_hash = hashlib.sha1()  # noqa: S324
@@ -361,7 +468,7 @@ def _get_label(
     qr_text: str,
     label_text: str,
     _oi: OrderItem | Storage,
-) -> Image:
+) -> ImageType:
     font_path = Path("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf")
 
     label_hash = hashlib.sha1()  # noqa: S324
@@ -378,7 +485,7 @@ def _get_label(
     return _make_label(label_text, qr_text, cache_file, font_path)
 
 
-def _label_print(im: Image) -> requests.Response:
+def _label_print(im: ImageType) -> requests.Response:
     if not settings.BQW_ENDPOINT:
         return HttpResponse(
             "Printing not configured on this server",
@@ -415,7 +522,7 @@ def _make_label(
     qr_url: str,
     cache_file: Path,
     font_path: Path,
-) -> Image:
+) -> ImageType:
     im = _make_qr_for_text(qr_url)
 
     # Make text take ut 3/4 of label width
@@ -432,24 +539,27 @@ def _make_label(
 
     draw = ImageDraw.Draw(text_im)
 
-    def get_reaming_pixels(txt: str, text_im: Image) -> (int, int, int):
-        fontsize = 1  # starting font size
-        font = ImageFont.truetype(font_path, fontsize)
+    def get_reaming_pixels(
+        txt: str,
+        text_im: ImageType,
+    ) -> tuple[int, int, int]:
+        font_size = 1  # starting font size
+        font = ImageFont.truetype(font_path, font_size)
         _, _, text_width, text_height = draw.textbbox((0, 0), txt, font=font)
         im_width, im_height = text_im.size
         while text_width < im_width and text_height < im_height * 0.95:
-            fontsize += 1
-            font = ImageFont.truetype(font_path, fontsize)
+            font_size += 1
+            font = ImageFont.truetype(font_path, font_size)
             _, _, text_width, text_height = draw.textbbox(
                 (0, 0),
                 txt,
                 font=font,
             )
 
-        fontsize -= 1
-        font = ImageFont.truetype(font_path, fontsize)
+        font_size -= 1
+        font = ImageFont.truetype(font_path, font_size)
         _, _, text_width, text_height = draw.textbbox((0, 0), txt, font=font)
-        return fontsize, text_width, text_height
+        return font_size, text_width, text_height
 
     im_width, im_height = text_im.size
     best_font_size = -1
@@ -464,16 +574,16 @@ def _make_label(
         except TypeError:
             # Could not wrap with number of breaks, give up
             break
-        fontsize, w, h = get_reaming_pixels(txt, text_im)
+        font_size, w, h = get_reaming_pixels(txt, text_im)
         remainder = (im_width * im_height) - (w * h)
         if prev_remainder > -1:
             if remainder < prev_remainder:
-                best_font_size = fontsize
+                best_font_size = font_size
                 best_breaks = breaks
             else:
                 break
         else:
-            best_font_size = fontsize
+            best_font_size = font_size
             best_breaks = breaks
         prev_remainder = remainder
 
@@ -498,7 +608,7 @@ def _make_label(
     return resulting_im
 
 
-def _make_qr_for_text(qr_text: str) -> Image:
+def _make_qr_for_text(qr_text: str) -> ImageType:
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,

@@ -3,9 +3,11 @@ from django.urls import path
 from hlo.views import (
     label_print_item_size,
     label_print_orderitem,
+    label_print_sha1_size,
     label_print_storage,
     label_render_item_size,
     label_render_orderitem,
+    label_render_sha1_size,
     label_render_storage,
     sha1_redirect,
 )
@@ -15,6 +17,16 @@ urls = [  # Label stuff
         "sha1/<str:sha1>",
         sha1_redirect,
         name="sha1-redirect",
+    ),
+    path(
+        "label/render/<str:sha1>_size_<int:multiplier>.png",
+        label_render_sha1_size,
+        name="label-render-sha1-size",
+    ),
+    path(
+        "label/print/<str:sha1>_size_<int:multiplier>.png",
+        label_print_sha1_size,
+        name="label-print-sha1-size",
     ),
     path(
         "label/render/orderitem/<int:pk>.png",
