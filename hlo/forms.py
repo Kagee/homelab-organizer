@@ -324,7 +324,7 @@ class StockItemForm(ModelForm):
             Field("tags"),
             Field("comment"),
             HTML("""
-                    <div id="dropzone">
+                    <div id="dropzone">TODO: Add rotate buttons
                     {% if stockitem.thumbnail_url or  orderitem.thumbnail %}
                         <div id="div_id_thumbnail_render" class="mb-3 row">
                             <div class="col-form-label pt-0 col-2">

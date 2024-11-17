@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 class TagAutoResponseView(AutoResponseView):
     def get(self, request, *_args, **kwargs):
-        """This method is overridden for changing id to name instead of pk."""
+        """Return name instead of pk."""
         # pylint: disable=attribute-defined-outside-init
         self.widget = self.get_widget_or_404()
         self.term = kwargs.get("term", request.GET.get("term", ""))
@@ -196,7 +196,7 @@ class StockItemDetail(DetailView):
 
 
 def stockitem_list(request):
-    qs_stockitems = StockItem.objects.all()
+    qs_stockitems = StockItem.objects.all().order_by("-updated_at")
 
     f = StockItemFilter(request.GET, queryset=qs_stockitems)
     paginator = Paginator(f.qs, 10)

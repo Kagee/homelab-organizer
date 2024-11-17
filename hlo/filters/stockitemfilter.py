@@ -34,8 +34,14 @@ class StockItemFilter(NonOrderingStockItemFilter):
         empty_label=None,
         null_label=None,
         # tuple-mapping retains order
-        fields=(
-            ("name", "name"),
-            ("orderitems__order__date", "orderitems__order__date"),
+        choices=(
+            ("-updated_at", "Updated (most recent)"),
+            ("updated_at", "Updated (oldest)"),
+            ("name", "Name (ABZ)"),
+            ("-name", "Name (ZYX)"),
+            ("-order__date", "Newest order first"),
+            ("order__date", "Oldest order first"),
+            ("-created_at", "Created (most recent)"),
+            ("created_at", "Created (oldest)"),
         ),
     )

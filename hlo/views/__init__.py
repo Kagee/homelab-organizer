@@ -19,14 +19,8 @@ from .commontree import (
 )
 from .index_and_utils import index, no_access, render404
 from .label import (
-    label_print_item_size,
-    label_print_orderitem,
     label_print_sha1_size,
-    label_print_storage,
-    label_render_item_size,
-    label_render_orderitem,
     label_render_sha1_size,
-    label_render_storage,
     sha1_redirect,
 )
 from .orderitems import (

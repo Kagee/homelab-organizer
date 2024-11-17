@@ -9,27 +9,27 @@ from mptt.models import (  # type: ignore[import-untyped]
 
 
 class CommonTreeModel(MPTTModel):
-    name = models.CharField(
+    name: models.CharField = models.CharField(
         max_length=255,
         blank=False,  # Should not use null for Char/Text
     )
 
-    name_secondary = models.CharField(
+    name_secondary: models.CharField = models.CharField(
         max_length=255,
         blank=True,  # Should not use null for Char/Text
     )
 
-    comment = models.TextField(
+    comment: models.TextField = models.TextField(
         blank=True,  # Should not use null for Char/Text
     )
 
-    uuid = models.UUIDField(
+    uuid: models.UUIDField = models.UUIDField(
         unique=True,
         default=uuid.uuid4,
         editable=False,
     )
 
-    sha1_id = models.CharField(
+    sha1_id: models.CharField = models.CharField(
         max_length=40,
         editable=False,
         blank=True,
@@ -43,7 +43,11 @@ class CommonTreeModel(MPTTModel):
         related_name="children",
     )
 
-    label_printed = models.BooleanField(default=False)
+    label_printed: models.BooleanField = models.BooleanField(default=False)
+
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
+
+    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True

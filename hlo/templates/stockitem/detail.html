@@ -43,7 +43,7 @@
       window.csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
       console.log("CSRF token", csrftoken)
       document.querySelector('#print-label').addEventListener("click", (event) => {
-        if ({{ stockitem.orderitems.first.meta.label_printed | yesno:"true,false" }}) {
+        if ({{ stockitem.label_printed | yesno:"true,false" }}) {
           if (confirm("A label for this item has already been printed.\n\nAre you sure you want to print a new label?") != true) {
               return
           }
@@ -187,7 +187,7 @@
                 <td class="table-secondary">Label</td>
                 <td>
                   <p>
-                    <img src="{% url 'label-render-item-size' 4 stockitem.orderitems.first.id %}"
+                    <img src="{% url 'label-render-sha1-size' stockitem.sha1_id 4 %}"
                          width="400"
                          id="label_img" />
                   </p>

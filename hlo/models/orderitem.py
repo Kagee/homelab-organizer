@@ -35,7 +35,10 @@ def thumbnail_path(instance: OrderItem, filename: str) -> str:
     return f"thumbnails/hashed/{prefix}/{filename}{suffix}"
 
 
-class OrderItem(models.Model):
+class OrderItem(models.Model):  # type: ignore[django-manager-missing]
+    # the class declaration line in a class that is the target of a ForeignKey
+    # from a model with untyped / dynamically added managers as it happens
+    # on the reverse relation
     name = models.CharField(max_length=255)
     item_id = models.CharField(
         "Shop item ID",
@@ -122,6 +125,10 @@ class OrderItem(models.Model):
         ]
 
     def __str__(self) -> str:
+        """Return string representation.
+
+        Includes shop, order and item id, variation and NameError
+        """
         return (
             # pylint: disable=no-member
             f"{self.pk}: {self.order.shop.branch_name} "
@@ -240,8 +247,8 @@ class OrderItem(models.Model):
             '{} (<a href="{}" target="_blank">Open item page on {}}</a>)',
             self.order_id,  # type: ignore[reportAttributeAccessIssue]
             # pylint: disable=no-member
-            self.shop.order_url_template.format(order_id=self.order_id),  # type: ignore[reportAttributeAccessIssue]
-            self.shop.branch_name,  # type: ignore[reportAttributeAccessIssue]
+            self.shop.order_url_template.format(order_id=self.order_id),  # type: ignore[reportAttributeAccessIssue,attr-defined]
+            self.shop.branch_name,  # type: ignore[reportAttributeAccessIssue,attr-defined]
         )
 
     @admin.display(description="Extra data (indented)")
@@ -266,6 +273,7 @@ class OrderItemMeta(models.Model):
     ai_name = models.CharField(max_length=255, blank=True, default="")
 
     def __str__(self) -> str:
+        """Return name of parent, since meta has no name."""
         if self.parent:
             return str(self.parent.name)
         return "Parent is currently not in available in database."

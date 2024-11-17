@@ -16,7 +16,7 @@ from taggit.managers import TaggableManager  # type: ignore[import-untyped]
 
 from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
 
-from . import Attachment, OrderItem
+from . import Attachment
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +101,9 @@ class StockItem(models.Model):
     label_printed = models.BooleanField(default=False)
     "Boolean of wether a label has been printed for this object or not"
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
         ordering = ["name"]
         constraints = [
@@ -111,13 +114,14 @@ class StockItem(models.Model):
         ]
 
     def __str__(self):
+        """Return name (or parents name) as string."""
         if self.name:
             return str(self.name)
-        obj: OrderItem = self.orderitems.all().first()  # type: ignore[reportAssignmentType]
-        return str(obj.name)
+        return str(self.orderitems.all().first().name)
 
     def save(self, *args, **kwargs) -> None:
-        """Override save to also:
+        """Override save to for thumbnail and cache.
+
         * Calculate and save the thumbnail SHA1
         * Update the cache for number of stockitems
         """
