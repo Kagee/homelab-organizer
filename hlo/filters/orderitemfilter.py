@@ -36,8 +36,8 @@ class OrderItemFilter(NonOrderingOrderItemFilter):
         choices=(
             ("-order__date", "Newest order first"),
             ("order__date", "Oldest order first"),
-            ("-total_nok", "Total (low to high)"),
-            ("total_nok", "Total (high to low)"),
+            ("-total_nok", "Total (high to low(none))"),
+            ("total_nok", "Total (low (none) to high)"),
             ("name", "Name (ABZ)"),
             ("-name", "Name (ZYX)"),
         ),
