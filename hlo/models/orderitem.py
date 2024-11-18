@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 from django.contrib import admin
 from django.core.files.images import ImageFile
 from django.db import models
+from django.db.models import Case, F, When
 from django.urls import reverse
 from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
@@ -71,6 +72,20 @@ class OrderItem(models.Model):  # type: ignore[django-manager-missing]
         blank=True,
         null=True,
     )  # type: ignore[reportCallIssue]
+
+    total_nok = models.GeneratedField(
+        expression=Case(
+            When(total_currency="JPY", then=F("total") * 0.0716),
+            When(total_currency="USD", then=F("total") * 11.10),
+            When(total_currency="GBP", then=F("total") * 14.02),
+            When(total_currency="EUR", then=F("total") * 11.72),
+            default=F("total"),
+            output_field=models.DecimalField(max_digits=19, decimal_places=4),
+        ),
+        db_persist=False,
+        output_field=models.DecimalField(max_digits=19, decimal_places=4),
+    )
+
     subtotal = MoneyField(
         "Item subtotal",
         max_digits=19,
