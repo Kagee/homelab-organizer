@@ -81,49 +81,19 @@ def get_item(sha1: str) -> dict[str, Any] | None:
     return {
         "name": obj.name,
         "thumbnail": thumbnail,
-        "type": obj_type,
+        "type": obj_type.__name__,
         "sha1": sha1,
     }
 
 
-"""
-def get_item2(sha1: str):
-    sha1: list[str] = sha1.split("/")
-    sha1 = sha1[len(sha1) - 1]
-    try:
-        orderitem: OrderItem = OrderItem.objects.annotate(
-            stockitem_count=Count("stockitems"),
-        ).get(sha1_id=sha1.upper())
-        if orderitem.stockitem_count:
-            return orderitem.stockitems.first()
-        return scan_json_error("Order item #{obj.pk} has no stockitem")
-    except OrderItem.DoesNotExist:
-        try:
-            Storage.objects.get(sha1_id=sha1.upper())
-        except Storage.DoesNotExist:
-            return scan_json_error("No item with that hash exists.")
-        return scan_json_error("Scan item first, then storage!")
-"""
-
-"""
-def get_storage(sha1: str):
-    sha1 = sha1.split("/")[-1]
-    sha1 = sha1[len(sha1) - 1]
-    try:
-        return Storage.objects.get(sha1_id=sha1.upper())
-    except Storage.DoesNotExist:
-        return scan_json_error("No storage with that hash exists.")
-"""
-
-"""
 @require_http_methods(["POST"])
 def move_item_to_storage(request):
-    if (code1 := request.POST.get("code1")) and (
-        code2 := request.POST.get("code2")
+    if (bec1 := request.POST.get("bec1")) and (
+        bec2 := request.POST.get("bec2")
     ):
         logger.debug("move_item_to_storage")
-        item = get_item(code1)
-        storage = get_storage(code2)
+        obj1 = get_item(bec1)
+        obj2 = get_item(bec2)
 
         for o in [item, storage]:
             if isinstance(o, JsonResponse):
@@ -143,41 +113,6 @@ def move_item_to_storage(request):
     return scan_json_error(
         "Missing item to move or storage to move to",
     )
-"""
-
-"""
-@require_http_methods(["POST"])
-def move_storage_into_storage(request):
-    if (code1 := request.POST.get("code1")) and (
-        code2 := request.POST.get("code2")
-    ):
-        logger.debug("move_storage_into_storage")
-
-        child = get_storage(code1)
-        parent = get_storage(code2)
-
-        for o in [child, parent]:
-            if isinstance(o, JsonResponse):
-                return o
-        if child == parent:
-            return scan_json_error(
-                "Can not move item into itself",
-            )
-        return JsonResponse(
-            {
-                "ok": True,
-                "result": {
-                    "msg": (
-                        f"Putting\nStorage: {child.name}\n"
-                        f"into\nStorage: {parent.name}"
-                    ),
-                },
-            },
-        )
-    return scan_json_error(
-        "Missing storage child and parent",
-    )
-"""
 
 
 @require_http_methods(["GET"])

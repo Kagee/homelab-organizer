@@ -1,5 +1,7 @@
 {% load django_bootstrap5 %}
+{% load bootstrap_icons %}
 {% load static %}
+{% load hlo_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -43,7 +45,7 @@
             {% comment %}
             move_item_to_storage_url = "{% url 'move-item-to-storage' %}"
             move_storage_into_storage_url = "{% url 'move-store-into-storage' %}"
-            {% endcomment %}
+{% endcomment %}
             {% if bec1 or bec2 %}
               {% if bec1 %}bec1 = "{{ bec1.sha1 }}";
               {% endif %}
@@ -76,10 +78,7 @@
       </div>
       <div class="row">
         <div class="col d-grid">
-          <button id="debug-btn"
-                  type="button"
-                  class="btn btn-primary btn-lg mt-1"
-                  >Debug</button>
+          <button id="debug-btn" type="button" class="btn btn-primary btn-lg mt-1">Debug</button>
         </div>
       </div>
       <div class="row" id="wake-lock-div">
@@ -90,15 +89,46 @@
       <div class="row" id="binary-eye-div">
         <div class="col d-grid">
           <!-- binaryeye://scan?ret=https%3A%2F%2Fscan.h2x.no%2Fscan%3Fresult%3D{RESULT} -->
-          <a href="{{ binaryeye_url }}" role="button" id="binary-eye-btn" type="button" class="btn btn-primary btn-lg mt-1">Binary eye</a>
+          <a href="{{ binaryeye_url }}"
+             role="button"
+             id="binary-eye-btn"
+             type="button"
+             class="btn btn-primary btn-lg mt-1">Binary eye</a>
         </div>
       </div>
     </div>
-    {% if bec1 %}
-     <p>{{ bec1.type }}:{{ bec1.name }}</p>
-    {% endif %}
-    {% if bec2 %}
-    <p>{{ bec2.type }}: {{ bec2.name }}</p>
+    {% if bec1 or bec2 %}
+      <table class="table mt-3">
+        {% if bec1 %}
+          <tr>
+            <td>
+              <img src="{{ bec1.thumbnail }}" style="max-width: 100%; max-height: 100%;" />
+            </td>
+            <td>
+              <b>{{ bec1.type }}</b>: {{ bec1.name }}
+            </td>
+          </tr>
+        {% endif %}
+        {% if bec2 %}
+          <tr>
+            <td>
+              <form method="post" action="/scan?bec1={{ request.GET.bec1 }}&bec2={{ request.GET.bec2 }}">
+                <button role="submit" class="btn btn-lg btn-primary">Store in {% bs_icon 'arrow-down' size='1em' %}</button>
+              </form>
+            </td>
+          </tr>
+          <tr>
+            {% if bec2.thumbnail %}
+              <td>
+                <img src="{{ bec2.thumbnail }}" style="max-width: 30%; max-height: 30%;" />
+              </td>
+            {% endif %}
+            <td {% if not bec2.thumbnail %}colspan="2"{% endif %}>
+              <b>{{ bec2.type }}</b>: {{ bec2.name }}
+            </td>
+          </tr>
+        {% endif %}
+      </table>
     {% endif %}
   </body>
 </html>
