@@ -68,6 +68,10 @@
                                 <td>{{ orderitem.order.date }}</td>
                             </tr>
                             <tr>
+                                <td>Total / subtotal</td>
+                                <td>{{ orderitem.total }} / {{ orderitem.subtotal }}</td>
+                            </tr>
+                            <tr>
                                 <td>Item listing</td>
                                 <td>
                                     <a href="{{ orderitem.get_orderitem_url }}"
