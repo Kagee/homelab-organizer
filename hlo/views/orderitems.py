@@ -37,7 +37,7 @@ def orderitem_filtered_list(
         .order_by("-order__date")
     )
     per_page_choices = [5, 10, 20, 50, 100]
-    per_page = 10
+    per_page = 15
     if "per_page" in request.GET:
         per_page = int(request.GET["per_page"])
         #  May be random value calculated by JS
