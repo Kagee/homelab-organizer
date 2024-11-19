@@ -45,7 +45,8 @@
             {% comment %}
             move_item_to_storage_url = "{% url 'move-item-to-storage' %}"
             move_storage_into_storage_url = "{% url 'move-store-into-storage' %}"
-{% endcomment %}
+            {% endcomment %}
+
             {% if bec1 or bec2 %}
               {% if bec1 %}bec1 = "{{ bec1.sha1 }}";
               {% endif %}
@@ -96,7 +97,7 @@
              class="btn btn-primary btn-lg mt-1">Binary eye</a>
         </div>
       </div>
-    </div>
+    
     {% if bec1 or bec2 %}
       <table class="table mt-3">
         {% if bec1 %}
@@ -111,9 +112,13 @@
         {% endif %}
         {% if bec2 %}
           <tr>
-            <td>
-              <form method="post" action="/scan?bec1={{ request.GET.bec1 }}&bec2={{ request.GET.bec2 }}">
-                <button role="submit" class="btn btn-lg btn-primary">Store in {% bs_icon 'arrow-down' size='1em' %}</button>
+            <td colspan="2">
+              <div class="row" id="wake-lock-div">
+              <form method="post" action="{% url "scan" %}?bec1={{ request.GET.bec1 }}&bec2={{ request.GET.bec2 }}">
+                {% csrf_token %}
+                <div class="col d-grid"><button role="submit" class="btn btn-lg btn-primary" name="one-in-two">Store in {% bs_icon 'arrow-down' size='1em' %}</button></div>
+                <div class="col d-grid"><button role="submit" class="btn btn-lg btn-primary" name="two-in-one">Store in {% bs_icon 'arrow-up' size='1em' %}</button></div>
+              </div>
               </form>
             </td>
           </tr>
@@ -130,5 +135,6 @@
         {% endif %}
       </table>
     {% endif %}
+  </div>
   </body>
 </html>

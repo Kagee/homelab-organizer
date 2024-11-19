@@ -5,6 +5,8 @@ from django.conf import settings
 from django.http import (
     JsonResponse,
 )
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import TemplateView
 
@@ -15,6 +17,19 @@ logger = logging.getLogger(__name__)
 
 class WebappView(TemplateView):
     template_name = "scan/webapp.html"
+
+    def post(self, request, *_args, **_kwargs):
+        # context = self.get_context_data(**kwargs)
+
+        # bar = self.request.POST.get("foo", None)
+        # if bar:
+        #    self.template_name = "path-to-new-template.html"
+        # previous_foo = context["foo"]
+        # context["new_variable"] = "new_variable" + " updated"
+        logger.debug(request.GET)
+        logger.debug(request.POST)
+        # return self.render_to_response(context)
+        return redirect(reverse("scan") + "?item=4")
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
