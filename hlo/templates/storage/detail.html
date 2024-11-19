@@ -112,7 +112,7 @@
 
     function print_label() {
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        url = "{% url 'label-render-sha1-size' storage.sha1_id 4 %}"
+        url = "{% url 'label-print-sha1-size' storage.sha1_id 4 %}"
         if ({{ storage.label_printed | yesno:"true,false" }}) {
             if (confirm("A label for this item has already been printed.\n\nAre you sure you want to print a new label?") != true) {
                 return
