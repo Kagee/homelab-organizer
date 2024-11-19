@@ -65,15 +65,35 @@ class OrderItemFilter(NonOrderingOrderItemFilter):
             ("-name", "Name (ZYX)"),
         ),
     )
-    # hidden = django_filters.BooleanFilter(
-    #    label="Show hidden",
-    #
-    # )
+
+    STOCKITEM_CHOICES = (
+        ("hide_if_stockitems", "W/o stockitems"),
+        ("show_both", "W & W/o stockitems"),
+        ("show_only_if_stockitems", "W. stockitems"),
+    )
+
+    stockitem_show = django_filters.ChoiceFilter(
+        choices=STOCKITEM_CHOICES,
+        label="Stockitems",
+        method="filter_stockitems",
+        empty_label=None,
+        initial="hide_if_stockitems",
+    )
+
+    def filter_stockitems(self, queryset, _name, value):
+        if value == "show_both":
+            return queryset
+        if value == "show_only_if_stockitems":
+            return queryset.filter(stockitems__isnull=False)
+        # hide_if_stockitems
+        return queryset.filter(stockitems__isnull=True)
+
     HIDDEN_CHOICES = (
         ("hide", "Hide"),
         ("both", "Both"),
-        ("show", "Only"),
+        ("only", "Only"),
     )
+
     hidden = django_filters.ChoiceFilter(
         choices=HIDDEN_CHOICES,
         label="Hidden",
@@ -85,6 +105,6 @@ class OrderItemFilter(NonOrderingOrderItemFilter):
     def filter_hidden(self, queryset, _name, value):
         if value == "both":
             return queryset
-        if value == "show":
+        if value == "only":
             return queryset.filter(Q(meta__isnull=False) & Q(meta__hidden=True))
         return queryset.filter(Q(meta__isnull=True) | Q(meta__hidden=False))

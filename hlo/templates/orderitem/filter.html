@@ -61,7 +61,6 @@
       }
     }
 
-
     async function toggleHideWrapper(e) {
       let pk = e.target.dataset.pk;
       let hidden = e.target.dataset.metaHidden == "true";
@@ -81,8 +80,6 @@
       toggleHide(url, hidden, comment)
     }
 
-
-
     window.addEventListener("load", function($) {
       if (!(new URL(document.location).search)) {
         console.log("calc wis");
@@ -99,7 +96,6 @@
           document.location = document.location + `?per_page=${visible}`
         }
       } else {
-        console.log("not calculating page size");
         window.csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         btnToggleHides = document.querySelectorAll(".btn-toggle-hide")
         for (let btn of btnToggleHides) {

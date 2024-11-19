@@ -30,10 +30,7 @@ def orderitem_filtered_list(
     request: WSGIRequest,
 ) -> HttpResponse:
     qs_orderitems = (
-        OrderItem.objects.exclude(
-            stockitems__count__gt=0,
-        )
-        .select_related("order")
+        OrderItem.objects.select_related("order")
         .select_related("order__shop")
         .prefetch_related("stockitems")
         .order_by("-order__date")
@@ -70,7 +67,7 @@ def orderitem_filtered_list(
             *[
                 Column(field, css_class="col")
                 for field in f.form.fields
-                if field != "name"  # and field != "per_page"
+                if field != "name"
             ],
             Column(
                 ButtonHolder(
@@ -88,7 +85,8 @@ def orderitem_filtered_list(
     )
     f.form.helper.add_layout(layout)
 
-    page = int(request.GET.get("page"))  # type: ignore[arg-type]
+    page = request.GET.get("page") or 1
+
     try:
         response = paginator.page(page)
     except PageNotAnInteger:
