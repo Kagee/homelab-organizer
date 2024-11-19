@@ -9,19 +9,8 @@ from hlo.models import Attachment, OrderItem, StockItem
 
 logger = logging.getLogger(__name__)
 
-
-# from django.contrib.auth.decorators import user_passes_test
-# @user_passes_test(
-#    lambda u: u.is_staff,
-#    login_url="/do_not_have_access",
-#    redirect_field_name=None,
-# )
-
-# To update a key somewhere else:
-# from django.core.cache import cache
-# from hlo.views import INDEX_DATA_CACHE_KEYS
-# value = INDEX_DATA_CACHE_KEYS["SOME KEY"]()
-# cache.set(key, value, timeout=None)
+# To clear a key somewhere else:
+# cache.delete_many([...],)
 INDEX_DATA_CACHE_KEYS: dict = {  # type: ignore[annotation-unchecked]
     "orderitem_raw_count": OrderItem.objects.count,
     "orderitem_unprocessed_count": OrderItem.objects.filter(

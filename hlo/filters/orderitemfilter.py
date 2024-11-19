@@ -33,7 +33,8 @@ class NonOrderingOrderItemFilter(django_filters.FilterSet):
 
 
 class OrderItemFilter(NonOrderingOrderItemFilter):
-    # https://django-filter.readthedocs.io/en/main/guide/tips.html#using-initial-values-as-defaults
+    # https://django-filter.readthedocs.io
+    # /en/main/guide/tips.html#using-initial-values-as-defaults
     def __init__(self, data=None, *args, **kwargs):
         # if filterset is bound, use initial values as defaults
         if data is not None:
@@ -43,7 +44,8 @@ class OrderItemFilter(NonOrderingOrderItemFilter):
             for name, f in self.base_filters.items():
                 initial = f.extra.get("initial")
 
-                # filter param is either missing or empty, use initial as default
+                # filter param is either missing or empty,
+                # use initial as default
                 if not data.get(name) and initial:
                     data[name] = initial
 

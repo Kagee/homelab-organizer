@@ -1,8 +1,8 @@
 # ruff: noqa: ERA001,N806
 import logging
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (
+from crispy_forms.helper import FormHelper  # type: ignore[import-untyped]
+from crispy_forms.layout import (  # type: ignore[import-untyped]
     HTML,
     ButtonHolder,
     Column,
@@ -30,7 +30,7 @@ def orderitem_filtered_list(
     request: WSGIRequest,
 ) -> HttpResponse:
     qs_orderitems = (
-        OrderItem.objects.exclude(  # .exclude(meta__hidden=True)  # Items with meta = hidden
+        OrderItem.objects.exclude(
             stockitems__count__gt=0,
         )
         .select_related("order")
@@ -88,7 +88,7 @@ def orderitem_filtered_list(
     )
     f.form.helper.add_layout(layout)
 
-    page = request.GET.get("page")
+    page = int(request.GET.get("page"))  # type: ignore[arg-type]
     try:
         response = paginator.page(page)
     except PageNotAnInteger:

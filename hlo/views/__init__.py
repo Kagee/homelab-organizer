@@ -49,24 +49,6 @@ from .stockitems import (
 )
 from .tags import TagDetailView, TagListView, items_with_tags
 
-
-def test(request):
-    import magic
-
-    content_type = "unkown"
-    if request.FILES and "uploadFile" in request.FILES:
-        content_type = magic.from_buffer(
-            request.FILES["uploadFile"].read(), mime=True
-        )
-
-    context = {
-        "postdata": request.POST,
-        "filedata": request.FILES,
-        "content_type": content_type,
-    }
-    return render(request=request, template_name="test.html", context=context)
-
-
 __all__ = [
     "test",
     "render404",
@@ -106,6 +88,7 @@ __all__ = [
     "OrderItemCreateView",
     "OrderItemUpdateView",
     "orderitem_filtered_list",
+    "orderitem_hide",
     "OrderDetailView",
     "OrderListView",
     "OrderUpdateView",

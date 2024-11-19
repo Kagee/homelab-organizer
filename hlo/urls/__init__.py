@@ -71,11 +71,6 @@ urlpatterns = [
             AboutView.as_view(),
             name="about",
         ),
-        path(
-            "test",
-            views.test,
-            name="about",
-        ),
     ],
     *label.urls,
     *items.urls,
