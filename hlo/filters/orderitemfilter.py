@@ -81,12 +81,8 @@ class OrderItemFilter(NonOrderingOrderItemFilter):
     )
 
     def filter_hidden(self, queryset, _name, value):
-        logger.debug("value %s", value)
-        # If value = True
         if value == "both":
             return queryset
         if value == "show":
-            logger.debug("showing WITH meta and HIDDEN TRUE")
             return queryset.filter(Q(meta__isnull=False) & Q(meta__hidden=True))
-        logger.debug("showing WITHOUT meta OR HIDDEN FALSE")
         return queryset.filter(Q(meta__isnull=True) | Q(meta__hidden=False))
