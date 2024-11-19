@@ -1,0 +1,85 @@
+from hlo.utils.colored_logs import ColoredLogFormatter
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": ("{asctime} [{levelname[0]}] {message} ({name})"),
+            "style": "{",
+        },
+        "simple": {
+            "format": "S: {levelname} {message}",
+            "style": "{",
+        },
+        "coloredlogs": {
+            "()": lambda: ColoredLogFormatter(
+                fmt=("{asctime} [{levelname[0]}] {message} ({name})"),
+                style="{",
+            ),
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "coloredlogs",
+        },
+        # ruff: noqa: ERA001
+        # "file": {
+        #    "class": "logging.FileHandler",
+        #    "filename": "scraper.log",
+        #    "formatter": "verbose",
+        #    "encoding": "utf-8",
+        # },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+    "loggers": {
+        "hlo.management.commands.loaders.shopmetaloader": {
+            "handlers": ["console"],
+            "level": "INFO",  # Will be overriden by --verbosity
+        },
+        "charset_normalizer": {
+            "level": "INFO",
+        },
+        "urllib3.connectionpool": {
+            "level": "DEBUG",
+        },
+        "django.server": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+        "PIL.PngImagePlugin": {
+            "level": "WARNING",
+        },
+        "psycopg.pq": {
+            "level": "WARNING",
+        },
+        # immoi "db" logging?
+        "db": {
+            "level": "WARNING",
+        },
+        "PIL.Image": {
+            "level": "WARNING",
+        },
+        # openapi
+        "httpcore": {
+            "level": "INFO",
+        },
+        "httpx": {
+            "level": "WARNING",
+        },
+        "openai": {
+            "level": "INFO",
+        },
+        # Prod level server
+        #'daphne': {
+        #    'handlers': [
+        #        'console',
+        #    ],
+        #    'level': 'DEBUG'
+        # },
+    },
+}
