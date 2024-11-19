@@ -3,6 +3,53 @@
 {% block title %}
     Details for {{ orderitem.name }}
 {% endblock title %}
+{% block head %}
+    <script type="text/javascript">
+        window.addEventListener("load", () => { 
+            window.csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            document.querySelector('#btn-toggle-hide').addEventListener("click", toggleHide);
+        });
+        
+        async function toggleHide() {
+            const formData = new FormData();
+
+            {% if orderitem.meta and orderitem.meta.hidden %}
+            // show / un-hide
+            let url = "{% url "orderitem-hide" orderitem.id "false" %}"
+            {% else %}
+            // hide
+            let url = "{% url "orderitem-hide" orderitem.id "true" %}"
+            let reason = prompt("Why should this item be hidden?", "{{ orderitem.meta.comment }}");
+            reason = reason.trim()
+            if (reason == "") {
+                return
+            }
+            formData.append("comment", reason);
+            {% endif %}
+
+            try {
+              
+              const response = await fetch(url, {
+                method: "POST",
+                body: formData,
+                headers: {
+                  'X-CSRFToken': window.csrftoken,
+                },
+              });
+              if (!response.ok) {
+                const json = await response.json();
+                alert(json["message"])
+              } else {
+                window.location.reload();
+              }
+            } catch (error) {
+              alert(`Serverside error: ${error.message}`)
+              console.error(error.message);
+            }
+          }
+    </script>
+{% endblock head %}
+
 {% block content %}
     <!-- https://getbootstrap.com/docs/5.0/layout/grid/ -->
     <div class="row mt-3">
@@ -17,12 +64,19 @@
                            role="button">Edit</a>
                     {% endif %}
                     <a href="{% url 'stockitem-create-from' orderitem.id %}"
-                       class="btn btn-outline-secondary btn-sm">
+                       class="btn btn-outline-success btn-sm">
                         {% if not orderitem.stockitems.count %}
                             Create stock item
                         {% else %}
                             Create additional stock item
                         {% endif %}
+                    </a>
+                    <a id="btn-toggle-hide" class="btn btn-outline-danger text-middle btn-sm">
+                        {% if orderitem.meta and orderitem.meta.hidden %}
+                        Show
+                        {% else %}
+                        Hide
+                    {% endif %}
                     </a>
                     {% if request.user.is_staff %}
                         <a class="btn btn-outline-secondary btn-sm"
@@ -132,9 +186,9 @@
             {% endif %}
         </div>
     </div>
+    {% csrf_token %}
 {% endblock content %}
 {% block bodybottom %}
-    {% csrf_token %}
     <script type="text/javascript">
     $('#print-label').click(function() 
     {
@@ -164,4 +218,5 @@
         });
     });
     </script>
+    
 {% endblock bodybottom %}

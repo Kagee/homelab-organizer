@@ -47,7 +47,7 @@ urls = [
         name="orderitem-detail",
     ),
     path(
-        "orderitem/hide/<int:pk>",
+        "orderitem/hide/<int:pk>/<str:hide>",
         orderitem_hide,
         name="orderitem-hide",
     ),

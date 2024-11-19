@@ -16,11 +16,12 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, DetailView, UpdateView
 
 from hlo.filters import OrderItemFilter
 from hlo.forms import OrderItemForm
-from hlo.models import Order, OrderItem
+from hlo.models import Order, OrderItem, OrderItemMeta
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +30,9 @@ def orderitem_filtered_list(
     request: WSGIRequest,
 ) -> HttpResponse:
     qs_orderitems = (
-        OrderItem.objects.exclude(meta__hidden=True)  # Items with meta = hidden
-        .exclude(stockitems__count__gt=0)
+        OrderItem.objects.exclude(  # .exclude(meta__hidden=True)  # Items with meta = hidden
+            stockitems__count__gt=0,
+        )
         .select_related("order")
         .select_related("order__shop")
         .prefetch_related("stockitems")
@@ -100,8 +102,30 @@ def orderitem_filtered_list(
     )
 
 
-def orderitem_hide(_request):
-    return JsonResponse("foo")
+@require_http_methods(["POST"])
+def orderitem_hide(request, pk: int, hide: str):
+    if hide not in ("true", "false"):
+        return JsonResponse(
+            {"message": f"Hide value must be true/false, was {hide}"},
+            status=400,
+        )
+    obj = OrderItem.objects.filter(pk=pk).first()
+    if not obj:
+        return JsonResponse(
+            {"message": f"No OrderItem with pk {pk} found"},
+            status=400,
+        )
+    # For some odd reason, possibly because we are using a on2on on a specific
+    # field,get_or_create does not work
+    if not hasattr(obj, "meta"):
+        obj_meta = OrderItemMeta.objects.create(parent=obj)
+    else:
+        obj_meta = obj.meta
+    if "comment" in request.POST:
+        obj_meta.comment = request.POST["comment"]
+    obj_meta.hidden = hide == "true"
+    obj_meta.save()
+    return JsonResponse({"message": "OK"}, status=200)
 
 
 class OrderItemDetailView(DetailView):

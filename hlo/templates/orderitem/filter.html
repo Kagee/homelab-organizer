@@ -32,6 +32,55 @@
       ).singleNodeValue;
     }
 
+    async function toggleHide(url, hidden, comment) {
+      const formData = new FormData();
+
+      if (comment != "") {
+        formData.append("comment", comment);
+      }
+      console.log("POST TO:")
+      console.log(url)
+      try {
+        
+        const response = await fetch(url, {
+          method: "POST",
+          body: formData,
+          headers: {
+            'X-CSRFToken': window.csrftoken,
+          },
+        });
+        if (!response.ok) {
+          const json = await response.json();
+          alert(json["message"])
+        } else {
+          window.location.reload();
+        }
+      } catch (error) {
+        alert(`Serverside error: ${error.message}`)
+        console.error(error.message);
+      }
+    }
+
+
+    async function toggleHideWrapper(e) {
+      let pk = e.target.dataset.pk;
+      let hidden = e.target.dataset.metaHidden == "true";
+      let comment = e.target.dataset.metaComment;
+
+      let url = "{% url "orderitem-hide" 9876 "TRUEORFALSE" %}"
+      url = url.replace("/9876/", `/${pk}/`)
+      url = url.replace("/TRUEORFALSE", `/${!hidden}`)
+      console.log(url)
+      if (!hidden) {
+        comment = prompt("Why should this item be hidden?", comment);
+        comment = comment.trim()
+        if (comment == "") {
+            return
+        }
+      } 
+      toggleHide(url, hidden, comment)
+    }
+
 
 
     window.addEventListener("load", function($) {
@@ -51,6 +100,11 @@
         }
       } else {
         console.log("not calculating page size");
+        window.csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        btnToggleHides = document.querySelectorAll(".btn-toggle-hide")
+        for (let btn of btnToggleHides) {
+          btn.addEventListener("click", toggleHideWrapper)
+        }
       }
 
       document.querySelectorAll(".btn-hide-item").forEach((e) => {
@@ -118,12 +172,23 @@
                 <a href="{% url 'stockitem-create-from' orderitem.id %}"
                    class="btn btn-success  btn-lg text-middle">Stock</a>
               {% endif %}
-              <a id="btn-hide" class="btn btn-danger text-middle btn-lg btn-hide-item">Hide</a>
+              <a
+                 class="btn btn-danger text-middle btn-lg btn-toggle-hide"
+                 data-pk="{{ orderitem.pk }}"
+                 data-meta-hidden="{{ orderitem.meta.hidden | yesno:"true,false" }}"
+                 data-meta-comment="{{ orderitem.meta.comment }}">
+                {% if orderitem.meta and orderitem.meta.hidden %}
+                  Show
+                {% else %}
+                  Hide
+                {% endif %}
+              </a>
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
-{% include "common/pagination.html" %}
+  {% include "common/pagination.html" %}
+  {% csrf_token %}
 {% endblock content %}

@@ -11,6 +11,7 @@ from crispy_forms.layout import (
     Row,
     Submit,
 )
+from django import forms
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.forms.widgets import Select
@@ -198,8 +199,20 @@ class StockItemDetail(DetailView):
 def stockitem_list(request):
     qs_stockitems = StockItem.objects.all().order_by("-updated_at")
 
+    per_page_choices = [5, 10, 20, 50, 100]
+    per_page = 15
+    if "per_page" in request.GET:
+        per_page = int(request.GET["per_page"])
+        #  May be random value calculated by JS
+        if per_page not in per_page_choices:
+            per_page_choices.append(per_page)
+
     f = StockItemFilter(request.GET, queryset=qs_stockitems)
-    paginator = Paginator(f.qs, 10)
+    paginator = Paginator(f.qs, per_page)
+
+    f.form.fields["per_page"] = forms.fields.ChoiceField(
+        choices=[(choice, choice) for choice in per_page_choices],
+    )
 
     f.form.helper = FormHelper()
     f.form.helper.form_method = "get"
