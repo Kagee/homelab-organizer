@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from django.contrib import admin
+from django.core.cache import cache
 from django.core.files.images import ImageFile
 from django.db import models
 from django.db.models import Case, F, When
@@ -184,9 +185,21 @@ class OrderItem(models.Model):  # type: ignore[django-manager-missing]
         )
         self.sha1_id = orderitem_hash.hexdigest().upper()
         super().save(*args, **kwargs)
+        self.clear_orderitem_caches()
 
     def get_absolute_url(self) -> str:
         return reverse("orderitem-detail", kwargs={"pk": self.pk})
+
+    def clear_orderitem_caches(self):
+        """Update cache keys that depend on StockItems."""
+        cache.delete_many(
+            [
+                "orderitem_raw_count",
+                "orderitem_unprocessed_count",
+                "orderitem_processed_count",
+                "stockitem_count",
+            ],
+        )
 
     def simple_image_tag(
         self,
@@ -292,3 +305,16 @@ class OrderItemMeta(models.Model):
         if self.parent:
             return str(self.parent.name)
         return "Parent is currently not in available in database."
+
+    def save(self, *args, **kwargs) -> None:
+        super().save(*args, **kwargs)
+        self.clear_orderitemmeta_caches()
+
+    def clear_orderitemmeta_caches(self):
+        """Update cache keys that depend on StockItems."""
+        cache.delete_many(
+            [
+                "orderitem_unprocessed_count",
+                "orderitem_hidden_count",
+            ],
+        )

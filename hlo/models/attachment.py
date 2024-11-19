@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 
 from django.contrib import admin
+from django.core.cache import cache
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
@@ -70,6 +71,16 @@ class Attachment(models.Model):
         else:
             self.sha1 = self.sha1 if self.sha1 else None
         super().save(*args, **kwargs)
+
+    def clear_attachment_caches(self):
+        """Update cache keys that depend on StockItems."""
+        cache.delete_many(
+            [
+                "attachment_count",
+                "attachment_pdf",
+                "attachment_html",
+            ],
+        )
 
     def text_or_not(self):
         if len(self.text):

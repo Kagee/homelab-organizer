@@ -125,11 +125,6 @@ class StockItem(models.Model):
         * Calculate and save the thumbnail SHA1
         * Update the cache for number of stockitems
         """
-        cache.set(
-            "stockitem_count",
-            StockItem.objects.count(),
-            timeout=None,
-        )
         # pylint: disable=no-member
         self.thumbnail_sha1 = ""
         buf = BytesIO()
@@ -148,9 +143,20 @@ class StockItem(models.Model):
             buffer_file = ImageFile(buf)
             self.thumbnail.file = buffer_file
         super().save(*args, **kwargs)
+        self.clear_stockitem_caches()
 
     def get_absolute_url(self) -> str:
         return reverse("stockitem-detail", kwargs={"pk": self.pk})
+
+    def clear_stockitem_caches(self):
+        """Update cache keys that depend on StockItems."""
+        cache.delete_many(
+            [
+                "orderitem_unprocessed_count",
+                "orderitem_processed_count",
+                "stockitem_count",
+            ],
+        )
 
     def orderitems_names(self):
         names = []
