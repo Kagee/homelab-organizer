@@ -8,16 +8,31 @@
 {% endblock title %}
 {% block content %}
     <div class="row">
-        <div class="col pt-3">
-            <div class="list-group" style="display:inline-block">
-                {% for storage, structure in storages|tree_info %}
-                    <a href="{% url "storage-detail" storage.id %}"
-                       class="list-group-item list-group-item-action">
-                        {% repeat_multi "&nbsp;" storage.level 10 %}{{ storage.name }}
-                        {% if storage.name_secondary %}<span class="text-secondary"> ({{ storage.name_secondary }})</span>{% endif %}
-                        <!-- () --></a>
-                    {% endfor %}
+        {% if storages %}
+            <div class="col pt-3">
+                <div class="list-group" style="display:inline-block">
+                    {% for storage, structure in storages|tree_info %}
+                        <a href="{% url "storage-detail" storage.id %}"
+                           class="list-group-item list-group-item-action">
+                            {% repeat_multi "&nbsp;" storage.level 10 %}{{ storage.name }}
+                            {% if storage.name_secondary %}<span class="text-secondary">({{ storage.name_secondary }})</span>{% endif %}
+                            <!-- () --></a>
+                        {% empty %}
+                        {% endfor %}
+                    </div>
                 </div>
+            {% else %}
+                <div class="col text-center mt-5">
+                    <p class="fs-4">No storage locations have been configured.</p>
+                </div>
+            {% endif %}
+        </div>
+        <div class="row">
+            <div class="col text-center mt-5">
+                <p>
+                    <a class="btn btn-outline-info btn mt-2"
+                       href="{% url "storage-create" %}">Create storage location</a>
+                </p>
             </div>
         </div>
     {% endblock content %}

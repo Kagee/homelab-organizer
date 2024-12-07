@@ -3,6 +3,7 @@ from typing import Any
 
 from crispy_forms.helper import FormHelper
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from hlo.models import Storage
@@ -33,8 +34,10 @@ class StorageCreateView(CreateView):
         if (
             "submit" in self.request.POST
             and self.request.POST["submit"] == "view-parent"
-        ) and self.object.parent:
-            return self.object.parent.get_absolute_url()
+        ):
+            if self.object.parent:
+                return self.object.parent.get_absolute_url()
+            return reverse("storage-list")
         return super().get_success_url()
 
     def get_form(self, form_class=None):
