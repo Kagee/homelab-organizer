@@ -6,33 +6,115 @@
 {% block title %}
     Storage
 {% endblock title %}
+{% block head %}
+<script type="text/javascript">
+
+
+    function inputDown(e) {
+        if (e instanceof Event) {
+            e = e.target;
+        }
+        listElement = document.querySelector('#storage-list')
+
+        filterText = e.value.toLowerCase();
+
+        newList = originalList.cloneNode(true)
+
+        if (filterText != "") {
+            storagesToShow = []
+            storages = newList.querySelectorAll("a[data-text]");
+            for (let storage of storages) {
+                if (storage.dataset.text.includes(filterText)) {
+                    console.log(`${storage.id} ${storage.dataset.text}`)
+                    storagesToShow.push(storage)
+                }
+            }
+            foundNonTopLevelMatch = false;
+            counter = 10;
+            while (true) {
+                for (let storage of storagesToShow) {
+                    if (storage.dataset.parent != "") {
+                        parent = newList.querySelector(`#${storage.dataset.parent}`);
+                        if (!storagesToShow.includes(parent)) {
+                            foundNonTopLevelMatch = true;
+                            storagesToShow.push(parent);
+                        }
+                    }
+                }
+                if (!foundNonTopLevelMatch) {
+                    console.log("Found only top level matches, breaking.")
+                    storages = newList.querySelectorAll("a[data-text]");
+                    for (let storage of storages) {
+                        if(!storagesToShow.includes(storage)) {
+                            storage.style.display="none";
+                        }
+                    }
+                    break;
+                }
+                foundNonTopLevelMatch = false;
+            }
+        }
+        listElement.replaceWith(newList)
+    }
+
+    function clearInput() {
+        inputFilter = document.querySelector('#input-filter')
+        inputFilter.value = "";
+        inputDown(inputFilter)
+    }
+
+    var originalList;
+
+    window.addEventListener("load", () => {
+        let inputFilter = document.querySelector('#input-filter')
+        inputFilter.addEventListener("keyup", inputDown);
+        inputFilter.addEventListener("focus", inputDown);
+        document.querySelector('#btn-clear').addEventListener("click", clearInput);
+        originalList = document.querySelector('#storage-list').cloneNode(true)
+        inputDown(inputFilter)
+
+    });
+</script>
+{% endblock head %}
 {% block content %}
+    <div class="row">
+        <div class="col-3 text-center mt-5"></div>
+        <div class="col-6 text-center mt-5">
+            <div class="input-group">
+                <input id="input-filter" type="text" class="form-control">
+                <button id="btn-clear" class="btn btn btn-primary">Clear</button>
+            </div>
+        </div>
+        <div class="col-3 text-center mt-5"></div>
+    </div>
     <div class="row">
         {% if storages %}
             <div class="col pt-3">
-                <div class="list-group" style="display:inline-block">
+                <div id="storage-list" class="list-group" style="display:inline-block">
                     {% for storage, structure in storages|tree_info %}
                         <a href="{% url "storage-detail" storage.id %}"
-                           class="list-group-item list-group-item-action">
-                            {% repeat_multi "&nbsp;" storage.level 10 %}{{ storage.name }}
+                           id="storage-{{ storage.id }}"
+                           data-parent="{% if storage.parent %}storage-{{ storage.parent.id }}{% endif %}"
+                           data-text="{{ storage.name | lower }}"
+                           class="list-group-item list-group-item-action"
+                            style="padding-left: calc({{ storage.level |add:"1" }} * 2em);">{{ storage.name }}
                             {% if storage.name_secondary %}<span class="text-secondary">({{ storage.name_secondary }})</span>{% endif %}
-                            <!-- () --></a>
-                        {% empty %}
-                        {% endfor %}
-                    </div>
+                        </a>
+                    {% endfor %}
                 </div>
-            {% else %}
-                <div class="col text-center mt-5">
-                    <p class="fs-4">No storage locations have been configured.</p>
-                </div>
-            {% endif %}
-        </div>
-        <div class="row">
-            <div class="col text-center mt-5">
-                <p>
-                    <a class="btn btn-outline-info btn mt-2"
-                       href="{% url "storage-create" %}">Create storage location</a>
-                </p>
             </div>
+        {% else %}
+            <div class="col text-center mt-5">
+                <p class="fs-4">No storage locations have been configured.</p>
+            </div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col text-center mt-5">
+            <p>
+                <a class="btn btn-outline-info btn mt-2"
+                   href="{% url "storage-create" %}">Create storage location</a>
+            </p>
         </div>
-    {% endblock content %}
+    </div>
+{% endblock content %}
