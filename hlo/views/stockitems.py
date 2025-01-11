@@ -1,8 +1,8 @@
 import logging
 from typing import Any
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (
+from crispy_forms.helper import FormHelper  # type: ignore[import-untyped]
+from crispy_forms.layout import (  # type: ignore[import-untyped]
     HTML,
     ButtonHolder,
     Column,
@@ -13,12 +13,15 @@ from crispy_forms.layout import (
 )
 from django import forms
 from django.conf import settings
+from django.core.cache import cache
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.forms.widgets import Select
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import CreateView, DetailView, UpdateView
-from django_select2.views import AutoResponseView
+from django_select2.views import (  # type: ignore[import-untyped]
+    AutoResponseView,
+)
 from openai import OpenAI
 
 from hlo.filters import StockItemFilter
@@ -55,6 +58,8 @@ class StockItemCreate(CreateView):
     template_name = "stockitem/form.html"
     form_class = StockItemForm
 
+    widgets = {}
+
     def get_ai_name_from_orderitem(self, oi: OrderItem) -> str | None:
         if not settings.OPENAPI_PROJECT_API_KEY:
             return None
@@ -76,8 +81,10 @@ class StockItemCreate(CreateView):
             ],
             model=settings.OPENAPI_TITLE_CLEANUP_MODEL,
         )
-        ai_name = result.choices[0].message.content.strip('"')
-        oim, created = OrderItemMeta.objects.get_or_create(parent=oi)
+        ai_name = oi.name
+        if result.choices[0].message.content:
+            ai_name = result.choices[0].message.content.strip('"')
+        oim, _ = OrderItemMeta.objects.get_or_create(parent=oi)
         oim.ai_name = ai_name
         oim.save()
         return ai_name
@@ -86,7 +93,7 @@ class StockItemCreate(CreateView):
         ctx = super().get_context_data(**kwargs)
         ctx["title"] = "Create stock item"
         if "fromitems" in self.kwargs:
-            oi = get_object_or_404(
+            oi: OrderItem = get_object_or_404(
                 OrderItem.objects.prefetch_related("meta"),
                 pk=int(self.kwargs["fromitems"].split(",")[0]),
             )
@@ -111,7 +118,9 @@ class StockItemCreate(CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
 
-        # if get paramenter fromitems is set, lock down orderitem list
+        cache.set("stockitem-count-units", ["a", "b", "c"], timeout=None)
+
+        # if get parameter fromitems is set, lock down orderitem list
         if "fromitems" in self.kwargs:
             form.fields["orderitems"].label = "Order items"
             form.fields["orderitems"].disabled = True
@@ -130,7 +139,7 @@ class StockItemCreate(CreateView):
         initial = super().get_initial()
         # Copy the dictionary so we don't accidentally change a mutable dict
         initial = initial.copy()
-        # if get paramenter fromitems is set, preselect these items
+        # if get parameter fromitems is set, preselect these items
         if "fromitems" in self.kwargs:
             qs = OrderItem.objects.filter(
                 pk__in=[int(x) for x in self.kwargs["fromitems"].split(",")],
@@ -164,7 +173,7 @@ class StockItemUpdate(UpdateView):
             ],
         )
 
-        # if get paramenter fromitems is set, lock down orderitem list
+        # if get parameter fromitems is set, lock down orderitem list
         if oi := self.object.orderitems.first().pk:
             form.fields["orderitems"].label = "Order items"
             form.fields["orderitems"].disabled = True

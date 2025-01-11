@@ -24,7 +24,7 @@
     <link rel="stylesheet"
           href="{% static 'bootstrap_icons/css/bootstrap_icons.css' %}">
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
-    {{ form.media.css }}
+    {% if form %}{{ form.media.css }}{% endif %}
     <style type="text/css">{% block css %}{% endblock css %}</style>
     <script type="text/javascript">{% block javascript %}{% endblock javascript %}</script>
     <!-- block head -->
@@ -80,7 +80,7 @@
        toastList.forEach(toast => toast.show()); // This show them
       </script>
     {% endif %}
-    {{ form.media.js }}
+    {% if form %}{{ form.media.js }}{% endif %}
     {% block bodybottom %}
     {% endblock bodybottom %}
   </body>

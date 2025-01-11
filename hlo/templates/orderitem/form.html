@@ -7,12 +7,12 @@
     {{ title }}
 {% endblock title %}
 {% block content %}
-    <div class="row pt-3">
+    <div class="row mt-2 mb-4">
         <div class="col">
             {% if orderitem %}
                 <h1>{{ orderitem.name }}</h1>
             {% else %}
-                <h1>Create item object</h1>
+                <h1>Create order line item</h1>
             {% endif %}
         </div>
     </div>

@@ -46,3 +46,8 @@ OPENAPI_TITLE_CLEANUP_MODEL: str = env(
     "OPENAPI_TITLE_CLEANUP_MODEL",
     default="gpt-4",
 )
+# For CustomPersistentRemoteUserMiddleware
+REMOTE_USER_HEADER = env("REMOTE_USER_HEADER")
+
+# For global_template_vars context processors
+LOGOUT_URL = env("LOGOUT_URL", default="/cdn-cgi/access/logout")

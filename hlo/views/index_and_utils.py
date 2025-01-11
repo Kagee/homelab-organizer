@@ -1,6 +1,5 @@
 import logging
 
-from django.apps import apps
 from django.core.cache import cache
 from django.db.models import Q
 from django.shortcuts import render

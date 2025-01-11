@@ -99,7 +99,12 @@
               <li>
                 <a class="nav-link{% if request.path == orderitem_create %} active{% endif %}"
                    aria-current="page"
-                   href="{{ orderitem_create }}">Item</a>
+                   href="{{ orderitem_create }}">Order item</a>
+              </li>
+              <li>
+                <a class="nav-link{% if request.path == stockitem_create %} active{% endif %}"
+                   aria-current="page"
+                   href="{{ stockitem_create }}">Stock item</a>
               </li>
               <li>
                 <a class="nav-link{% if request.path == storage_create %} active{% endif %}"
@@ -160,9 +165,9 @@
         </ul>
           <!-- Show username and optionally logout link -->
           <span class="navbar-text "> <!-- d-none d-lg-block d-xl-block d-xxl-block -->
-            {{ user.get_username }}{% if not user.is_authenticated %}(not autenticated){% endif %}
-            {% comment %}TODO: Use env var or simmilar{% endcomment %}
-            (<a href="/cdn-cgi/access/logout">logout</a>)
+            {{ user.get_username }}{% if not user.is_authenticated %}(not authenticated){% endif %}
+            {% comment %}TODO: Use env var or similar{% endcomment %}
+            (<a href="{{ LOGOUT_URL }}">logout</a>)
           </span>
       </div>
     </div>

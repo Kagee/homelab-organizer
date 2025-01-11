@@ -39,6 +39,11 @@ urls = [
         StockItemCreate.as_view(),
         name="stockitem-create-from",
     ),
+    path(
+        "stockitem/create",
+        StockItemCreate.as_view(),
+        name="stockitem-create",
+    ),
     # ORDERITEMS
     path("orderitem/list", orderitem_filtered_list, name="orderitem-list"),
     path(

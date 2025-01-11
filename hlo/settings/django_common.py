@@ -149,6 +149,7 @@ INSTALLED_APPS: list[str] = [
     "crispy_forms",
     "crispy_bootstrap5",
     "widget_tweaks",
+    # "django_fastdev",
     "hlo",
 ]
 
@@ -183,6 +184,7 @@ TEMPLATES: list[dict[str, Any]] = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "hlo.context_processors.global_template_vars",
             ],
             "builtins": ["hlo.templatetags.formz"],
         },
@@ -293,6 +295,3 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.RemoteUserBackend",
 ]
-
-# For CustomPersistentRemoteUserMiddleware
-REMOTE_USER_HEADER = env("REMOTE_USER_HEADER")

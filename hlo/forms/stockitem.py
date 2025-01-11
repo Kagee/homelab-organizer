@@ -1,8 +1,13 @@
 import logging
 
-from crispy_forms.bootstrap import FieldWithButtons, StrictButton
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (
+from crispy_forms.bootstrap import (  # type: ignore[import-untyped]
+    FieldWithButtons,
+    StrictButton,
+)
+from crispy_forms.helper import (  # type: ignore[import-untyped]
+    FormHelper,
+)
+from crispy_forms.layout import (  # type: ignore[import-untyped]
     HTML,
     Column,
     Div,
@@ -12,13 +17,16 @@ from crispy_forms.layout import (
     Submit,
 )
 from django import forms
-from django.forms import ModelForm, modelformset_factory
-from django.forms.widgets import DateInput, HiddenInput
-from django_bootstrap_icons.templatetags.bootstrap_icons import bs_icon
-from django_select2.forms import ModelSelect2TagWidget
-from taggit.models import Tag
+from django.forms import ModelForm
+from django_bootstrap_icons.templatetags.bootstrap_icons import (  # type: ignore[import-untyped]
+    bs_icon,
+)
+from django_select2.forms import (  # type: ignore[import-untyped]
+    ModelSelect2TagWidget,
+)
+from taggit.models import Tag  # type: ignore[import-untyped]
 
-from hlo.models import Attachment, Order, OrderItem, Shop, StockItem
+from hlo.models import StockItem
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +34,7 @@ logger = logging.getLogger(__name__)
 class TagChoices(ModelSelect2TagWidget):
     queryset = Tag.objects.all().order_by("name")
     search_fields = ["name__icontains"]
-    empty_label = "Start typing to search or create tags..."
+    empty_label = "foo"  # "Start typing to search or create tags..."
 
     def get_model_field_values(self, value) -> dict:
         return {"name": value}
@@ -76,163 +84,6 @@ class TagChoices(ModelSelect2TagWidget):
         return ",".join(cleaned_values)
 
 
-# Create the form class.
-class ShopForm(ModelForm):
-    class Meta:
-        model = Shop
-        fields = [
-            "name",
-            "branch_name",
-            "icon",
-            "order_url_template",
-            "item_url_template",
-        ]
-
-    def __init__(self, *args, **kwargs):
-        # We need this so self.fields is populated
-        super().__init__(*args, **kwargs)
-
-        self.helper = FormHelper()
-        self.helper.form_method = "post"
-        self.helper.form_class = "form-horizontal"
-        self.helper.label_class = "col-2"
-        self.helper.field_class = "col-10"
-
-
-class RealDateInput(DateInput):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.input_type = "date"
-
-
-class AttachmentForm(ModelForm):
-    class Meta:
-        model = Attachment
-        exclude = ["comment", "text", "manual_input", "sha1"]  # noqa: DJ006
-        widgets = {}
-        labels = {}
-        help_texts = {}
-
-
-AttachmentFormSet = modelformset_factory(
-    model=Attachment,
-    form=AttachmentForm,
-    extra=1,
-)
-
-
-class AttachmentFormSetHelper(FormHelper):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.form_method = "POST"
-        self.form_class = "form-vertical"
-        self.label_class = "col"
-        self.field_class = "col"
-        self.render_required_fields = True
-        self.form_tag = False
-        self.add_layout(
-            Column(
-                Row(
-                    Column(Field("name")),
-                    Column(
-                        Field("type"),
-                    ),
-                    Column(Field("file")),
-                ),
-            ),
-        )
-
-
-class OrderFormSimple(ModelForm):
-    class Meta:
-        model = Order
-        exclude = ["manual_input", "extra_data", "attachments"]  # noqa: DJ006
-        widgets = {
-            "shop": HiddenInput(),
-            "date": RealDateInput(),
-        }
-        labels = {
-            "order_id": "ID",
-            "date": "Date",
-        }
-        help_texts = {
-            "order_id": None,
-        }
-
-    def __init__(self, *args, **kwargs):
-        # We need this so self.fields is populated
-        super().__init__(*args, **kwargs)
-
-        self.helper = FormHelper()
-        self.helper.form_method = "post"
-        self.helper.form_class = "form-vertical"
-        self.helper.label_class = "col"
-        self.helper.field_class = "col"
-        self.helper.form_tag = False
-        # self.helper.add_input(Submit("submit", "Create"))
-
-        self.helper.add_layout(
-            Column(
-                Row(
-                    Column(Field("order_id")),
-                    Column(
-                        Field("date"),
-                    ),
-                    Column(FieldWithButtons("total")),
-                ),
-            ),
-        )
-
-
-# Create the form class.
-class OrderForm(ModelForm):
-    class Meta:
-        model = Order
-        exclude = ["manual_input"]
-        # fields = [
-        #    "name",
-        #    "branch_name",
-        #    "icon",
-        #    "order_url_template",
-        #    "item_url_template",
-        # ]
-
-    def __init__(self, *args, **kwargs):
-        # We need this so self.fields is populated
-        super().__init__(*args, **kwargs)
-
-        self.helper = FormHelper()
-        self.helper.form_method = "post"
-        self.helper.form_class = "form-horizontal"
-        self.helper.label_class = "col-2"
-        self.helper.field_class = "col-10"
-
-
-# Create the form class.
-class OrderItemForm(ModelForm):
-    class Meta:
-        model = OrderItem
-        exclude = ["manual_input", "sha1_id"]
-        # fields = [
-        #    "name",
-        #    "branch_name",
-        #    "icon",
-        #    "order_url_template",
-        #    "item_url_template",
-        # ]
-
-    def __init__(self, *args, **kwargs):
-        # We need this so self.fields is populated
-        super().__init__(*args, **kwargs)
-
-        self.helper = FormHelper()
-        self.helper.form_method = "post"
-        self.helper.form_class = "form-horizontal"
-        self.helper.label_class = "col-2"
-        self.helper.field_class = "col-10"
-
-
-# Create the form class.
 class StockItemForm(ModelForm):
     class Meta:
         model = StockItem
@@ -254,18 +105,25 @@ class StockItemForm(ModelForm):
             "tags": TagChoices(
                 data_view="stockitem-tag-auto-json",
                 attrs={
+                    "data-placeholder": "This is not working ...",
                     "data-token-separators": ",",
                 },
             ),
             "name": forms.Textarea(attrs={"rows": 3}),
+            "count_unit": forms.Select(choices=[(1, 2), (3, 4), (5, 6)]),
         }
 
     def __init__(self, *args, initial_tags=None, **kwargs):
         if initial_tags is None:
             initial_tags = []
 
+        # "count_unit": forms.Select(choices=[(1, 2), (3, 4), (5, 6)]),
+
         # We need this so self.fields is populated
         super().__init__(*args, **kwargs)
+
+        logger.debug(dir(self.fields["count_unit"]))
+        self.fields["count_unit"].initial = (5, 6)
 
         self.helper = FormHelper()
         self.helper.form_method = "post"
@@ -295,14 +153,14 @@ class StockItemForm(ModelForm):
                     Div(
                         Field(
                             "count",
-                            css_class="field-count",
-                            template="crispy_raw_field.html",
+                            # css_class="field-count",
+                            # template="crispy_raw_field.html",
                         ),
                         FieldWithButtons(
                             Field(
                                 "count_unit",
-                                css_class="field-count-unit",
-                                template="crispy_raw_field.html",
+                                # css_class="field-count-unit",
+                                # template="crispy_raw_field.html",
                             ),
                             StrictButton(
                                 bs_icon("plus-circle"),

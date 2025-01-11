@@ -37,6 +37,7 @@
             }, false);
             reader.readAsDataURL(file);
         }
+
         window.addEventListener("load", () => {
             document.querySelector("#id_thumbnail_btnclear").addEventListener(
                 'click', 
@@ -52,6 +53,20 @@
                     
                 }
                 );
+            
+            $("#btn_diameter").on("click", function() { 
+                $("#id_name").get(0).setRangeText("⌀")
+            })
+            $("#btn_degree").on("click", function() { 
+                $("#id_name").get(0).setRangeText("°")
+            })
+            $("#unit_btn").on("click", function() { 
+                var v = prompt("New unit")
+                if (v.length > 0) {
+                    $("#id_count_unit").append(new Option(v,v));
+                    $("#id_count_unit").val(v).change();
+                }
+            })
         });
     </script>
     <link href="{% static 'css/select2-bootstrap5-dark.css' %}" media="screen" rel="stylesheet">
@@ -78,13 +93,13 @@
     </div>
 {% endblock modals %}
 {% block content %}
-    <div class="row">
+    <div class="row mt-2 mb-4">
         <div class="col-6">
             {% if stockitem.name %}
                 <h1>{{ stockitem.name }}</h1>
             {% else %}
                 <h1>
-                    Create storage object
+                    Create stock item
                     <br>
                 </h1>
                 <h4 class="text-secondary">{{ original_name }}</h4>
@@ -92,9 +107,7 @@
         </div>
     </div>
     <div class="row">
-        <link href="{% static 'css/select2-bootstrap5-dark.css' %}" media="screen" rel="stylesheet">
         <div class="col-9">{% crispy form %}</div>
-        <link href="{% static 'css/select2-bootstrap5-dark.css' %}" media="screen" rel="stylesheet">
         <div class="col-3 ">
             TODO: Rotate buttons
             {% if stockitem.thumbnail_url %}
@@ -115,24 +128,10 @@
     {% endblock content %}
     {% block bodybottom %}
         <script type="text/javascript">
-        $(window).on("load", function() {
-            $("#btn_diameter").on("click", function() { 
-                $("#id_name").get(0).setRangeText("⌀")
-            })
-            $("#btn_degree").on("click", function() { 
-                $("#id_name").get(0).setRangeText("°")
-            })
-            $("#unit_btn").on("click", function() { 
-                var v = prompt("New unit")
-                if (v.length > 0) {
-                    $("#id_count_unit").append(new Option(v,v));
-                    $("#id_count_unit").val(v).change();
-                }
-            })
-            
-        })
+
         </script>
-        <script src="{% static 'js/multiselect-dropdown/multiselect-dropdown.js' %}"></script>
+        <!-- Used for storage/project/category -->
+       <!--  <script src="{% static 'js/multiselect-dropdown/multiselect-dropdown.js' %}"></script> -->
         <link rel="stylesheet" href="" media="screen" />
 
     {% endblock bodybottom %}

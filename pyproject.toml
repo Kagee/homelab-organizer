@@ -20,6 +20,10 @@ repository = "https://gitlab.com/Kagee/homelab-organizer.git"
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]
 
+[[tool.mypy.overrides]]
+module = ["crispy_forms.*"]
+follow_untyped_imports = true
+
 [tool.django-stubs]
 django_settings_module = "hlo.settings"
 
@@ -79,7 +83,6 @@ lint.ignore = [
   "ANN002",
   "ANN003",
   "ANN101",
-  #"D",      # docstrings?
   "TD",     # TODOs
   "ERA001", # Commented out code
   ]
