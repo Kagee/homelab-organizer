@@ -8,31 +8,77 @@
     display: inline-flex;
     }
 {% endblock css %}
-{% block javascript %}
-    // Scale input value to inverted 1-6
-    function scaleValue(value) {
-    var scale = (1 - 6) / ({{ max_item_count }} - 0);
-    var capped = Math.min({{ max_item_count }}, Math.max(0, value)) - 0;
-    return ~~(capped * scale + 6);
+{% block head %}
+    <script type="text/javascript">
+            // Scale input value to inverted 1-6
+        function scaleValue(value) {
+            var scale = (1 - 6) / ({{ max_item_count }} - 0);
+            var capped = Math.min({{ max_item_count }}, Math.max(0, value)) - 0;
+            return ~~(capped * scale + 6);
+        }
+        function setupTagSizes() {
+            for (let span of document.querySelectorAll("#tag-list span")) {
+                let count = span.dataset.count;
+                //console.log(count, scaleValue(count) )
+                var parent = span.parentNode;
+                var h = document.createElement(`h${scaleValue(count)}`);
+                h.classList.add("h-inline-flex", "pe-2");
+                h.dataset.pk = span.dataset.pk;
+                h.dataset.count = span.dataset.count;
+                h.dataset.name = span.dataset.name;
+                delete span.dataset.pk;
+                delete span.dataset.count;
+                delete span.dataset.name;
+                // set the h as child (instead of the span)
+                parent.replaceChild(h, span);
+                // set span as child of h
+                h.appendChild(span);
+            }
+        }
+
+    function inputDown(e) {
+        if (e instanceof Event) {
+            e = e.target;
+        }
+        filterText = e.value.toLowerCase().trim();
+        tags = document.querySelectorAll("#tag-list *[data-name]");
+
+        if (filterText == "") {
+            //console.log("Show all tags")
+            for (let tag of tags) {
+                tag.style.display="unset";
+            }
+        }
+        if (filterText != "") {
+            
+            for (let tag of tags) {
+                if (tag.dataset.name.includes(filterText)) {
+                    //console.log(`Show tag ${tag.dataset.name}`)
+                    tag.style.display="unset";
+                } else {
+                    //console.log(`Hide tag ${tag.dataset.name}`)
+                    tag.style.display="none";
+                }
+            }
+        }
     }
+
+    function clearInput() {
+        inputFilter = document.querySelector('#input-filter')
+        inputFilter.value = "";
+        inputDown(inputFilter)
+    }
+
     window.addEventListener("load", () => {
-    for (let span of document.querySelectorAll("#tags span")) {
-    let count = span.dataset.itemCount;
-    console.log(count, scaleValue(count) )
-    var parent = span.parentNode;
-    var h = document.createElement(`h${scaleValue(count)}`);
-    h.classList.add("h-inline-flex", "pe-2");
-    h.dataset.pk = span.dataset.pk;
-    h.dataset.itemCount = span.dataset.itemCount;
-    delete span.dataset.pk;
-    delete span.dataset.itemCount;
-    // set the h as child (instead of the span)
-    parent.replaceChild(h, span);
-    // set span as child of h
-    h.appendChild(span);
-    }
-    })
-{% endblock javascript %}
+        setupTagSizes()
+        let inputFilter = document.querySelector('#input-filter')
+        inputFilter.addEventListener("keyup", inputDown);
+        inputFilter.addEventListener("focus", inputDown);
+        document.querySelector('#btn-clear').addEventListener("click", clearInput);
+        inputDown(inputFilter)
+    });
+    </script>
+{% endblock head %}
 {% block content %}
     <div class="row">
         <div class="col-3 text-center mt-5"></div>
@@ -47,11 +93,12 @@
     {% if page_obj %}
         <div class="row">
             <div class="col text-center mt-5">
-                <span id="tags">
+                <span id="tag-list">
                     {% for tag in page_obj %}
                         <span class="badge text-bg-info rounded-pill"
                               data-pk="{{ tag.pk }}"
-                              data-item-count="{{ tag.item_count }}">{{ tag.name }}</span>
+                              data-count="{{ tag.item_count }}"
+                              data-name="{{ tag.name }}">{{ tag.name }}</span>
                     {% endfor %}
                 </span>
             </div>
