@@ -105,12 +105,11 @@ class StockItemForm(ModelForm):
             "tags": TagChoices(
                 data_view="stockitem-tag-auto-json",
                 attrs={
-                    "data-placeholder": "This is not working ...",
+                    "data-placeholder": "...",
                     "data-token-separators": ",",
                 },
             ),
             "name": forms.Textarea(attrs={"rows": 3}),
-            "count_unit": forms.Select(choices=[(1, 2), (3, 4), (5, 6)]),
         }
 
     def __init__(self, *args, initial_tags=None, **kwargs):
@@ -122,8 +121,18 @@ class StockItemForm(ModelForm):
         # We need this so self.fields is populated
         super().__init__(*args, **kwargs)
 
-        logger.debug(dir(self.fields["count_unit"]))
-        self.fields["count_unit"].initial = (5, 6)
+        # logger.debug(dir(self.fields["count_unit"]))
+
+        self.fields["count_unit"].widget = forms.Select(
+            choices=[
+                (x, x)
+                for x in StockItem.objects.order_by()
+                .values_list("count_unit", flat=True)
+                .distinct()
+            ]
+        )
+
+        self.fields["count_unit"].initial = "items"
 
         self.helper = FormHelper()
         self.helper.form_method = "post"
@@ -133,6 +142,8 @@ class StockItemForm(ModelForm):
 
         self.fields["tags"].widget.choices = initial_tags
         self.fields["comment"].widget.attrs["rows"] = 2
+        hide_class = "d-none"
+        hide_class = ""
         self.helper.layout = Layout(
             FieldWithButtons(
                 "name",
@@ -143,6 +154,7 @@ class StockItemForm(ModelForm):
                     data_bs_toggle="modal",
                     data_bs_target="#keyboardModel",
                 ),
+                css_class=hide_class,
             ),
             Row(
                 Column(
@@ -153,21 +165,21 @@ class StockItemForm(ModelForm):
                     Div(
                         Field(
                             "count",
-                            # css_class="field-count",
-                            # template="crispy_raw_field.html",
+                            css_class="field-count",
+                            template="crispy_raw_field.html",
                         ),
                         FieldWithButtons(
                             Field(
                                 "count_unit",
-                                # css_class="field-count-unit",
-                                # template="crispy_raw_field.html",
+                                css_class="field-count-unit",
+                                template="crispy_raw_field.html",
                             ),
                             StrictButton(
                                 bs_icon("plus-circle"),
                                 css_id="unit_btn",
                                 css_class="btn btn-primary",
-                                data_bs_toggle="modal",
-                                data_bs_target="#unitModal",
+                                # data_bs_toggle="modal",
+                                # data_bs_target="#unitModal",
                             ),
                             input_size="fwb-1 w-50",
                             css_class="fwb-2",
@@ -177,12 +189,12 @@ class StockItemForm(ModelForm):
                     ),
                     css_class="col-10",  # Column 2
                 ),
-                css_class="mb-3",  # Row
+                css_class="mb-3 d-none",  # Row
             ),
-            Field("tags"),
-            Field("comment"),
+            Field("tags", css_class=hide_class, wrapper_class=hide_class),
+            Field("comment", css_class=hide_class, wrapper_class=hide_class),
             HTML("""
-                    <div id="dropzone">TODO: Add rotate buttons
+                    <div id="dropzone">
                     {% if stockitem.thumbnail_url or  orderitem.thumbnail %}
                         <div id="div_id_thumbnail_render" class="mb-3 row">
                             <div class="col-form-label pt-0 col-2">
@@ -214,30 +226,44 @@ class StockItemForm(ModelForm):
                         </div>
                     {% endif %}
             """),
-            Field("thumbnail"),
+            HTML("""<div id="div_id_thumbnail_render" class="mb-3 row">
+                 <div id="div_id_thumbnail_render" class="col-2">
+                    Rotate thumbnail
+                 </div>
+                 <div id="div_id_thumbnail_render" class="col-10">
+            """),
+            StrictButton(
+                bs_icon("arrow-clockwise"),
+                css_id="btn_rotate_90_right",
+                css_class="btn btn-primary ps-4 pe-4",
+            ),
+            StrictButton(
+                bs_icon("arrow-repeat"),
+                css_id="btn_rotate_180",
+                css_class="btn btn-primary ps-4 pe-4",
+            ),
+            StrictButton(
+                bs_icon("arrow-counterclockwise"),
+                css_id="btn_rotate_90_left",
+                css_class="btn btn-primary ps-4 pe-4",
+            ),
             StrictButton(
                 bs_icon("x-circle"),
                 css_id="id_thumbnail_btnclear",
-                css_class="btn btn-primary",
+                css_class="btn btn-primary ps-4 pe-4",
             ),
+            HTML("""
+                 </div>
+                 <canvas id="cvs"></canvas>
+                 </div>"""),
+            Field("thumbnail"),
+            # We already have this is we have a image set :thinking_face:
             HTML("</div><!-- id=dropzone -->"),
-            Field(
-                "category",
-                css_class="multiselect-dropdown-upgrade multiselect-search",
-            ),
-            Field(
-                "project",
-                css_class="multiselect-dropdown-upgrade multiselect-search",
-            ),
-            Field(
-                "storage",
-                css_class="multiselect-dropdown-upgrade multiselect-search",
-            ),
-            Field("orderitems"),
-            Field(
-                "attachments",
-                css_class="multiselect-dropdown-upgrade multiselect-search",
-            ),
+            Field("category", wrapper_class=hide_class),
+            Field("project", wrapper_class=hide_class),
+            Field("storage", wrapper_class=hide_class),
+            Field("orderitems", wrapper_class=hide_class),
+            Field("attachments", wrapper_class=hide_class),
             HTML('<p class="text-end">'),
             Submit("submit", "{{ title }}"),
             HTML("</p>"),

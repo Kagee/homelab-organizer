@@ -173,12 +173,12 @@ class StockItemUpdate(UpdateView):
             ],
         )
 
-        # if get parameter fromitems is set, lock down orderitem list
-        if oi := self.object.orderitems.first().pk:
+        # May be a stockitem not linked to a OrderItem
+        if oi := self.object.orderitems.first():
             form.fields["orderitems"].label = "Order items"
             form.fields["orderitems"].disabled = True
             form.fields["orderitems"].queryset = OrderItem.objects.filter(
-                pk=oi,
+                pk=oi.pk,
             )
             form.fields["orderitems"].widget.attrs["size"] = 1
         return form

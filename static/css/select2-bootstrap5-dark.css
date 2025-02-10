@@ -38,31 +38,15 @@ html[data-bs-theme="dark"] .select2-container--bootstrap-5 .select2-dropdown {
 	background-color: var(--bs-body-bg);
 }
 
+/* 
+  Make the dropdown darker
+*/
+
 html[data-bs-theme="dark"] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[role=group] .select2-results__group {
 	color: var(--bs-secondary-color)!important;
 }
 
-/* Fix tag display */
-
-.select2-container .select2-selection--multiple .select2-selection__rendered {
-    display: inline-flex; !important
-}
-
-/*fix: multiple select*/
-
-.select2-selection--multiple {
-    padding: 0rem 0.75rem !important;
-}
-.select2-selection--multiple > ul {
-    display: inline-flex !important;
-}
-.select2-selection--multiple > ul > li {
-    padding: 0 0.3rem !important;
-    margin: 0.3rem !important;
-}
-.select2-selection--multiple .select2-search--inline {
-    display: inline-flex !important;
-    width: auto !important;
-    margin-top: 0.3rem !important;
-    vertical-align: middle;
+html[data-bs-theme="dark"]  .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--highlighted {
+    background-color: var(--bs-secondary-bg) !important;
+    color: var(--bs-body-color)!important;
 }

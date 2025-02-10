@@ -62,19 +62,21 @@
     }
 
     async function toggleHideWrapper(e) {
+      /* We need to stop the event now so we does not
+         trigger the row click */
+      e.stopImmediatePropagation()
       let pk = e.target.dataset.pk;
       let hidden = e.target.dataset.metaHidden == "true";
       let comment = e.target.dataset.metaComment;
 
-      let url = "{% url "orderitem-hide" 9876 "TRUEORFALSE" %}"
-      url = url.replace("/9876/", `/${pk}/`)
-      url = url.replace("/TRUEORFALSE", `/${!hidden}`)
-      console.log(url)
+      let url = "{% url "orderitem-hide" 9999 "PLACEHOLDER" %}"
+      url = url.replace("/9999/", `/${pk}/`)
+      url = url.replace("/PLACEHOLDER", `/${!hidden}`)
+     
       if (!hidden) {
         comment = prompt("Why should this item be hidden?", comment);
-        comment = comment.trim()
-        if (comment == "") {
-            return
+        if (!comment || comment.trim() == "") {
+          return;
         }
       } 
       toggleHide(url, hidden, comment)
@@ -82,7 +84,8 @@
 
     window.addEventListener("load", function($) {
       if (!(new URL(document.location).search)) {
-        console.log("calc wis");
+        /* If we have not created a filter, calculate the
+           optimal number of row on the screen at one time */
         let visible = 0;
         rows = document.querySelectorAll("tr.table-row")
         for (let row of rows) {
@@ -92,24 +95,23 @@
         }
         if (rows.length > visible) {
           visible = Math.max(visible-1, 5)
-          console.log("New page size", visible);
           document.location = document.location + `?per_page=${visible}`
         }
       } else {
+        /* Save csrfmiddlewaretoken to global variable */
         window.csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        btnToggleHides = document.querySelectorAll(".btn-toggle-hide")
-        for (let btn of btnToggleHides) {
+        /* Hide button event listeners */
+        document.querySelectorAll(".btn-toggle-hide").forEach((btn) => {
           btn.addEventListener("click", toggleHideWrapper)
-        }
-      }
-
-      document.querySelectorAll(".btn-hide-item").forEach((e) => {
-        e.addEventListener("click", function(ev) {
-          //a[@id='btn-hide2']
-          console.log(sxp('./ancestor::tr', ev.target).getAttribute("data-pk"));
-          // window.document.location = ev.target.getAttribute("data-href");
         });
-      });
+        /* Make all rows clickable */
+        document.querySelectorAll("[data-href]").forEach((row) => {
+          row.addEventListener("click", function(e) {
+            document.location = this.dataset.href;
+          });
+        });
+      }
+    /* end of window.addEventListener("load", function($) { */
     });
   </script>
 {% endblock head %}

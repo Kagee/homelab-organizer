@@ -71,11 +71,11 @@ def orderitem_filtered_list(
             ],
             Column(
                 ButtonHolder(
+                    Submit("submit", "Filter", css_class="btn btn-primary col"),
                     HTML(
                         '<a href="{{ request.path }}" '
                         'class="btn btn-secondary col ">Clear</a>',
                     ),
-                    Submit("submit", "Submit", css_class="btn btn-primary col"),
                     css_class="row align-items-end h-100 pb-3",
                 ),
                 css_class="col",

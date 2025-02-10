@@ -7,28 +7,30 @@
     {{ title }}
 {% endblock title %}
 {% block head %}
-    <link rel="stylesheet" href="{% static 'select2-bootstrap-5-theme/select2-bootstrap-5-theme.css' %}" />
+<link rel="stylesheet" href="{% static 'select2-bootstrap-5-theme/select2-bootstrap-5-theme.css' %}" />
  
     <link rel="stylesheet"
           href="{% static 'js/multiselect-dropdown/multiselect-dropdown.css' %}">
     <script src="{% static 'js/select-drop-paste.js' %}"></script>
     <script type="text/javascript">
-        new SDP({
+        window.sdp = new SDP({
             showErrorCallback: showError,
             hideErrorCallback: hideError,
             fileInputElement: "#id_thumbnail",
             dropzoneElement: "#dropzone",
+            imageElement: "#thumbnail",
             acceptedMimeTypes: ['image/png', 'image/jpeg'],
             debug: false,
             newFileCallback: previewFile
         });
         function showError(msg) {
-
+            console.log(msg)
         }
         function hideError() {
 
         }
         function previewFile(file) {
+            console.log("Got new file")
             const preview = document.querySelector("#thumbnail");
             preview.classList.remove("d-none");
             const reader = new FileReader();
@@ -39,6 +41,19 @@
         }
 
         window.addEventListener("load", () => {
+
+            /* jQuery + select2  multiselect dropdowns */
+            [
+                "attachments",
+                "orderitems",
+                "storage",
+                "category",
+                "project"
+            ].forEach((i) => {
+                $('#id_' + i ).select2({ theme: "bootstrap-5" });
+            });
+
+            /* Button to clear any image changes that has happened */
             document.querySelector("#id_thumbnail_btnclear").addEventListener(
                 'click', 
                 () => { 
@@ -50,30 +65,70 @@
                     } else {
                         preview.classList.add("d-none");
                     }
-                    
                 }
                 );
             
-            $("#btn_diameter").on("click", function() { 
-                $("#id_name").get(0).setRangeText("⌀")
+            /* On screen keyboard buttons*/
+            [
+                ["diameter","⌀"],
+                ["degree","°"]
+            ].forEach((inp) => {
+                document.querySelector("#btn_" + inp[0]).addEventListener("click", () => {
+                    document.querySelector("#id_name").setRangeText(inp[1])
+                });
             })
-            $("#btn_degree").on("click", function() { 
-                $("#id_name").get(0).setRangeText("°")
-            })
-            $("#unit_btn").on("click", function() { 
+
+            /* Button for adding new units */
+            document.querySelector("#unit_btn").addEventListener("click", () => {
                 var v = prompt("New unit")
-                if (v.length > 0) {
-                    $("#id_count_unit").append(new Option(v,v));
-                    $("#id_count_unit").val(v).change();
+                if (!v || v.trim() == "") {
+                    return
                 }
-            })
+                v = v.trim()
+                const o = document.createElement("option");
+                o.value = v;
+                o.text = v;
+                s = document.querySelector("#id_count_unit")
+                s.add(o);
+                s.value = v;
+            });
+
+            function rotate(rot) {
+                console.log(rot)
+                ime = document.querySelector("#thumbnail");
+                // const canvas = document.createElement("canvas");
+                canvas = document.querySelector("#cvs");
+                /* make canvas big enough to rotate */
+                max = Math.max(ime.naturalHeight, ime.naturalWidth)
+                canvas.width = ime.naturalHeight;
+                canvas.height = ime.naturalWidth;
+                const ctx = canvas.getContext("2d");
+                ctx.setTransform(
+                    0,1, // x axis down the screen
+                    -1,0, // y axis across the screen from right to left
+                    ime.naturalHeight, // x origin is on the right side of the canvas 
+                    0             // y origin is at the top
+                );
+                ctx.drawImage(ime,0,0);
+                ctx.setTransform(1,0,0,1,0,0); // restore default     
+            }
+
+            document.querySelector("#btn_rotate_90_right").addEventListener("click", () => {
+                rotate("right")
+            });
+            document.querySelector("#btn_rotate_180").addEventListener("click", () => {
+                rotate("180")
+
+            });
+            document.querySelector("#btn_rotate_90_left").addEventListener("click", () => {
+                rotate("left")
+            });
+
         });
     </script>
+    <!-- select2-bootstrap5 dark mode overrides -->
     <link href="{% static 'css/select2-bootstrap5-dark.css' %}" media="screen" rel="stylesheet">
 {% endblock head %}
-{% block css %}
-
-{% endblock css %}
 {% block modals %}
     <div class="modal" tabindex="-1" id="keyboardModel">
         <div class="modal-dialog modal-dialog-centered">
@@ -94,7 +149,8 @@
 {% endblock modals %}
 {% block content %}
     <div class="row mt-2 mb-4">
-        <div class="col-6">
+        <div class="col">
+            
             {% if stockitem.name %}
                 <h1>{{ stockitem.name }}</h1>
             {% else %}
@@ -107,31 +163,6 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-9">{% crispy form %}</div>
-        <div class="col-3 ">
-            TODO: Rotate buttons
-            {% if stockitem.thumbnail_url %}
-                <img alt="Image thumbnail"
-                     src="{{ stockitem.thumbnail_url }}"
-                     class="img-fluid"
-                     style="max-width: 90%" id="thumbnail" />
-            {% elif orderitem.thumbnail %}
-                <img alt="Image thumbnail"
-                     src="{{ orderitem.thumbnail.url }}"
-                     class="img-fluid"
-                     style="max-width: 90%" id="thumbnail" />
-            {% else %}
-                {% md_icon 'image-off' color='grey' size="10em" %}
-            {% endif %}
-        </div>
+        <div class="col">{% crispy form %}</div>
     </div>
     {% endblock content %}
-    {% block bodybottom %}
-        <script type="text/javascript">
-
-        </script>
-        <!-- Used for storage/project/category -->
-       <!--  <script src="{% static 'js/multiselect-dropdown/multiselect-dropdown.js' %}"></script> -->
-        <link rel="stylesheet" href="" media="screen" />
-
-    {% endblock bodybottom %}

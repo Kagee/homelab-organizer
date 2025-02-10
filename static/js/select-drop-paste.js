@@ -29,6 +29,8 @@ class SDP {
            potentially update based on `autoAssignFileToInput` 
          */
         fileInputElement: "#uploadfile",
+        /* Image element to read for rotation */
+        imageElement: null,
         /* Element to use as drop zone */
         dropzoneElement: "#dropzone",
         /* Acceptable MIME types for files. Will be used 
@@ -42,6 +44,7 @@ class SDP {
     };
     dze = null;
     fie = null;
+    ime = null;
     constructor(config) {
         this._config = this._mergeConfig(config);
 
@@ -50,6 +53,9 @@ class SDP {
                constructor so the elements are loaded. */
             this.dze = document.querySelector(this._config.dropzoneElement);
             this.fie = document.querySelector(this._config.fileInputElement);
+            if (this._config.imageElement) {
+                this.ime = document.querySelector(this._config.imageElement) || null;
+            }
             this.dze.addEventListener('drop', this._dropEventHandler.bind(this));
             this.dze.addEventListener('dragover', (ev) => { ev.preventDefault() });
             this.fie.addEventListener('change', this._fileFieldChange.bind(this));
@@ -57,6 +63,23 @@ class SDP {
         }.bind(this));
     }
 
+    rotate(rot) {
+        if (!this.ime) {
+            console.log("No image element set, can not rotate")
+            return
+        }
+        src = this.ime.src
+        switch (rot) {
+            case 'left':
+            case 'right':
+            case '180':
+                console.log("Rotate " + rot)
+                console.log("Image src is " + this.ime.src)
+              break;
+            default:
+              console.log(`Invalid rotation ${rot}.`);
+          }
+    }
     _fileFieldChange(ev) {
         const file = ev.target.files.item(0)
         if (this._isAcceptableMIMEType(file)) {
