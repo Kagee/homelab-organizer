@@ -2,6 +2,7 @@ import pprint
 
 from django.contrib import admin
 from django.db import models
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils.html import escape, format_html, format_html_join, mark_safe
 from djmoney.models.fields import MoneyField
@@ -10,8 +11,8 @@ from .attachment import Attachment
 from .shop import Shop
 
 
-class Order(models.Model):
-    shop: Shop = models.ForeignKey(
+class Order(models.Model):  # type: ignore[django-manager-missing]
+    shop = models.ForeignKey(
         Shop,
         on_delete=models.CASCADE,
         related_name="orders",
@@ -114,8 +115,6 @@ class Order(models.Model):
             )
         html += "</ul>"
         return mark_safe(html)  # noqa: S308
-
-    attachments_tag.short_description = "Attachments"
 
     @admin.display(description="Items")
     def items_count(self):

@@ -6,7 +6,7 @@ from django.utils.html import format_html
 from hlo.utils.overwritingfilestorage import OverwritingFileSystemStorage
 
 
-class Shop(models.Model):
+class Shop(models.Model):  # type: ignore[django-manager-missing]
     name = models.CharField(
         max_length=255,
         help_text=(
@@ -84,8 +84,6 @@ class Shop(models.Model):
                 f" />&nbsp;{self.longname()}",
             )
         return f"{self.longname()}"
-
-    list_icon.short_description = "Shop"
 
     def img_icon(self):
         if self.icon:
