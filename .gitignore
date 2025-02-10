@@ -12,6 +12,7 @@ hlo/settings/logging.py
 .vscode/
 # folders
 media_root
+dev-media_root
 whoosh_index
 # symlinks
 .vscode
