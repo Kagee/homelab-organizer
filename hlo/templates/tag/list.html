@@ -1,37 +1,66 @@
 {% extends "common/base.html" %}
 {% load django_bootstrap5 %}
-
 {% block title %}
     Tags
 {% endblock title %}
 {% block css %}
-.h-inline-flex {
+    .h-inline-flex {
     display: inline-flex;
- }
+    }
 {% endblock css %}
 {% block javascript %}
     // Scale input value to inverted 1-6
     function scaleValue(value) {
-        var scale = (1 - 6) / ({{ max_item_count }} - 0);
-        var capped = Math.min({{ max_item_count }}, Math.max(0, value)) - 0;
-        return ~~(capped * scale + 6);
+    var scale = (1 - 6) / ({{ max_item_count }} - 0);
+    var capped = Math.min({{ max_item_count }}, Math.max(0, value)) - 0;
+    return ~~(capped * scale + 6);
     }
     window.addEventListener("load", () => {
-        for (let span of document.querySelectorAll("#tags span")) {
-            let count = span.dataset.itemCount;
-            console.log(count, scaleValue(count) )
-            var parent = span.parentNode;
-            var h = document.createElement(`h${scaleValue(count)}`);
-            h.classList.add("h-inline-flex", "pe-2");
-            // set the h as child (instead of the span)
-            parent.replaceChild(h, span);
-            // set span as child of h
-            h.appendChild(span);
-        }
+    for (let span of document.querySelectorAll("#tags span")) {
+    let count = span.dataset.itemCount;
+    console.log(count, scaleValue(count) )
+    var parent = span.parentNode;
+    var h = document.createElement(`h${scaleValue(count)}`);
+    h.classList.add("h-inline-flex", "pe-2");
+    h.dataset.pk = span.dataset.pk;
+    h.dataset.itemCount = span.dataset.itemCount;
+    delete span.dataset.pk;
+    delete span.dataset.itemCount;
+    // set the h as child (instead of the span)
+    parent.replaceChild(h, span);
+    // set span as child of h
+    h.appendChild(span);
+    }
     })
 {% endblock javascript %}
 {% block content %}
-<span id="tags">
-        {% for tag in page_obj %}<span class="badge text-bg-info rounded-pill" data-pk="{{ tag.pk }}" data-item-count="{{ tag.item_count }}">{{ tag.name }}</span>{% endfor %}
-    </span>
+    <div class="row">
+        <div class="col-3 text-center mt-5"></div>
+        <div class="col-6 text-center mt-5">
+            <div class="input-group">
+                <input id="input-filter" type="text" class="form-control">
+                <button id="btn-clear" class="btn btn btn-primary">Clear</button>
+            </div>
+        </div>
+        <div class="col-3 text-center mt-5"></div>
+    </div>
+    {% if page_obj %}
+        <div class="row">
+            <div class="col text-center mt-5">
+                <span id="tags">
+                    {% for tag in page_obj %}
+                        <span class="badge text-bg-info rounded-pill"
+                              data-pk="{{ tag.pk }}"
+                              data-item-count="{{ tag.item_count }}">{{ tag.name }}</span>
+                    {% endfor %}
+                </span>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col text-center mt-5">
+                <p class="fs-4">There are no tags</p>
+            </div>
+        </div>
+    {% endif %}
 {% endblock content %}
