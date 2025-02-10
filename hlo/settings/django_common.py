@@ -25,19 +25,20 @@ env = environ.FileAwareEnv(
 
 env.prefix = "HLO_"
 
+PROD: bool = env("PROD", default=False)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
 
-MEDIA_ROOT: Path = (BASE_DIR / Path("media_root")).resolve()
-MEDIA_URL: str = "files/"
-# Take environment variables from .env file
-
-PROD: bool = env("PROD", default=False)
 
 env_file = ".env-prod" if PROD else ".env-dev"
 
 env.read_env(BASE_DIR / env_file)
 
+MEDIA_ROOT: Path = Path(env("MEDIA_ROOT")).resolve()
+
+MEDIA_URL: str = "files/"
+# Take environment variables from .env file
 DEBUG: bool = env("DEBUG", default=False)
 
 INTERNAL_IPS = [
