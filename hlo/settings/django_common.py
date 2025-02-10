@@ -34,7 +34,7 @@ MEDIA_URL: str = "files/"
 
 PROD: bool = env("PROD", default=False)
 
-env_file = ".env-prod" if PROD else ".env"
+env_file = ".env-prod" if PROD else ".env-dev"
 
 env.read_env(BASE_DIR / env_file)
 
