@@ -15,3 +15,4 @@ ruff
 djlint
 types-requests
 factory_boy
+faker_file
