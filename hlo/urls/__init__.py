@@ -12,6 +12,7 @@ from hlo.urls.utils import handler404
 from hlo.views import (
     AttachmentSearchView,
     TagDetailView,
+    TagItemListView,
     TagListView,
     item_search,
     items_with_tags,
@@ -53,8 +54,8 @@ urlpatterns = [
         ),
         path(
             "tags/items",
-            items_with_tags,
-            name="tag-items",
+            TagItemListView.as_view(),
+            name="tag-item",
         ),
         path(
             "search/items",

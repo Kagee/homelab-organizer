@@ -1,1 +1,150 @@
-{% for slug in slugs %}* {{ slug }}<br>{% empty %}No slugs?{% endfor %}
+{% extends "common/base.html" %}
+{% load django_bootstrap5 %}
+{% block title %}
+    Tags
+{% endblock title %}
+{% block css %}
+    .h-inline-flex {
+    display: inline-flex;
+    }
+    .table-row{
+    cursor:pointer;
+    }
+    td.thumbnail {
+      min-height: 12em;
+      height: 6em;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position-y: center;
+    }
+{% endblock css %}
+{% block head %}
+    <script type="text/javascript">
+            // Scale input value to inverted 1-6
+        function scaleValue(value) {
+            var scale = (1 - 6) / ({{ max_item_count }} - 0);
+            var capped = Math.min({{ max_item_count }}, Math.max(0, value)) - 0;
+            return ~~(capped * scale + 6);
+        }
+        function setupTagSizes() {
+            for (let span of document.querySelectorAll("#tag-list span")) {
+                let count = span.dataset.count;
+                //console.log(count, scaleValue(count) )
+                var parent = span.parentNode;
+                var h = document.createElement(`h${scaleValue(count)}`);
+                h.classList.add("h-inline-flex", "pe-2");
+                h.dataset.pk = span.dataset.pk;
+                h.dataset.count = span.dataset.count;
+                h.dataset.name = span.dataset.name;
+                delete span.dataset.pk;
+                delete span.dataset.count;
+                delete span.dataset.name;
+                // set the h as child (instead of the span)
+                parent.replaceChild(h, span);
+                // set span as child of h
+                h.appendChild(span);
+            }
+        }
+
+    function inputDown(e) {
+        if (e instanceof Event) {
+            e = e.target;
+        }
+        filterText = e.value.toLowerCase().trim();
+        tags = document.querySelectorAll("#tag-list *[data-name]");
+
+        if (filterText == "") {
+            //console.log("Show all tags")
+            for (let tag of tags) {
+                tag.style.display="unset";
+            }
+        }
+        if (filterText != "") {
+            
+            for (let tag of tags) {
+                if (tag.dataset.name.includes(filterText)) {
+                    //console.log(`Show tag ${tag.dataset.name}`)
+                    tag.style.display="unset";
+                } else {
+                    //console.log(`Hide tag ${tag.dataset.name}`)
+                    tag.style.display="none";
+                }
+            }
+        }
+    }
+
+    function clearInput() {
+        inputFilter = document.querySelector('#input-filter')
+        inputFilter.value = "";
+        inputDown(inputFilter)
+    }
+
+    window.addEventListener("load", () => {
+        setupTagSizes()
+        let inputFilter = document.querySelector('#input-filter')
+        inputFilter.addEventListener("keyup", inputDown);
+        inputFilter.addEventListener("focus", inputDown);
+        document.querySelector('#btn-clear').addEventListener("click", clearInput);
+        inputDown(inputFilter)
+    });
+    </script>
+{% endblock head %}
+{% block content %}
+    <div class="row">
+        <div class="col-3 text-center mt-5"></div>
+        <div class="col-6 text-center mt-5">
+            <div class="input-group">
+                <input id="input-filter" type="text" class="form-control">
+                <button id="btn-clear" class="btn btn btn-primary">Clear</button>
+            </div>
+        </div>
+        <div class="col-3 text-center mt-5"></div>
+    </div>
+    {% if tags %}
+        <div class="row">
+            <div class="col text-center mt-5">
+                <span id="tag-list">
+                    {% for tag in tags %}
+                        <span class="badge text-bg-info rounded-pill"
+                              data-pk="{{ tag.pk }}"
+                              data-count="{{ tag.item_count }}"
+                              data-name="{{ tag.name }}">{{ tag.name }}</span>
+                    {% endfor %}
+                </span>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col text-center mt-5">
+                <p class="fs-4">There are no tags</p>
+            </div>
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col  mt-5">
+          <table class="table table-sm table-bordered table-striped table-hover table-sm">
+            <thead>
+              <tr>
+                <th scope="col" style="min-width: 6em;"></th>
+                <th scope="col">Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for stockitem in stockitems %}
+                <!-- transform as a hack to stop .stretched-link -->
+                <tr class="table-row" data-href="{{ stockitem.get_absolute_url }}">
+                  {% with thumb_link=stockitem.thumbnail_url %}
+                    <td class="p-2 thumbnail"
+                        style="{% if thumb_link %}background-image: url({{ thumb_link }});
+                               {% endif %}"></td>
+                  {% endwith %}
+                  <td class="align-middle">
+                    <a href="{{ stockitem.get_absolute_url }}">{{ stockitem.name }}</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+{% endblock content %}

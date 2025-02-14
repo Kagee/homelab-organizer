@@ -11,6 +11,8 @@
 {% url 'storage-list' as storage_list %}
 {% url 'storage-create' as storage_create %}
 {% url 'tag-list' as tag_list %}
+{% url 'tag-item' as tag_item %}
+
 <header>
   {% load bootstrap_icons %}
   <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
@@ -73,6 +75,11 @@
                 <a class="nav-link{% if request.path == tag_list %} active{% endif %}"
                    aria-current="page"
                    href="{{ tag_list }}">Tags</a>
+              </li>
+              <li>
+                <a class="nav-link{% if request.path == tag_item %} active{% endif %}"
+                   aria-current="page"
+                   href="{{ tag_item }}">Tags (items)</a>
               </li>
             </ul>
             <!-- navbarList -->
