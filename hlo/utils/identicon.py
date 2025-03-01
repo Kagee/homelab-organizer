@@ -3,18 +3,18 @@ import hashlib
 from typing import Callable, Final  # noqa: UP035
 
 
-def _md5(input_string: str) -> str:
+def md5(input_string: str) -> str:
     return hashlib.md5(input_string.encode()).hexdigest()
 
 
-def _sha1(input_string: str) -> str:
+def sha1(input_string: str) -> str:
     return hashlib.sha1(input_string.encode()).hexdigest()
 
 
 DEFAULT_GRID_SIDE: int = 5
 DEFAULT_PIXEL_TYPES: int = 2
 DEFAULT_PIXELS = ["██", "  ", "▒▒"]
-DEFAULT_HASH_FUNC = _sha1
+DEFAULT_HASH_FUNC = sha1
 
 
 def render_utf8(
@@ -26,10 +26,9 @@ def render_utf8(
     half_grid_size_int = (grid_side + 1) // 2
 
     for row in arr:
-        for pos in range(grid_side):
-            if pos > half_grid_size_int - 1:
-                # Move backwards to mirror the output
-                pos = grid_side - pos - 1
+        for pos in list(range(half_grid_size_int)) + list(
+            reversed(range(half_grid_size_int - 1)),
+        ):
             print(pixels[row[pos]], end="")
         print()
 
