@@ -1,7 +1,5 @@
 import logging
 
-from django.shortcuts import render
-
 from .combined_search import item_search
 from .commontree import (
     CategoryCreateView,
@@ -19,7 +17,9 @@ from .commontree import (
 )
 from .index_and_utils import index, no_access, render404
 from .label import (
+    label_print_identicon_sha1,
     label_print_sha1_size,
+    label_render_identicon_sha1,
     label_render_sha1_size,
     sha1_redirect,
 )
@@ -95,6 +95,8 @@ __all__ = [
     "label_render_orderitem",
     "label_render_sha1_size",
     "label_render_storage",
+    "label_print_identicon_sha1",
+    "label_render_identicon_sha1",
     "no_access",
     "orderitem_filtered_list",
     "orderitem_hide",

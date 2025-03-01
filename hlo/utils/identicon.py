@@ -1,6 +1,9 @@
 # ruff: noqa: T201, S324, INP001, PLW2901
 import hashlib
+import logging
 from typing import Callable, Final  # noqa: UP035
+
+logger = logging.getLogger(__name__)
 
 
 def md5(input_string: str) -> str:
@@ -20,16 +23,11 @@ DEFAULT_HASH_FUNC = sha1
 def render_utf8(
     arr: list[list],
     *,
-    grid_side: int = DEFAULT_GRID_SIDE,
     pixels: list[str] = DEFAULT_PIXELS,
 ) -> None:
-    half_grid_size_int = (grid_side + 1) // 2
-
     for row in arr:
-        for pos in list(range(half_grid_size_int)) + list(
-            reversed(range(half_grid_size_int - 1)),
-        ):
-            print(pixels[row[pos]], end="")
+        for pos in row:
+            print(pixels[pos], end="")
         print()
 
 
@@ -56,29 +54,48 @@ def string_to_identicon_arr(
 
     arr: list[list] = []
     hash_code = hash_function(s)
+
     while len(hash_code) < (grid_side * grid_side):
         hash_code = hash_code + hash_function(hash_code)
+
+    logger.debug("Hash code is %s", hash_code)
     half_grid_size_int = (grid_side + 1) // 2
 
-    for i in range(grid_side):
+    for row in range(grid_side):
         arr.append([])
-        for j in range(half_grid_size_int):
-            hash_value = int(hash_code[i * grid_side + j], 16)
-            arr[i].append(hash_value % pixel_types)
+        for _ in range(grid_side):
+            arr[row].append(0)
+        for col in range(half_grid_size_int):
+            hash_value = int(hash_code[row * grid_side + col], 16)
+            # arr[row].append(hash_value % pixel_types)
+            arr[row][col] = hash_value % pixel_types
+            arr[row][len(arr[row]) - col - 1] = hash_value % pixel_types
     return arr
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.DEBUG,
+        style="{",
+        format="{asctime} [{levelname}] {message} ({name}:{module})",
+        handlers=[
+            # logging.FileHandler(f"{os.path.basename(__file__)}.log"),
+            logging.StreamHandler()
+        ],
+    )
     ss = [
         "Hello world",
-        "1234567890",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-        "eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        '-(/%/(#6#¤%"#%&/¤&\'(#¤%&#¤%&"#!)))',
+        # "1234567890",
+        # "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
+        # "eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        #'-(/%/(#6#¤%"#%&/¤&\'(#¤%&#¤%&"#!)))',
         "",  # Empty string
     ]
+    ss = ["A38BB65A64D93D3E38FBD6A55571294122F5AD6C", "FABFABFABFAB"]
     for s in ss:
-        options = {"grid_side": 5}
-        arr = string_to_identicon_arr(s, **options)
-        print("SHA1:", DEFAULT_HASH_FUNC(s))
-        render_utf8(arr, **options)
+
+        def foo(i):
+            return i
+
+        arr = string_to_identicon_arr(s, hash_function=foo)
+        render_utf8(arr)

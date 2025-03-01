@@ -17,7 +17,7 @@ from django.http import (
 )
 from django.shortcuts import redirect
 from django.utils.cache import patch_cache_control
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 from PIL.Image import Image as ImageType
 
 from hlo.models import (
@@ -26,18 +26,88 @@ from hlo.models import (
     Storage,
     get_object_from_sha1,
 )
+from hlo.utils.identicon import string_to_identicon_arr
 
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    "sha1_redirect",
-    "label_render_sha1_size",
+    "label_print_identicon_sha1",
     "label_print_sha1_size",
+    "label_render_identicon_sha1",
+    "label_render_sha1_size",
+    "sha1_redirect",
 ]
 
 # At label widths multiplied by more than
 # 12, the QR ode is unclear when printing.
 MAX_SENSIBLE_LABEL_MULTIPLIER = 12
+
+
+def label_render_identicon_sha1(
+    _request: WSGIRequest,
+    sha1: str,
+) -> HttpResponse:
+    response = HttpResponse(content_type="image/png")
+    patch_cache_control(
+        response,
+        no_cache=True,
+        no_store=True,
+        must_revalidate=True,
+    )
+    _make_identicon(sha1).save(response, format="PNG")  # type: ignore[arg-type]
+    return response
+
+
+def label_print_identicon_sha1(
+    _request: WSGIRequest,
+    sha1: str,
+) -> JsonResponse:
+    img = _make_identicon(sha1)
+
+    response: requests.Response
+    try:
+        response = _label_print(img)
+        if response.ok:
+            return JsonResponse({"status": "ok"})
+        return JsonResponse(
+            {
+                "status": "error",
+                "status_code": response.status_code,
+                "reason": response.reason,
+                "text": response.text,
+            },
+            status=500,
+        )
+    except ValueError as ve:
+        return JsonResponse(
+            {
+                "status": "error",
+                "text": str(ve),
+            },
+            status=500,
+        )
+
+
+def _make_identicon(sha1: str) -> ImageType:
+    def no_hash(s):
+        return s
+
+    arr = string_to_identicon_arr(sha1, hash_function=no_hash)
+    side = len(arr) * 100
+    im = Image.new(
+        "RGB",
+        size=(side, side),
+        color="white",
+    )
+    d = ImageDraw.Draw(im)
+    for x, row in enumerate(arr):
+        for y, col in enumerate(row):
+            if col == 1:
+                color = "black"
+                pos = (y * 100, x * 100, (y * 100) + 100, (x * 100) + 100)
+                d.rectangle(pos, fill=color)
+
+    return ImageOps.expand(im, border=10, fill="white")
 
 
 def label_render_sha1_size(

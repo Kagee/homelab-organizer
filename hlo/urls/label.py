@@ -3,7 +3,9 @@ from functools import partial
 from django.urls import path
 
 from hlo.views import (
+    label_print_identicon_sha1,
     label_print_sha1_size,
+    label_render_identicon_sha1,
     label_render_sha1_size,
     sha1_redirect,
 )
@@ -33,6 +35,16 @@ urls = [  # Label stuff
         "label/print/<str:sha1>.png",
         partial(label_print_sha1_size, multiplier=4),
         name="label-render-sha1",
+    ),
+    path(
+        "label/identicon/print/<str:sha1>.png",
+        label_print_identicon_sha1,
+        name="label-print-identicon-sha1",
+    ),
+    path(
+        "label/identicon/render/<str:sha1>.png",
+        label_render_identicon_sha1,
+        name="label-render-identicon-sha1",
     ),
 ]
 

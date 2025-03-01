@@ -99,6 +99,26 @@
                                     </p>
                                 </td>
                             </tr>
+                            <tr class="table-dark">
+                                <td colspan="2">Identicon</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>
+                                        <img src="{% url 'label-render-identicon-sha1' storage.sha1_id %}" width="100" />
+                                    </p>
+                                    <p>
+                                        <a id="print-identicon" class="btn btn-primary btn-sm">
+                                            {% if storage.label_printed %}
+                                                Reprint identicon
+                                            {% else %}
+                                                Print identicon
+                                            {% endif %}
+                                        </a>
+
+                                    </p>
+                                </td>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -110,9 +130,12 @@
 {% csrf_token %}
 <script type="text/javascript">
 
-    function print_label() {
+    url_qr = "{% url 'label-print-sha1-size' storage.sha1_id 4 %}"
+    url_identicon = "{% url 'label-print-identicon-sha1' storage.sha1_id %}"
+
+    function print_label(url) {
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        url = "{% url 'label-print-sha1-size' storage.sha1_id 4 %}"
+        // url = "{% url 'label-print-sha1-size' storage.sha1_id 4 %}"
         if ({{ storage.label_printed | yesno:"true,false" }}) {
             if (confirm("A label for this item has already been printed.\n\nAre you sure you want to print a new label?") != true) {
                 return
@@ -137,15 +160,19 @@
         });
     }
 
-    $('#print-label').click(function() 
+    $('#print-qr').click(function() 
     {
-        print_label();
+        print_label(url_qr);
     });
-    $('#print-three-labels').click(function() 
+    $('#print-three-qr').click(function() 
     {
-        print_label();
-        print_label();
-        print_label();
+        print_label(url_qr);
+        print_label(url_qr);
+        print_label(url_qr);
+    });
+    $('#print-identicon').click(function() 
+    {
+        print_label(url_identicon);
     });
 
 </script>
