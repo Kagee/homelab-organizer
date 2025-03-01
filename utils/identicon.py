@@ -19,10 +19,12 @@ DEFAULT_HASH_FUNC = _sha1
 
 def render_utf8(
     arr: list[list],
+    *,
     grid_side: int = DEFAULT_GRID_SIDE,
     pixels: list[str] = DEFAULT_PIXELS,
 ) -> None:
     half_grid_size_int = (grid_side + 1) // 2
+
     for row in arr:
         for pos in range(grid_side):
             if pos > half_grid_size_int - 1:
@@ -32,8 +34,9 @@ def render_utf8(
         print()
 
 
-def string_to_arr(
+def string_to_identicon_arr(
     s: str,
+    *,
     hash_function: Callable = DEFAULT_HASH_FUNC,
     grid_side: int = DEFAULT_GRID_SIDE,
     pixel_types: int = DEFAULT_PIXEL_TYPES,
@@ -57,6 +60,7 @@ def string_to_arr(
     while len(hash_code) < (grid_side * grid_side):
         hash_code = hash_code + hash_function(hash_code)
     half_grid_size_int = (grid_side + 1) // 2
+
     for i in range(grid_side):
         arr.append([])
         for j in range(half_grid_size_int):
@@ -75,6 +79,7 @@ if __name__ == "__main__":
         "",  # Empty string
     ]
     for s in ss:
-        arr = string_to_arr(s)
+        options = {"grid_side": 5}
+        arr = string_to_identicon_arr(s, **options)
         print("SHA1:", DEFAULT_HASH_FUNC(s))
-        render_utf8(arr)
+        render_utf8(arr, **options)
