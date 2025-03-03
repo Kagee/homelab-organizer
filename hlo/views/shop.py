@@ -3,6 +3,7 @@ import logging
 from crispy_forms.layout import (
     Submit,
 )
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from hlo.forms import ShopForm
@@ -19,10 +20,11 @@ class ShopListView(ListView):
     context_object_name = "shops"
 
 
-class ShopDetailView(DetailView):
+class ShopDetailView(PermissionRequiredMixin, DetailView):
     model = Shop
     template_name = "shop/detail.html"
     context_object_name = "shop"
+    permission_required = ["hlo.view_shop"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -30,11 +32,13 @@ class ShopDetailView(DetailView):
         return context
 
 
-class ShopCreateView(CreateView):
+class ShopCreateView(PermissionRequiredMixin, CreateView):
     model = Shop
     template_name = "shop/form.html"
     context_object_name = "shop"
     form_class = ShopForm
+    # TODO: Fix permissions
+    permission_required = ["polls.view_choice", "polls.change_choice"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
