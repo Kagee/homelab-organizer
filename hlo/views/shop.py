@@ -14,10 +14,11 @@ from hlo.models import Order, Shop
 logger = logging.getLogger(__name__)
 
 
-class ShopListView(ListView):
+class ShopListView(PermissionRequiredMixin, ListView):
     model = Shop
     template_name = "shop/list.html"
     context_object_name = "shops"
+    permission_required = ["hlo.view_shop"]
 
 
 class ShopDetailView(PermissionRequiredMixin, DetailView):
@@ -37,8 +38,7 @@ class ShopCreateView(PermissionRequiredMixin, CreateView):
     template_name = "shop/form.html"
     context_object_name = "shop"
     form_class = ShopForm
-    # TODO: Fix permissions
-    permission_required = ["polls.view_choice", "polls.change_choice"]
+    permission_required = ["hlo.add_shop"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -51,11 +51,12 @@ class ShopCreateView(PermissionRequiredMixin, CreateView):
         return form
 
 
-class ShopUpdateView(UpdateView):
+class ShopUpdateView(PermissionRequiredMixin, UpdateView):
     model = Shop
     template_name = "shop/form.html"
     context_object_name = "shop"
     form_class = ShopForm
+    permission_required = ["hlo.change_shop"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
