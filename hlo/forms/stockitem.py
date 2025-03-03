@@ -222,16 +222,16 @@ class StockItemForm(ModelForm):
             HTML("""
                  </div>
                  </div>"""),
-            # {% if stockitem.thumbnail_url or  orderitem.thumbnail %}
+            Field("thumbnail"),
             HTML("""
                     <div id="dropzone">
                     
                         <div id="div_id_thumbnail_render" class="mb-3 row">
                             <div class="col-form-label pt-0 col-2">
                                 {% if stockitem.thumbnail_url %}
-                                    Stock item thumbnail
+                                    Thumbnail (Stock item)
                                 {% elif orderitem.thumbnail %}
-                                    Order item thumbnail
+                                    Thumbnail (Order item)
                                 {% endif %}
                             </div>
                             <div class="col-10">
@@ -256,8 +256,6 @@ class StockItemForm(ModelForm):
                         </div>
                     
             """),
-            # {% endif %}
-            Field("thumbnail"),
             # We already have this is we have a image set :thinking_face:
             HTML("</div><!-- id=dropzone -->"),
             Field("category"),
