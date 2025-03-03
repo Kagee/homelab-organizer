@@ -123,13 +123,17 @@ class StockItemForm(ModelForm):
 
         # logger.debug(dir(self.fields["count_unit"]))
 
+        units = (
+            StockItem.objects.order_by()
+            .values_list("count_unit", flat=True)
+            .distinct()
+        )
+        # In a fresh db, we may not have any units
+        if not units:
+            units = ["units"]
+
         self.fields["count_unit"].widget = forms.Select(
-            choices=[
-                (x, x)
-                for x in StockItem.objects.order_by()
-                .values_list("count_unit", flat=True)
-                .distinct()
-            ]
+            choices=[(x, x) for x in units]
         )
 
         self.fields["count_unit"].initial = "items"
