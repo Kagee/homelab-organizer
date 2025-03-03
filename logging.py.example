@@ -74,6 +74,7 @@ LOGGING = {
         "openai": {
             "level": "INFO",
         },
+        "hlo.management.commands.show_permissions": {"level": "INFO"},
         # Prod level server
         #'daphne': {
         #    'handlers': [
