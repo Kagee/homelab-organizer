@@ -193,6 +193,35 @@ class StockItemForm(ModelForm):
             ),
             Field("tags"),
             Field("comment"),
+            HTML("""<div id="div_id_thumbnail_render" class="mb-3 row">
+                 <div id="div_id_thumbnail_render" class="col-2">
+                    Rotate thumbnail
+                 </div>
+                 <div id="div_id_thumbnail_render" class="col-10">
+            """),
+            StrictButton(
+                bs_icon("arrow-clockwise"),
+                css_id="btn_rotate_90_right",
+                css_class="btn btn-primary ps-4 pe-4",
+            ),
+            StrictButton(
+                bs_icon("arrow-repeat"),
+                css_id="btn_rotate_180",
+                css_class="btn btn-primary ps-4 pe-4",
+            ),
+            StrictButton(
+                bs_icon("arrow-counterclockwise"),
+                css_id="btn_rotate_90_left",
+                css_class="btn btn-primary ps-4 pe-4",
+            ),
+            StrictButton(
+                bs_icon("x-circle"),
+                css_id="id_thumbnail_btnclear",
+                css_class="btn btn-primary ps-4 pe-4",
+            ),
+            HTML("""
+                 </div>
+                 </div>"""),
             # {% if stockitem.thumbnail_url or  orderitem.thumbnail %}
             HTML("""
                     <div id="dropzone">
@@ -228,35 +257,6 @@ class StockItemForm(ModelForm):
                     
             """),
             # {% endif %}
-            HTML("""<div id="div_id_thumbnail_render" class="mb-3 row">
-                 <div id="div_id_thumbnail_render" class="col-2">
-                    Rotate thumbnail
-                 </div>
-                 <div id="div_id_thumbnail_render" class="col-10">
-            """),
-            StrictButton(
-                bs_icon("arrow-clockwise"),
-                css_id="btn_rotate_90_right",
-                css_class="btn btn-primary ps-4 pe-4",
-            ),
-            StrictButton(
-                bs_icon("arrow-repeat"),
-                css_id="btn_rotate_180",
-                css_class="btn btn-primary ps-4 pe-4",
-            ),
-            StrictButton(
-                bs_icon("arrow-counterclockwise"),
-                css_id="btn_rotate_90_left",
-                css_class="btn btn-primary ps-4 pe-4",
-            ),
-            StrictButton(
-                bs_icon("x-circle"),
-                css_id="id_thumbnail_btnclear",
-                css_class="btn btn-primary ps-4 pe-4",
-            ),
-            HTML("""
-                 </div>
-                 </div>"""),
             Field("thumbnail"),
             # We already have this is we have a image set :thinking_face:
             HTML("</div><!-- id=dropzone -->"),
