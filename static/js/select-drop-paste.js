@@ -64,22 +64,41 @@ class SDP {
     }
 
     rotate(rot) {
-        if (!this.ime) {
-            console.log("No image element set, can not rotate")
-            return
+        ime = this.ime
+        console.log(`Natural height: ${ime.naturalHeight} Natural width: ${ime.naturalWidth}`)
+
+        cvs=document.createElement("canvas");
+        cvs.width = ime.naturalHeight;
+        cvs.height = ime.naturalWidth;
+        cvs.style.width  =  ime.naturalHeight + "px";
+        cvs.style.height = ime.naturalWidth + "px";
+        const ctx = cvs.getContext("2d");
+
+        if (rot == "left") {
+            ctx.translate(0, ime.naturalWidth);
+            ctx.rotate(-90 * Math.PI / 180)
+        } else if (rot == "right") {
+            ctx.translate(ime.naturalHeight, 0);
+            ctx.rotate(90 * Math.PI / 180)
+        } else {
+            // 180
+            cvs.width = ime.naturalWidth;
+            cvs.height = ime.naturalHeight;
+            cvs.style.width  =  ime.naturalWidth + "px";
+            cvs.style.height = ime.naturalHeight + "px";
+            ctx.translate(ime.naturalWidth, ime.naturalHeight);
+            ctx.rotate(180 * Math.PI / 180)
         }
-        src = this.ime.src
-        switch (rot) {
-            case 'left':
-            case 'right':
-            case '180':
-                console.log("Rotate " + rot)
-                console.log("Image src is " + this.ime.src)
-              break;
-            default:
-              console.log(`Invalid rotation ${rot}.`);
-          }
+        ctx.drawImage(ime,0,0);
+
+        cvs.toBlob((blob) => {
+            let file = new File([blob], "rotated.jpg", { type: "image/jpeg" });
+            this._newFile(file);
+            cvs.remove();
+          }, 'image/jpeg');
     }
+
+
     _fileFieldChange(ev) {
         const file = ev.target.files.item(0)
         if (this._isAcceptableMIMEType(file)) {

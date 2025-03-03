@@ -97,20 +97,38 @@
                 console.log(rot)
                 ime = document.querySelector("#thumbnail");
                 // const canvas = document.createElement("canvas");
-                canvas = document.querySelector("#cvs");
+                
                 /* make canvas big enough to rotate */
+                console.log(`Natural height: ${ime.naturalHeight} Natural width: ${ime.naturalWidth}`)
                 max = Math.max(ime.naturalHeight, ime.naturalWidth)
-                canvas.width = ime.naturalHeight;
-                canvas.height = ime.naturalWidth;
-                const ctx = canvas.getContext("2d");
-                ctx.setTransform(
-                    0,1, // x axis down the screen
-                    -1,0, // y axis across the screen from right to left
-                    ime.naturalHeight, // x origin is on the right side of the canvas 
-                    0             // y origin is at the top
-                );
+
+                canvas_parent = document.querySelector("#canvas_parent");
+                while (canvas_parent.firstChild) {
+                    canvas_parent.removeChild(canvas_parent.lastChild);
+                  }
+                cvs=document.createElement("canvas");
+                canvas_parent.appendChild(cvs);
+                cvs.width = ime.naturalHeight;
+                cvs.height = ime.naturalWidth;
+                cvs.style.width  =  ime.naturalHeight + "px";
+                cvs.style.height = ime.naturalWidth + "px";
+                const ctx = cvs.getContext("2d");
+                if (rot == "left") {
+                    ctx.translate(0, ime.naturalWidth);
+                    ctx.rotate(-90 * Math.PI / 180)
+                } else if (rot == "right") {
+                    ctx.translate(ime.naturalHeight, 0);
+                    ctx.rotate(90 * Math.PI / 180)
+                } else {
+                    // 180
+                    cvs.width = ime.naturalWidth;
+                    cvs.height = ime.naturalHeight;
+                    cvs.style.width  =  ime.naturalWidth + "px";
+                    cvs.style.height = ime.naturalHeight + "px";
+                    ctx.translate(ime.naturalWidth, ime.naturalHeight);
+                    ctx.rotate(180 * Math.PI / 180)
+                }
                 ctx.drawImage(ime,0,0);
-                ctx.setTransform(1,0,0,1,0,0); // restore default     
             }
 
             document.querySelector("#btn_rotate_90_right").addEventListener("click", () => {
@@ -158,6 +176,21 @@
                     Create stock item
                     <br>
                 </h1>
+                {% if form.non_field_errors %}
+    <li>{{ form.non_field_errors }}</li>
+  {% endif %}
+  {% for field in form %}
+  {% if field.errors %}
+    <li>
+      {{ field.label }}
+      <ul class="errorlist">
+        {% for error in field.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endif %}
+{% endfor %}
                 <h4 class="text-secondary">{{ original_name }}</h4>
             {% endif %}
         </div>
