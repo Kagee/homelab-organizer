@@ -138,21 +138,6 @@
                     Create stock item
                     <br>
                 </h1>
-                {% if form.non_field_errors %}
-    <li>{{ form.non_field_errors }}</li>
-  {% endif %}
-  {% for field in form %}
-  {% if field.errors %}
-    <li>
-      {{ field.label }}
-      <ul class="errorlist">
-        {% for error in field.errors %}
-          <li>{{ error }}</li>
-        {% endfor %}
-      </ul>
-    </li>
-  {% endif %}
-{% endfor %}
                 <h4 class="text-secondary">{{ original_name }}</h4>
             {% endif %}
         </div>

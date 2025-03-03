@@ -133,7 +133,7 @@ class StockItemForm(ModelForm):
             units = ["units"]
 
         self.fields["count_unit"].widget = forms.Select(
-            choices=[(x, x) for x in units]
+            choices=[(x, x) for x in units],
         )
 
         self.fields["count_unit"].initial = "items"
@@ -225,7 +225,6 @@ class StockItemForm(ModelForm):
             Field("thumbnail"),
             HTML("""
                     <div id="dropzone">
-                    
                         <div id="div_id_thumbnail_render" class="mb-3 row">
                             <div class="col-form-label pt-0 col-2">
                                 {% if stockitem.thumbnail_url %}
@@ -254,7 +253,6 @@ class StockItemForm(ModelForm):
                                 {% endif %}
                             </div>
                         </div>
-                    
             """),
             # We already have this is we have a image set :thinking_face:
             HTML("</div><!-- id=dropzone -->"),
