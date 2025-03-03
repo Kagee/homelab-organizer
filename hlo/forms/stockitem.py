@@ -146,8 +146,7 @@ class StockItemForm(ModelForm):
 
         self.fields["tags"].widget.choices = initial_tags
         self.fields["comment"].widget.attrs["rows"] = 2
-        hide_class = "d-none"
-        hide_class = ""
+
         self.helper.layout = Layout(
             FieldWithButtons(
                 "name",
@@ -158,7 +157,6 @@ class StockItemForm(ModelForm):
                     data_bs_toggle="modal",
                     data_bs_target="#keyboardModel",
                 ),
-                css_class=hide_class,
             ),
             Row(
                 Column(
@@ -182,8 +180,6 @@ class StockItemForm(ModelForm):
                                 bs_icon("plus-circle"),
                                 css_id="unit_btn",
                                 css_class="btn btn-primary",
-                                # data_bs_toggle="modal",
-                                # data_bs_target="#unitModal",
                             ),
                             input_size="fwb-1 w-50",
                             css_class="fwb-2",
@@ -193,13 +189,14 @@ class StockItemForm(ModelForm):
                     ),
                     css_class="col-10",  # Column 2
                 ),
-                css_class="mb-3 d-none",  # Row
+                css_class="mb-3",
             ),
-            Field("tags", css_class=hide_class, wrapper_class=hide_class),
-            Field("comment", css_class=hide_class, wrapper_class=hide_class),
+            Field("tags"),
+            Field("comment"),
+            # {% if stockitem.thumbnail_url or  orderitem.thumbnail %}
             HTML("""
                     <div id="dropzone">
-                    {% if stockitem.thumbnail_url or  orderitem.thumbnail %}
+                    
                         <div id="div_id_thumbnail_render" class="mb-3 row">
                             <div class="col-form-label pt-0 col-2">
                                 {% if stockitem.thumbnail_url %}
@@ -228,8 +225,9 @@ class StockItemForm(ModelForm):
                                 {% endif %}
                             </div>
                         </div>
-                    {% endif %}
+                    
             """),
+            # {% endif %}
             HTML("""<div id="div_id_thumbnail_render" class="mb-3 row">
                  <div id="div_id_thumbnail_render" class="col-2">
                     Rotate thumbnail
@@ -258,16 +256,15 @@ class StockItemForm(ModelForm):
             ),
             HTML("""
                  </div>
-                 <canvas id="cvs"></canvas>
                  </div>"""),
             Field("thumbnail"),
             # We already have this is we have a image set :thinking_face:
             HTML("</div><!-- id=dropzone -->"),
-            Field("category", wrapper_class=hide_class),
-            Field("project", wrapper_class=hide_class),
-            Field("storage", wrapper_class=hide_class),
-            Field("orderitems", wrapper_class=hide_class),
-            Field("attachments", wrapper_class=hide_class),
+            Field("category"),
+            Field("project"),
+            Field("storage"),
+            Field("orderitems"),
+            Field("attachments"),
             HTML('<p class="text-end">'),
             Submit("submit", "{{ title }}"),
             HTML("</p>"),

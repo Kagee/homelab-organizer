@@ -93,53 +93,15 @@
                 s.value = v;
             });
 
-            function rotate(rot) {
-                console.log(rot)
-                ime = document.querySelector("#thumbnail");
-                // const canvas = document.createElement("canvas");
-                
-                /* make canvas big enough to rotate */
-                console.log(`Natural height: ${ime.naturalHeight} Natural width: ${ime.naturalWidth}`)
-                max = Math.max(ime.naturalHeight, ime.naturalWidth)
-
-                canvas_parent = document.querySelector("#canvas_parent");
-                while (canvas_parent.firstChild) {
-                    canvas_parent.removeChild(canvas_parent.lastChild);
-                  }
-                cvs=document.createElement("canvas");
-                canvas_parent.appendChild(cvs);
-                cvs.width = ime.naturalHeight;
-                cvs.height = ime.naturalWidth;
-                cvs.style.width  =  ime.naturalHeight + "px";
-                cvs.style.height = ime.naturalWidth + "px";
-                const ctx = cvs.getContext("2d");
-                if (rot == "left") {
-                    ctx.translate(0, ime.naturalWidth);
-                    ctx.rotate(-90 * Math.PI / 180)
-                } else if (rot == "right") {
-                    ctx.translate(ime.naturalHeight, 0);
-                    ctx.rotate(90 * Math.PI / 180)
-                } else {
-                    // 180
-                    cvs.width = ime.naturalWidth;
-                    cvs.height = ime.naturalHeight;
-                    cvs.style.width  =  ime.naturalWidth + "px";
-                    cvs.style.height = ime.naturalHeight + "px";
-                    ctx.translate(ime.naturalWidth, ime.naturalHeight);
-                    ctx.rotate(180 * Math.PI / 180)
-                }
-                ctx.drawImage(ime,0,0);
-            }
-
             document.querySelector("#btn_rotate_90_right").addEventListener("click", () => {
-                rotate("right")
+                window.sdp.rotate("right")
             });
             document.querySelector("#btn_rotate_180").addEventListener("click", () => {
-                rotate("180")
+                window.sdp.rotate("180")
 
             });
             document.querySelector("#btn_rotate_90_left").addEventListener("click", () => {
-                rotate("left")
+                window.sdp.rotate("left")
             });
 
         });

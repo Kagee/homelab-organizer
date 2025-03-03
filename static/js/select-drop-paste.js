@@ -64,32 +64,29 @@ class SDP {
     }
 
     rotate(rot) {
-        ime = this.ime
-        console.log(`Natural height: ${ime.naturalHeight} Natural width: ${ime.naturalWidth}`)
-
-        cvs=document.createElement("canvas");
-        cvs.width = ime.naturalHeight;
-        cvs.height = ime.naturalWidth;
-        cvs.style.width  =  ime.naturalHeight + "px";
-        cvs.style.height = ime.naturalWidth + "px";
+        let cvs = document.createElement("canvas");
+        cvs.width = this.ime.naturalHeight;
+        cvs.height = this.ime.naturalWidth;
+        cvs.style.width  =  this.ime.naturalHeight + "px";
+        cvs.style.height = this.ime.naturalWidth + "px";
         const ctx = cvs.getContext("2d");
 
         if (rot == "left") {
-            ctx.translate(0, ime.naturalWidth);
+            ctx.translate(0, this.ime.naturalWidth);
             ctx.rotate(-90 * Math.PI / 180)
         } else if (rot == "right") {
-            ctx.translate(ime.naturalHeight, 0);
+            ctx.translate(this.ime.naturalHeight, 0);
             ctx.rotate(90 * Math.PI / 180)
         } else {
             // 180
-            cvs.width = ime.naturalWidth;
-            cvs.height = ime.naturalHeight;
-            cvs.style.width  =  ime.naturalWidth + "px";
-            cvs.style.height = ime.naturalHeight + "px";
-            ctx.translate(ime.naturalWidth, ime.naturalHeight);
+            cvs.width = this.ime.naturalWidth;
+            cvs.height = this.ime.naturalHeight;
+            cvs.style.width  =  this.ime.naturalWidth + "px";
+            cvs.style.height = this.ime.naturalHeight + "px";
+            ctx.translate(this.ime.naturalWidth, this.ime.naturalHeight);
             ctx.rotate(180 * Math.PI / 180)
         }
-        ctx.drawImage(ime,0,0);
+        ctx.drawImage(this.ime,0,0);
 
         cvs.toBlob((blob) => {
             let file = new File([blob], "rotated.jpg", { type: "image/jpeg" });
