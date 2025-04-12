@@ -14,6 +14,7 @@ hlo/settings/logging.py
 media_root
 dev-media_root
 whoosh_index
+*.old
 # symlinks
 .vscode
 .env*
