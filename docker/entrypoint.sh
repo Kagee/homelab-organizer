@@ -45,6 +45,7 @@ echo "INFO: Running myapp as ${APP_USERNAME}:${APP_GROUP} (${MY_UID}:${MY_GID})"
 
 cd /app
 # TODO:
+# ENV PATH="/app/.venv/bin:$PATH"
 # gosu "${APP_USERNAME}" python3 manage.py migrate
 # gosu "${APP_USERNAME}" python3 manage.py collectstatic
 
