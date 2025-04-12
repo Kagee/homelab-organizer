@@ -33,8 +33,13 @@ RUN apt-get update && apt-get install -y npm
 # We copy static in the next build step
 COPY hlo /app/hlo
 COPY static /app/static
-copy manage.py LICENSE pyproject.toml package.json /app
+COPY manage.py LICENSE pyproject.toml package.json /app/
 RUN npm install . && ls
+
+# Convert all soft symlinks to hard symlinks
+RUN find /app/static -type l -exec bash -c 'ln -f "$(readlink -m "$0")" "$0"' {} \;
+
+RUN rm -r ./node_modules
 
 FROM python:3.13-slim as app
 
