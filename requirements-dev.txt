@@ -6,11 +6,9 @@ pylint
 django-extensions
 Werkzeug
 pyOpenSSL
-black
 pylint-django
 types-jsonschema
 pydotplus # graph
-daphne # asgi webserver
 ruff
 djlint
 types-requests
