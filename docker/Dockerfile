@@ -30,11 +30,12 @@ COPY ../requirements.txt  /app/
 # Install all dependencies
 RUN pip install --no-cache-dir -r requirements.txt
  
-RUN apt-get update && apt-get install -y npm
+RUN apt-get update && apt-get install -y npm gosu
 
 # Copy just what we need for a running app
 COPY hlo /app/hlo
 COPY static /app/static
+COPY docker/entrypoint.sh /app/docker/entrypoint.sh
 COPY manage.py LICENSE pyproject.toml package.json /app/
 
 # Install (download) JS deps to ./node_modules
@@ -59,7 +60,9 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1 
 
 # Copy venv, app code, static files etc from builder
-COPY --from=builder /app /app
+COPY --from=builder --chown=1000:1000 /app /app
+COPY --from=builder --chown=0:0 /usr/sbin/gosu /usr/sbin/gosu
+
 WORKDIR /app
 
 ENV HLO_STATIC_ROOT=/app/static_root
@@ -72,13 +75,19 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Temporarily set some ENV vars that is required
 # for manage.py check to work
-RUN export \
-    HLO_SECRET_KEY=no-so-secret-key-used-for-testing \
-    HLO_CSRF_TRUSTED_ORIGINS='https://*' \
-    HLO_REMOTE_USER_HEADER=none; \
-    python3 manage.py check
+# this created /tmp/django_cache owned by root :/
+#RUN export \
+#    HLO_SECRET_KEY=no-so-secret-key-used-for-testing \
+#    HLO_CSRF_TRUSTED_ORIGINS='https://*' \
+#    HLO_REMOTE_USER_HEADER=none; \
+#    python3 manage.py check
+
+# Do this late to ease development
+COPY docker/entrypoint.sh /app/docker/entrypoint.sh
 
 # static_root is the static output directory
 VOLUME /app/static_root /app/db /app/media_root /app/whoosh_index
+EXPOSE 8000
 
-ENTRYPOINT [ "entrypoint.sh" ]
+ENTRYPOINT [ "/app/docker/entrypoint.sh" ]
+CMD [ "gunicorn", "hlo.wsgi:application", "--bind", "0.0.0.0:8005" ]
