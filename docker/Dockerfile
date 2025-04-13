@@ -75,12 +75,12 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Temporarily set some ENV vars that is required
 # for manage.py check to work
-# this created /tmp/django_cache owned by root :/
-#RUN export \
-#    HLO_SECRET_KEY=no-so-secret-key-used-for-testing \
-#    HLO_CSRF_TRUSTED_ORIGINS='https://*' \
-#    HLO_REMOTE_USER_HEADER=none; \
-#    python3 manage.py check
+# this creates /tmp/django_cache owned by root :/
+RUN export \
+    HLO_SECRET_KEY=no-so-secret-key-used-for-testing \
+    HLO_CSRF_TRUSTED_ORIGINS='https://*' \
+    HLO_REMOTE_USER_HEADER=none; \
+    python3 manage.py check && rm -r /tmp/*
 
 # Do this late to ease development
 COPY docker/entrypoint.sh /app/docker/entrypoint.sh
