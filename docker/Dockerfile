@@ -5,7 +5,7 @@
 #  |_.__/ \__,_|_|_|\__,_|\___|_|
 #
 
-FROM python:3.13 as builder
+FROM python:3.13 AS builder
  
 # Set the working directory inside the container
 WORKDIR /app
@@ -51,7 +51,7 @@ RUN rm -r ./node_modules
 #  /_/   \_\_|   |_|
 #
 
-FROM python:3.13-slim as app
+FROM python:3.13-slim AS app
 
 # Prevents Python from writing pyc files to disk
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -81,4 +81,4 @@ RUN export \
 # static_root is the static output directory
 VOLUME /app/static_root /app/db /app/media_root /app/whoosh_index
 
-ENTRYPOINT "entrypoint.sh"
+ENTRYPOINT [ "entrypoint.sh" ]
