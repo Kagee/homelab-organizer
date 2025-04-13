@@ -121,13 +121,13 @@ ALLOWED_HOSTS: list[str] = env.list("ALLOWED_HOSTS")
 
 CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS")
 
-STATIC_URL: str = env("STATIC_URL")
+STATIC_URL: str = env("STATIC_URL") 
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-STATIC_ROOT: str = env("STATIC_ROOT")
+STATIC_ROOT: Path = Path(env("STATIC_ROOT")).resolve()
 
 INSTALLED_APPS: list[str] = [
     "django.contrib.admin",
@@ -288,8 +288,8 @@ MD_ICONS_BASE_PATH = "node_modules/@mdi/svg/"
 BS_ICONS_BASE_PATH = "node_modules/bootstrap-icons/"
 
 BS_ICONS_CACHE: Path = (MEDIA_ROOT / Path("icon_cache")).resolve()
-if not BS_ICONS_CACHE.is_dir():
-    BS_ICONS_CACHE.mkdir(exist_ok=True)
+# if not BS_ICONS_CACHE.is_dir():
+#    BS_ICONS_CACHE.mkdir(exist_ok=True)
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 

@@ -27,8 +27,8 @@ BQW_ENDPOINT: str = env("BQW_ENDPOINT", default=None)
 WEBAPP_DOMAIN: str = env("WEBAPP_DOMAIN", default=None)
 
 BARCODE_CACHE: Path = (MEDIA_ROOT / Path("barcode_cache")).resolve()
-if not BARCODE_CACHE.is_dir():
-    BARCODE_CACHE.mkdir(exist_ok=True)
+# if not BARCODE_CACHE.is_dir():
+#    BARCODE_CACHE.mkdir(exist_ok=True)
 
 QR_URL_PREFIX: str = env("QR_URL_PREFIX", default="")
 

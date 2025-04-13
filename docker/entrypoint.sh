@@ -46,6 +46,7 @@ echo "INFO: Running myapp as ${APP_USERNAME}:${APP_GROUP} (${MY_UID}:${MY_GID})"
 cd /app
 # TODO:
 # ENV PATH="/app/.venv/bin:$PATH"
+# check for wrong permissions in /app/static_root /app/db /app/media_root /app/whoosh_index
 # gosu "${APP_USERNAME}" python3 manage.py migrate
 # gosu "${APP_USERNAME}" python3 manage.py collectstatic
 

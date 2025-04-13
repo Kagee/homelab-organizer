@@ -62,6 +62,22 @@ ENV PYTHONUNBUFFERED=1
 COPY --from=builder /app /app
 WORKDIR /app
 
+ENV HLO_STATIC_ROOT=/app/static_root
+ENV HLO_MEDIA_ROOT=/app/media_root
+ENV HLO_SQLITE3_FILE=/app/db/hlo.sqlite3
+ENV HLO_WHOOSH_INDEX=/app/whoosh_index
+
+# Use python binaries from venv
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Temporarily set some ENV vars that is required
+# for manage.py check to work
+RUN export \
+    HLO_SECRET_KEY=no-so-secret-key-used-for-testing \
+    HLO_CSRF_TRUSTED_ORIGINS='https://*' \
+    HLO_REMOTE_USER_HEADER=none; \
+    python3 manage.py check
+
 # static_root is the static output directory
 VOLUME /app/static_root /app/db /app/media_root /app/whoosh_index
 
