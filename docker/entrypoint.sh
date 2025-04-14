@@ -59,8 +59,8 @@ chown "${APP_UID}:${APP_GID}" "${APP_DIR}"
 # Cleanup permissions
 echo "INFO: Cleanup permissions in subdirectories of ${APP_DIR} to ${APP_UID}:${APP_GID}"
 find "${APP_DIR}" -type d -not -perm 755 -exec chmod 755 {} \;
-find "${APP_DIR}" -type f -not -perm 644 -exec chmod 644 {} \;
-find "${APP_DIR}" -not \( -uid "${APP_UID}" -and -gid "${APP_GID}" \) -exec chown "${APP_UID}:${APP_GID}" {} \;
+find "${APP_DIR}" -type f -not -perm 644 -not -path "/app/docker/*" -exec chmod 644 {} \;
+find "${APP_DIR}" -not \( -uid "${APP_UID}" -and -gid "${APP_GID}" \) -not -path "/app/docker/*" -exec chown "${APP_UID}:${APP_GID}" {} \;
 
 chmod 755 "${APP_DIR}/.venv/bin/gunicorn"
 
@@ -68,16 +68,19 @@ chmod 755 "${APP_DIR}/.venv/bin/gunicorn"
 echo "INFO: Running app from ${APP_DIR} as ${APP_USERNAME}:${APP_GROUP} (${APP_UID}:${APP_GID})"
 
 cd "${APP_DIR}"
-# TODO:
+# "Activate" venv for gunicorn etc
 export PATH="${APP_DIR}/.venv/bin:$PATH"
 
 # check for wrong permissions in /app/static_root /app/db /app/media_root /app/whoosh_index
-ls -lah /tmp
 echo "INFO: Running django migrations"
 gosu "${APP_USERNAME}" python3 manage.py migrate
-ls -lah /tmp
+
 echo "INFO: Collecting static files"
 gosu "${APP_USERNAME}" python3 manage.py collectstatic
-ls -lah /tmp
-# exec and run the actual process specified in the CMD of the Dockerfile (which gets passed as ${*})
-exec gosu "${APP_USERNAME}" "${@}"
+
+if $HLO_DEBUG; then
+  python3 manage.py runserver 0.0.0.0:8000
+else
+  # exec and run the actual process specified in the CMD of the Dockerfile (which gets passed as ${*})
+  exec gosu "${APP_USERNAME}" gunicorn hlo.wsgi:application --bind 0.0.0.0:8000
+fi

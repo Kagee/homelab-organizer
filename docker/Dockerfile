@@ -90,4 +90,4 @@ VOLUME /app/static_root /app/db /app/media_root /app/whoosh_index
 EXPOSE 8000
 
 ENTRYPOINT [ "/app/docker/entrypoint.sh" ]
-CMD [ "gunicorn", "hlo.wsgi:application", "--bind", "0.0.0.0:8005" ]
+CMD [ "gunicorn", "hlo.wsgi:application", "--bind", "0.0.0.0:8000" ]
