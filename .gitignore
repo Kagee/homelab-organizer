@@ -14,6 +14,7 @@ hlo/settings/logging.py
 media_root
 dev-media_root
 whoosh_index
+static/django_bootstrap_icons
 *.old
 # symlinks
 .vscode
