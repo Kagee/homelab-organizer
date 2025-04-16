@@ -32,14 +32,17 @@ then
 else
   echo "INFO: Group ${APP_GROUP} doesn't exist; creating..."
   # create the group
-  addgroup \
-    --gid "${APP_GID}" \
-    "${APP_GROUP}" || \
+  #   addgroup \
+  #  --gid "${APP_GID}" \
+  #  "${APP_GROUP}" || \
+  set -x
+  groupadd --gid "${APP_GID}" "${APP_GROUP}" || \
     (echo "INFO: Group ${APP_GROUP} exists but with a different name; renaming..."; \
       groupmod --gid "${APP_GID}" --new-name "${APP_GROUP}" \
       "$( \
         awk -F ':' '{print $1":"$3}' < /etc/group | grep ":${APP_GID}$" | awk -F ":" '{print $1}' \ 
       )")
+  set +x
 fi
 
 
@@ -50,13 +53,16 @@ then
 else
   echo "INFO: User ${APP_USERNAME} doesn't exist; creating..."
   # create the user
-  adduser --quiet \
+  set -x
+  useradd \
+    --no-log-init \
     --uid "${APP_UID}" \
-    --ingroup "${APP_GROUP}" \
-    --home "/home/${APP_USERNAME}" \
-    --shell /bin/sh \
-    --disabled-password \
-    "${APP_USERNAME}"
+    --gid "${APP_GID}" \
+    --home-dir "/home/${APP_USERNAME}" \
+    --create-home \
+    --shell /bin/bash \
+    "${APP_USERNAME}";
+  set +x
 fi
 
 # change ownership of any directories needed to run my app as the proper UID/GID
@@ -85,19 +91,17 @@ gosu "${APP_USERNAME}" python3 manage.py migrate
 echo "INFO: Collecting static files"
 gosu "${APP_USERNAME}" python3 manage.py collectstatic
 
-echo "INFO: ls / app"
-ls /app
-
-echo "INFO: cat /app/buildinfo"
-cat /app/buildinfo
-
 # Whatever build, if we supply a command, run it.
-[[ $# -ne 0 ]] && echo "Custom command" && set -x && exec gosu "${APP_USERNAME}" "$@"
+[[ $# -ne 0 ]] && \
+  cat /app/buildinfo && \
+  echo "INFO: Custom command" && \
+  set -x && \
+  exec gosu "${APP_USERNAME}" "$@"
 
 # $DEBUG_BUILD is alwasy `true` or `false`
 
 # Use factory_boy and Faker to populate db and files
-$DEBUG_BUILD && echo "INFO: DEBUG" && {
+$DEBUG_BUILD && {
   # Fake test data
   echo "INFO: Creating fake app data"
   gosu "${APP_USERNAME}" python3 manage.py setup_test_data;
@@ -110,7 +114,11 @@ $DEBUG_BUILD && echo "INFO: DEBUG" && {
   --noinput;
 
   # Exex as APP_USERNAME a development server on port 8000
-  exec gosu "${APP_USERNAME}" python3 manage.py runserver 0.0.0.0:8000
+  cat /app/buildinfo && \
+    echo "INFO: Debug mode with runserver" && \
+    exec gosu "${APP_USERNAME}" python3 manage.py runserver 0.0.0.0:8000
 }
 # exec as APP_USERNAME a production server on port 8000
-$DEBUG_BUILD || echo "INFO: PROD" && exec gosu "${APP_USERNAME}" gunicorn hlo.wsgi:application --bind 0.0.0.0:8000
+$DEBUG_BUILD || cat /app/buildinfo && \
+  echo "INFO: Production mode with gunicorn" && \
+  exec gosu "${APP_USERNAME}" gunicorn hlo.wsgi:application --bind 0.0.0.0:8000

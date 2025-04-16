@@ -1,9 +1,12 @@
 # setup_test_data.py
-import random
 import sys
 
-import factory.random
 from django.conf import settings
+
+import factory.random
+factory.random.reseed_random(settings.FACTORY_SEED)
+
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -25,8 +28,6 @@ class Command(BaseCommand):
         if settings.PROD:
             print("DO NOT RUN IN PROD")  # noqa: T201
             sys.exit(1)
-
-        # factory.random.reseed_random("hlo")
 
         self.stdout.write("Deleting old data...")
         models = [Shop]

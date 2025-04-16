@@ -19,3 +19,5 @@ CURRENCIES = ("USD", "EUR", "NOK", "JPY")
 CURRENCY_CHOICES = [("USD", "$"), ("EUR", "€"), ("NOK", "kr"), ("JPY", "¥")]
 
 SELECT2_THEME = "bootstrap-5"
+
+FACTORY_SEED = env("FACTORY_SEED", default="hlo-testing-seed")

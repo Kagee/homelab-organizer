@@ -75,6 +75,8 @@ LOGGING = {
             "level": "INFO",
         },
         "hlo.management.commands.show_permissions": {"level": "INFO"},
+        "factory.generate": {"level": "INFO"},
+        "faker.factory": {"level": "INFO"},
         # Prod level server
         #'daphne': {
         #    'handlers': [
