@@ -1,8 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 # https://github.com/mbentley/docker-runtime-user
 
-[[ -f "/custom-entrypoint.sh" ]] && exec /custom-entrypoint.sh
-
+[[ -f "/custom-entrypoint.sh" ]] && \
+  [[ "$(basename "$0")" != "custom-entrypoint.sh" ]] && \
+  echo "INFO: Running custom entrypoint" && \
+  exec /custom-entrypoint.sh
 set -e
 
 # use specified user name or use `default` if not specified
@@ -62,10 +64,10 @@ echo "INFO: Setting permissions for ${APP_DIR} to ${APP_UID}:${APP_GID}"
 chown "${APP_UID}:${APP_GID}" "${APP_DIR}"
 
 # Cleanup permissions
-echo "INFO: Cleanup permissions in subdirectories of ${APP_DIR} to ${APP_UID}:${APP_GID}"
+#echo "INFO: Cleanup permissions in subdirectories of ${APP_DIR} to ${APP_UID}:${APP_GID}"
 find "${APP_DIR}" -type d -not -perm 755 -exec chmod 755 {} \;
 find "${APP_DIR}" -type f -not -perm 644 -not -path "/app/docker/*" -exec chmod 644 {} \;
-find "${APP_DIR}" -not \( -uid "${APP_UID}" -and -gid "${APP_GID}" \) -not -path "/app/docker/*" -exec chown "${APP_UID}:${APP_GID}" {} \;
+find "${APP_DIR}" -not \( -uid "${APP_UID}" -and -gid "${APP_GID}" \) -not -path "/app/docker/*" -not -path "/app/hlo/*" -exec chown "${APP_UID}:${APP_GID}" {} \;
 
 chmod 755 "${APP_DIR}/.venv/bin/gunicorn"
 
@@ -78,10 +80,10 @@ export PATH="${APP_DIR}/.venv/bin:$PATH"
 
 # check for wrong permissions in /app/static_root /app/db /app/media_root /app/whoosh_index
 echo "INFO: Running django migrations"
-# gosu "${APP_USERNAME}" python3 manage.py migrate
+gosu "${APP_USERNAME}" python3 manage.py migrate
 
 echo "INFO: Collecting static files"
-# gosu "${APP_USERNAME}" python3 manage.py collectstatic
+gosu "${APP_USERNAME}" python3 manage.py collectstatic
 
 echo "INFO: ls / app"
 ls /app

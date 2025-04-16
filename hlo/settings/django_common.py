@@ -284,10 +284,10 @@ BOOTSTRAP5 = {  # We use local copies of bootstrap
 }
 
 ## django-bootstrap-icons
-MD_ICONS_BASE_PATH = "node_modules/@mdi/svg/"
-BS_ICONS_BASE_PATH = "node_modules/bootstrap-icons/"
+MD_ICONS_BASE_PATH: Path = Path(env("MD_ICONS_BASE_PATH", default=BASE_DIR / "node_modules/@mdi/svg/")).resolve()
+BS_ICONS_BASE_PATH: Path = Path(env("BS_ICONS_BASE_PATH", default=BASE_DIR / "node_modules/bootstrap-icons/")).resolve()
 
-BS_ICONS_CACHE: Path = (MEDIA_ROOT / Path("icon_cache")).resolve()
+BS_ICONS_CACHE: Path =  Path(env("BS_ICONS_CACHE", default=MEDIA_ROOT / Path("icon_cache"))).resolve()
 # if not BS_ICONS_CACHE.is_dir():
 #    BS_ICONS_CACHE.mkdir(exist_ok=True)
 

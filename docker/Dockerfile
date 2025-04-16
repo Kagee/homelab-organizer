@@ -5,8 +5,10 @@
 #  |_.__/ \__,_|_|_|\__,_|\___|_|
 #
 
-FROM python:3.13 AS builder
- 
+FROM docker.io/library/python:3.13-bullseye AS builder
+ARG DEBUG_BUILD=true
+ENV DEBUG_BUILD=$DEBUG_BUILD
+
 # Set the working directory inside the container
 WORKDIR /app
  
@@ -25,26 +27,51 @@ ENV PATH="/app/.venv/bin:$PATH"
 RUN pip install --upgrade pip 
  
 # Copy the Django project requirements
-COPY ../requirements.txt  /app/
- 
-# Install all dependencies
-RUN pip install --no-cache-dir -r requirements.txt
- 
-RUN apt-get update && apt-get install -y npm gosu
+COPY requirements.txt requirements-dev.txt  /app/
 
-# Copy just what we need for a running app
+# Copy just what we need for a running into /app
 COPY hlo /app/hlo
 COPY static /app/static
-COPY docker/entrypoint.sh /app/docker/entrypoint.sh
-COPY docker/copy_django_bootstrap_icons.sh /app/docker/copy_django_bootstrap_icons.sh
-COPY manage.py LICENSE pyproject.toml package.json /app/
+COPY manage.py LICENSE pyproject.toml package.json /app/ 
+COPY docker/copy_django_bootstrap_icons.sh /copy_django_bootstrap_icons.sh
+
+
+# Install all dependencies
+RUN if $DEBUG_BUILD; then \
+        pip install --no-cache-dir -r requirements-dev.txt; \
+    else \
+        pip install --no-cache-dir -r requirements.txt; \
+    fi
+
+RUN apt-get update && \
+        apt-get install \
+            --assume-yes\
+            --no-install-recommends \
+            npm \
+            gosu \
+            figlet
+
+# Here we have a copy of everyting, including .git
+COPY .git /repo/.git
+
+RUN cd /repo; \
+    if $DEBUG_BUILD; then \ 
+      figlet DEBUG > /app/buildinfo; \
+    else \
+      figlet PROD > /app/buildinfo; \
+    fi; \
+    date --iso=m >> /app/buildinfo; \
+    git describe --all --dirty=-dirty --long >> /app/buildinfo; \
+    cat /app/buildinfo;
 
 # Install (download) JS deps to ./node_modules
 RUN npm install .
 # Convert all soft symlinks in static to hard symlinks (js and css from node_modules)
 RUN find /app/static -type l -exec bash -c 'ln -f "$(readlink -m "$0")" "$0"' {} \;
 
-RUN /app/docker/copy_django_bootstrap_icons.sh
+COPY docker/copy_django_bootstrap_icons.sh /copy_django_bootstrap_icons.sh
+RUN /copy_django_bootstrap_icons.sh
+
 # Remove the resto of the node data, as we now don't need it anymore
 RUN rm -r ./node_modules
 
@@ -55,7 +82,11 @@ RUN rm -r ./node_modules
 #  /_/   \_\_|   |_|
 #
 
-FROM python:3.13-slim AS app
+
+FROM docker.io/library/python:3.13-slim-bullseye AS app
+
+ARG DEBUG_BUILD=false
+ENV DEBUG_BUILD=$DEBUG_BUILD
 
 # Prevents Python from writing pyc files to disk
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -68,10 +99,14 @@ COPY --from=builder --chown=0:0 /usr/sbin/gosu /usr/sbin/gosu
 
 WORKDIR /app
 
+RUN cat /app/buildinfo;
+
 ENV HLO_STATIC_ROOT=/app/static_root
 ENV HLO_MEDIA_ROOT=/app/media_root
 ENV HLO_SQLITE3_FILE=/app/db/hlo.sqlite3
 ENV HLO_WHOOSH_INDEX=/app/whoosh_index
+ENV HLO_BS_ICONS_BASE_PATH="$HLO_STATIC_ROOT/django_bootstrap_icons/bs_icon/"
+ENV HLO_MD_ICONS_BASE_PATH="$HLO_STATIC_ROOT/django_bootstrap_icons/md_icon/"
 
 # Use python binaries from venv
 ENV PATH="/app/.venv/bin:$PATH"
@@ -86,10 +121,12 @@ RUN export \
     python3 manage.py check && rm -r /tmp/*
 
 # Do this late to ease development
-COPY docker/entrypoint.sh /app/docker/entrypoint.sh
+COPY docker/docker-entrypoint.sh /docker-entrypoint.sh
+
+RUN cat /app/buildinfo
 
 # static_root is the static output directory
 VOLUME /app/static_root /app/db /app/media_root /app/whoosh_index
 EXPOSE 8000
 
-ENTRYPOINT [ "/app/docker/entrypoint.sh" ]
+ENTRYPOINT [ "/docker-entrypoint.sh" ]

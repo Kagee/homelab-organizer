@@ -9,7 +9,7 @@ from faker_file.providers.png_file import (
 )
 from faker_file.storages.filesystem import FileSystemStorage
 
-from .models import Shop
+from hlo.models import Shop
 
 # FAKER = Faker()  # Initialize Faker
 # FAKER.add_provider(PngFileProvider)  # Register PngFileProvider
