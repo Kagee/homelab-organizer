@@ -11,8 +11,10 @@ docker-build:
   # All branches are tagged with $DOCKER_IMAGE_NAME (defaults to commit ref slug)
   # Default branch is also tagged with `latest`
   script:
-    - docker build -f docker/Dockerfile --pull -t "$DOCKER_IMAGE_NAME" .
+    - docker build -f docker/Dockerfile --pull --tag "${DOCKER_IMAGE_NAME}-debug" --build-arg=DEBUG_BUILD=true .
+    - docker build -f docker/Dockerfile --pull --tag "$DOCKER_IMAGE_NAME" --build-arg=DEBUG_BUILD=false .
     - docker push "$DOCKER_IMAGE_NAME"
+    - docker push "${DOCKER_IMAGE_NAME}-debug"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
         docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE:latest"
