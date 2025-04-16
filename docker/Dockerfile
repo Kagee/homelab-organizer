@@ -36,12 +36,15 @@ RUN apt-get update && apt-get install -y npm gosu
 COPY hlo /app/hlo
 COPY static /app/static
 COPY docker/entrypoint.sh /app/docker/entrypoint.sh
+COPY docker/copy_django_bootstrap_icons.sh /app/docker/copy_django_bootstrap_icons.sh
 COPY manage.py LICENSE pyproject.toml package.json /app/
 
 # Install (download) JS deps to ./node_modules
 RUN npm install .
 # Convert all soft symlinks in static to hard symlinks (js and css from node_modules)
 RUN find /app/static -type l -exec bash -c 'ln -f "$(readlink -m "$0")" "$0"' {} \;
+
+RUN /app/docker/copy_django_bootstrap_icons.sh
 # Remove the resto of the node data, as we now don't need it anymore
 RUN rm -r ./node_modules
 
@@ -90,4 +93,3 @@ VOLUME /app/static_root /app/db /app/media_root /app/whoosh_index
 EXPOSE 8000
 
 ENTRYPOINT [ "/app/docker/entrypoint.sh" ]
-CMD [ "gunicorn", "hlo.wsgi:application", "--bind", "0.0.0.0:8000" ]
