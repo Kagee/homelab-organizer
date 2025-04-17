@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class ShopOrderLoader:
-    def __init__(self, shop, options):  # noqa: C901, PLR0915
+    def __init__(self, shop, options):  # noqa: C901, PLR0912, PLR0915
         self.log = logging.getLogger(__name__)
         self.options = options
         json_file: Path = settings.INPUT_FOLDER / f"{shop}.json"

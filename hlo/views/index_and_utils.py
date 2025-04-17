@@ -54,7 +54,7 @@ def index(request):
     cache_buster = "bust_cache" in request.GET
     if cache_buster:
         logger.debug("Busting index cache")
-    for key in INDEX_DATA_CACHE_KEYS:
+    for key in INDEX_DATA_CACHE_KEYS:  # noqa: PLC0206
         if key not in cached_keys or cache_buster:
             value = INDEX_DATA_CACHE_KEYS[key]()
             cache.set(key, value, timeout=None)

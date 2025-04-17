@@ -1,4 +1,5 @@
-"""ASGI config for hlo project.
+"""
+ASGI config for hlo project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

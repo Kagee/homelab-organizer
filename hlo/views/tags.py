@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class TagListView(ListView):
+
     """TagListView cloud display."""
 
     """
@@ -84,6 +85,7 @@ def items_with_tags(request):
 
 
 class TagItemListView(ListView):
+
     """TagListView cloud display."""
 
     """

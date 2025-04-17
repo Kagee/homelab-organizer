@@ -1,12 +1,9 @@
 import logging
 
-from django.db.models import Count
 from django.http import HttpResponse
 from django.urls import path
 from django.views.generic.base import TemplateView
-from taggit.models import Tag
 
-from hlo import views
 from hlo.urls import commontree, items, label, scan, utils
 from hlo.urls.utils import handler404
 from hlo.views import (
@@ -15,7 +12,7 @@ from hlo.views import (
     TagItemListView,
     TagListView,
     item_search,
-    items_with_tags,
+    items_with_tags,  # noqa: F401
 )
 
 logger = logging.getLogger(__name__)

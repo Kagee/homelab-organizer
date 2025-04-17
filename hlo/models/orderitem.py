@@ -141,7 +141,8 @@ class OrderItem(models.Model):  # type: ignore[django-manager-missing]
         ]
 
     def __str__(self) -> str:
-        """Return string representation.
+        """
+        Return string representation.
 
         Includes shop, order and item id, variation and NameError
         """

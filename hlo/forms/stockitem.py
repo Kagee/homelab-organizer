@@ -64,7 +64,8 @@ class TagChoices(ModelSelect2TagWidget):
         )
 
     def value_from_datadict(self, data, files, name):
-        """Create objects for missing tags.
+        """
+        Create objects for missing tags.
 
         Return comma separates string of tags.
         """

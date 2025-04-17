@@ -10,24 +10,24 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
     order_choices = [
         ("month", "This month"),
         (f"year-{now().year}", "This year"),
-        (f"year-{now().year-1}", "Previous year"),
+        (f"year-{now().year - 1}", "Previous year"),
     ]
 
     order_filters = {
         "month": lambda qs, name: qs.filter(
             **{
-                "%s__year" % name: now().year,
-                "%s__month" % name: now().month,
+                "%s__year" % name: now().year,  # noqa: UP031
+                "%s__month" % name: now().month,  # noqa: UP031
             },
         ),
         f"year-{now().year}": lambda qs, name: qs.filter(
             **{
-                "%s__year" % name: now().year,
+                "%s__year" % name: now().year,  # noqa: UP031
             },
         ),
-        f"year-{now().year-1}": lambda qs, name: qs.filter(
+        f"year-{now().year - 1}": lambda qs, name: qs.filter(
             **{
-                "%s__year" % name: now().year - 1,
+                "%s__year" % name: now().year - 1,  # noqa: UP031
             },
         ),
     }
@@ -69,7 +69,7 @@ class OrderDateRangeFilter(django_filters.DateRangeFilter):
             self.order_filters[f"year-{year!s}"] = (
                 lambda qs, name, lambda_year=year: qs.filter(
                     **{
-                        "%s__year" % name: lambda_year,
+                        "%s__year" % name: lambda_year,  # noqa: UP031
                     },
                 )
             )

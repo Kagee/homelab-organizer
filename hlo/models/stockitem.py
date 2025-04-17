@@ -120,7 +120,8 @@ class StockItem(models.Model):
         return str(self.orderitems.all().first().name)
 
     def save(self, *args, **kwargs) -> None:
-        """Override save to for thumbnail and cache.
+        """
+        Override save to for thumbnail and cache.
 
         * Calculate and save the thumbnail SHA1
         * Update the cache for number of stockitems

@@ -110,7 +110,8 @@ class OrderUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = (
-            f"Update {context['order'].shop.branch_name}#{context['order'].order_id}"
+            f"Update {context['order'].shop.branch_name}"
+            f"#{context['order'].order_id}"
         )
         return context
 

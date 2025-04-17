@@ -1,4 +1,5 @@
-"""WSGI config for hlo project.
+"""
+WSGI config for hlo project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

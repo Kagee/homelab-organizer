@@ -34,7 +34,7 @@ class Command(BaseCommand):
             for table in tables:
                 print(table)  # noqa: T201
                 file = Path(rf"db\table_export\{table}.sql")
-                subprocess.run(
+                subprocess.run(  # noqa: S603
                     [  # noqa: S607
                         "sqlite3",
                         f"{db}",
@@ -48,7 +48,7 @@ class Command(BaseCommand):
             for table in tables:
                 print(table)  # noqa: T201
                 file = Path(rf"db\table_export\{table}.sql")
-                subprocess.run(
+                subprocess.run(  # noqa: S603
                     [  # noqa: S607
                         "sqlite3",
                         f"{db}",

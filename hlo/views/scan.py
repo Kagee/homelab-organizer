@@ -107,8 +107,9 @@ def move_item_to_storage(request):
         bec2 := request.POST.get("bec2")
     ):
         logger.debug("move_item_to_storage")
-        obj1 = get_item(bec1)
-        obj2 = get_item(bec2)
+        # Change this to detect type
+        item = get_item(bec1)
+        storage = get_item(bec2)
 
         for o in [item, storage]:
             if isinstance(o, JsonResponse):

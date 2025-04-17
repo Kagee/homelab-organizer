@@ -115,7 +115,8 @@ def label_render_sha1_size(
     sha1: str,
     multiplier: int,
 ) -> HttpResponse:
-    """Return image with QR and label or HTTP404.
+    """
+    Return image with QR and label or HTTP404.
 
     The larger the multiplier, the smaller the QR code
     will become, because the label width is QR code width * multiplier
@@ -165,7 +166,8 @@ def label_print_sha1_size(
     sha1: str,
     multiplier: int,
 ) -> JsonResponse:
-    """Print image with QR and label and return status.
+    """
+    Print image with QR and label and return status.
 
     The larger the multiplier, the smaller the QR code
     will become, because the label width is QR code width * multiplier

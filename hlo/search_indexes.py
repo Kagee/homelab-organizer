@@ -18,7 +18,6 @@ class AttachmentIndex(indexes.SearchIndex, indexes.Indexable):
         return Attachment
 
     def index_queryset(self, using=None):  # noqa: ARG002
-        """Used when the entire index for model is updated."""
         return (
             self.get_model()
             .objects.annotate(text_len=Length("text"))
