@@ -2,7 +2,6 @@ import logging
 from typing import Any
 
 from crispy_forms.helper import FormHelper
-from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 

@@ -4,11 +4,11 @@ __all__ = [
     "Order",
     "OrderItem",
     "OrderItemMeta",
+    "OrderStockItemLink",
     "Project",
     "Shop",
     "StockItem",
     "Storage",
-    "OrderStockItemLink",
     "User",
     "get_object_from_sha1",
 ]

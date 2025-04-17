@@ -121,7 +121,7 @@ ALLOWED_HOSTS: list[str] = env.list("ALLOWED_HOSTS")
 
 CSRF_TRUSTED_ORIGINS: list[str] = env.list("CSRF_TRUSTED_ORIGINS")
 
-STATIC_URL: str = env("STATIC_URL") 
+STATIC_URL: str = env("STATIC_URL")
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",

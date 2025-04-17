@@ -5,7 +5,6 @@ from factory.django import DjangoModelFactory
 from faker_file.providers.image.pil_generator import PilImageGenerator
 from faker_file.providers.png_file import (
     GraphicPngFileProvider,
-    PngFileProvider,
 )
 from faker_file.storages.filesystem import FileSystemStorage
 

@@ -32,26 +32,25 @@ class OrderItemAdmin(admin.ModelAdmin):
                     "attachments_tag",
                     "indent_extra_data",
                 ]
-            else:
-                return [
-                    "admin_image_tag",
-                    "name",
-                    "order",
-                    "text_manual_input",
-                    "computed",
-                    "sha1",
-                    "extra_data",
-                    "total",
-                    "subtotal",
-                    "tax",
-                    "item_id",
-                    "count",
-                    "item_variation",
-                    "item_ref",
-                    "attachments",
-                    "attachments_tag",
-                    "indent_extra_data",
-                ]
+            return [
+                "admin_image_tag",
+                "name",
+                "order",
+                "text_manual_input",
+                "computed",
+                "sha1",
+                "extra_data",
+                "total",
+                "subtotal",
+                "tax",
+                "item_id",
+                "count",
+                "item_variation",
+                "item_ref",
+                "attachments",
+                "attachments_tag",
+                "indent_extra_data",
+            ]
         return []
 
     filter_horizontal = ["attachments"]

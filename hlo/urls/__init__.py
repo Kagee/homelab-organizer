@@ -79,4 +79,4 @@ urlpatterns = [
     *commontree.urls,
     *scan.urls,
 ]
-__all__ = ["urlpatterns", "handler404"]
+__all__ = ["handler404", "urlpatterns"]

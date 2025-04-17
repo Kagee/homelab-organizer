@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import TemplateView
 
-from hlo.models import OrderItem, StockItem, Storage, get_object_from_sha1
+from hlo.models import OrderItem, StockItem, get_object_from_sha1
 
 logger = logging.getLogger(__name__)
 

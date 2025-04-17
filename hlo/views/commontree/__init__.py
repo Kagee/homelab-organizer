@@ -18,14 +18,14 @@ from .storage import (
 )
 
 __all__ = [
-    "ProjectCreateView",
-    "ProjectDetailView",
-    "ProjectListView",
-    "ProjectUpdateView",
     "CategoryCreateView",
     "CategoryDetailView",
     "CategoryListView",
     "CategoryUpdateView",
+    "ProjectCreateView",
+    "ProjectDetailView",
+    "ProjectListView",
+    "ProjectUpdateView",
     "StorageCreateView",
     "StorageDetailView",
     "StorageListView",

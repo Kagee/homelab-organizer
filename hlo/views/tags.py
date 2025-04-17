@@ -1,6 +1,6 @@
 import logging
 
-from django.db.models import Count, Max, Min, Value
+from django.db.models import Count, Value
 from django.shortcuts import render
 from django.views.generic import DetailView, ListView
 from taggit.models import Tag

@@ -35,7 +35,7 @@ class Command(BaseCommand):
                 print(table)  # noqa: T201
                 file = Path(rf"db\table_export\{table}.sql")
                 subprocess.run(
-                    [  # noqa: S603, S607
+                    [  # noqa: S607
                         "sqlite3",
                         f"{db}",
                         f".mode insert {table}",
@@ -49,7 +49,7 @@ class Command(BaseCommand):
                 print(table)  # noqa: T201
                 file = Path(rf"db\table_export\{table}.sql")
                 subprocess.run(
-                    [  # noqa: S603, S607
+                    [  # noqa: S607
                         "sqlite3",
                         f"{db}",
                         f".read {file}",

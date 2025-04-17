@@ -80,7 +80,7 @@ if __name__ == "__main__":
         format="{asctime} [{levelname}] {message} ({name}:{module})",
         handlers=[
             # logging.FileHandler(f"{os.path.basename(__file__)}.log"),
-            logging.StreamHandler()
+            logging.StreamHandler(),
         ],
     )
     ss = [

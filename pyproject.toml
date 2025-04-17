@@ -19,6 +19,13 @@ repository = "https://gitlab.com/Kagee/homelab-organizer.git"
 
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]
+exclude = [
+  "migrations",
+  "tests",
+  "manage.py",
+  "(a|w)sgi.py",
+]
+
 
 [[tool.mypy.overrides]]
 module = ["crispy_forms.*"]
@@ -62,13 +69,13 @@ django-settings-module = "hlo.settings"
 # https://www.djlint.com/docs/configuration/
 [tool.djlint]
 ignore = "H031,H030,H006,H013,H021"
+indent = 2
+
 
 [tool.ruff]
 line-length = 80
 indent-width = 4
 target-version = "py310"
-#select = ["E4", "E7", "E9", "F"]
-#select = ["E", "F", "W", "I", "B"]
 lint.select = ["ALL"]
 lint.ignore = [
   "D100",   # Missing docstring in public module
@@ -90,6 +97,7 @@ lint.ignore = [
 lint.fixable = ["ALL"]
 # Exclude a variety of commonly ignored directories.
 exclude = [
+    "hlo/migrations",
     ".git",
     ".mypy_cache",
     ".ruff_cache",

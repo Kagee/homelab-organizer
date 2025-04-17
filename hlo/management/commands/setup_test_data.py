@@ -1,17 +1,16 @@
 # setup_test_data.py
 import sys
 
-from django.conf import settings
-
 import factory.random
-factory.random.reseed_random(settings.FACTORY_SEED)
-
-
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from hlo.factories import ShopFactory
 from hlo.models import Shop
+
+factory.random.reseed_random(settings.FACTORY_SEED)
+
+from hlo.factories import ShopFactory  # noqa: E402
 
 NUM_SHOPS = 10
 NUM_ORDERS = 100
@@ -24,7 +23,7 @@ class Command(BaseCommand):
     help = "Generates test data"
 
     @transaction.atomic
-    def handle(self, *args, **kwargs):
+    def handle(self, *_args, **_kwargs):
         if settings.PROD:
             print("DO NOT RUN IN PROD")  # noqa: T201
             sys.exit(1)

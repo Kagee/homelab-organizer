@@ -186,8 +186,8 @@ class OrderItemUpdateView(UpdateView):
 
 
 __all__ = [
-    "orderitem_filtered_list",
-    "OrderItemDetailView",
     "OrderItemCreateView",
+    "OrderItemDetailView",
     "OrderItemUpdateView",
+    "orderitem_filtered_list",
 ]

@@ -9,12 +9,12 @@ from .shop import ShopForm
 from .stockitem import StockItemForm
 
 __all__ = [
-    "StockItemForm",
-    "OrderForm",
-    "OrderFormSimple",
-    "ShopForm",
-    "OrderItemForm",
     "AttachmentForm",
     "AttachmentFormSet",
     "AttachmentFormSetHelper",
+    "OrderForm",
+    "OrderFormSimple",
+    "OrderItemForm",
+    "ShopForm",
+    "StockItemForm",
 ]
