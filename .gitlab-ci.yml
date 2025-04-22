@@ -8,14 +8,14 @@ before_script:
 
 build-dev:
   script:
-    - docker build -f docker/Container --pull --tag "hlo:dev" --build-arg=DEBUG_BUILD=true .
+    - docker build -f docker/Containerfile --pull --tag "hlo:dev" --build-arg=DEBUG_BUILD=true .
     - docker push "hlo:dev"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
 
 build-prod:
   script:
-    - docker build -f docker/Container --pull --tag "hlo:prod" --build-arg=DEBUG_BUILD=false .
+    - docker build -f docker/Containerfile --pull --tag "hlo:prod" --build-arg=DEBUG_BUILD=false .
     - docker push "hlo:prod"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
