@@ -122,4 +122,4 @@ $DEBUG_BUILD && {
 # exec as APP_USERNAME a production server on port 8000
 $DEBUG_BUILD || cat /app/buildinfo && \
   echo "INFO: Production mode with gunicorn" && \
-  exec gosu "${APP_USERNAME}" gunicorn hlo.wsgi:application --bind 0.0.0.0:8000
+  exec gosu "${APP_USERNAME}" gunicorn hlo.wsgi:application -w 4 --bind 0.0.0.0:8000
