@@ -8,19 +8,16 @@ before_script:
 
 build-dev:
   script:
-    - docker build -f docker/Containerfile --pull --tag "hlo:dev" --build-arg=DEBUG_BUILD=true .
-    - docker push "hlo:dev"
+    - docker build -f docker/Containerfile --pull --tag "homelab-organizer:dev" --build-arg=DEBUG_BUILD=true .
+    - docker push "homelab-organizer:dev"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
 
 build-prod:
   script:
-    - docker build -f docker/Containerfile --pull --tag "hlo:prod" --build-arg=DEBUG_BUILD=false .
-    - docker push "hlo:prod"
-    - |
-      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE:latest"
-        docker push "$CI_REGISTRY_IMAGE:latest"
-      fi
+    - docker build -f docker/Containerfile --pull --tag "homelab-organizer:prod" --build-arg=DEBUG_BUILD=false .
+    - docker push "homelab-organizer:prod"
+    - docker tag "homelab-organizer:prod" "homelab-organizer:latest"
+    - docker push "homelab-organizer:latest"
   rules:
     - if: $CI_COMMIT_BRANCH == "stable"
