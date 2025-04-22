@@ -8,16 +8,16 @@ before_script:
 
 build-dev:
   script:
-    - docker build -f docker/Containerfile --pull --tag "homelab-organizer:dev" --build-arg=DEBUG_BUILD=true .
-    - docker push "homelab-organizer:dev"
+    - docker build -f docker/Containerfile --pull --tag "$CI_REGISTRY_IMAGE:dev" --build-arg=DEBUG_BUILD=true .
+    - docker push "$CI_REGISTRY_IMAGE:dev"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
 
 build-prod:
   script:
-    - docker build -f docker/Containerfile --pull --tag "homelab-organizer:prod" --build-arg=DEBUG_BUILD=false .
-    - docker push "homelab-organizer:prod"
-    - docker tag "homelab-organizer:prod" "homelab-organizer:latest"
-    - docker push "homelab-organizer:latest"
+    - docker build -f docker/Containerfile --pull --tag "$CI_REGISTRY_IMAGE:prod" --build-arg=DEBUG_BUILD=false .
+    - docker push "$CI_REGISTRY_IMAGE:prod"
+    - docker tag "$CI_REGISTRY_IMAGE:prod" "$CI_REGISTRY_IMAGE:latest"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
   rules:
     - if: $CI_COMMIT_BRANCH == "stable"
