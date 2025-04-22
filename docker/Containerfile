@@ -11,11 +11,11 @@ ENV DEBUG_BUILD=$DEBUG_BUILD
 
 # Set the working directory inside the container
 WORKDIR /app
- 
+
 # Prevents Python from writing pyc files to disk
 ENV PYTHONDONTWRITEBYTECODE=1
 #Prevents Python from buffering stdout and stderr
-ENV PYTHONUNBUFFERED=1 
+ENV PYTHONUNBUFFERED=1
 
 # Create a venv that we can copy after building
 RUN python3 -m venv .venv
@@ -24,15 +24,15 @@ RUN python3 -m venv .venv
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Upgrade pip
-RUN pip install --upgrade pip 
- 
+RUN pip install --upgrade pip
+
 # Copy the Django project requirements
 COPY requirements.txt requirements-dev.txt  /app/
 
 # Copy just what we need for a running into /app
 COPY hlo /app/hlo
 COPY static /app/static
-COPY manage.py LICENSE pyproject.toml package.json /app/ 
+COPY manage.py LICENSE pyproject.toml package.json /app/
 COPY docker/copy_django_bootstrap_icons.sh /copy_django_bootstrap_icons.sh
 
 
@@ -55,7 +55,7 @@ RUN apt-get update && \
 COPY .git /repo/.git
 
 RUN cd /repo; \
-    if $DEBUG_BUILD; then \ 
+    if $DEBUG_BUILD; then \
       figlet DEBUG > /app/buildinfo; \
     else \
       figlet PROD > /app/buildinfo; \
@@ -91,7 +91,7 @@ ENV DEBUG_BUILD=$DEBUG_BUILD
 # Prevents Python from writing pyc files to disk
 ENV PYTHONDONTWRITEBYTECODE=1
 #Prevents Python from buffering stdout and stderr
-ENV PYTHONUNBUFFERED=1 
+ENV PYTHONUNBUFFERED=1
 
 # Copy venv, app code, static files etc from builder
 COPY --from=builder --chown=1000:1000 /app /app
@@ -99,7 +99,7 @@ COPY --from=builder --chown=0:0 /usr/sbin/gosu /usr/sbin/gosu
 
 WORKDIR /app
 
-RUN cat /app/buildinfo;
+RUN cat /app/buildinfo; cp /app/buildinfo /app/hlo/templates/common/buildinfo.txt;
 
 ENV HLO_STATIC_ROOT=/app/static_root
 ENV HLO_MEDIA_ROOT=/app/media_root
