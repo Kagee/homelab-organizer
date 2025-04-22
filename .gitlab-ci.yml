@@ -1,27 +1,29 @@
-docker-build:
-  # Use the official docker image.
-  image: docker:cli
-  stage: build
-  services:
-    - docker:dind
-  variables:
-    DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+image: docker:cli
+
+services:
+  - docker:dind
+
+stage: build
+
+build-dev:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  # All branches are tagged with $DOCKER_IMAGE_NAME (defaults to commit ref slug)
-  # Default branch is also tagged with `latest`
   script:
-    - docker build -f docker/Dockerfile --pull --tag "${DOCKER_IMAGE_NAME}-debug" --build-arg=DEBUG_BUILD=true .
-    - docker build -f docker/Dockerfile --pull --tag "$DOCKER_IMAGE_NAME" --build-arg=DEBUG_BUILD=false .
-    - docker push "$DOCKER_IMAGE_NAME"
-    - docker push "${DOCKER_IMAGE_NAME}-debug"
+    - docker build -f docker/Container --pull --tag "hlo:dev" --build-arg=DEBUG_BUILD=true .
+    - docker push "hlo:dev"
+  rules:
+    if: $CI_COMMIT_BRANCH == "main"
+
+build-prod:
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build -f docker/Container --pull --tag "hlo:prod" --build-arg=DEBUG_BUILD=false .
+    - docker push "hlo:prod"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
         docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE:latest"
         docker push "$CI_REGISTRY_IMAGE:latest"
       fi
-  # Run this job in a branch where a Dockerfile exists
   rules:
-    - if: $CI_COMMIT_BRANCH
-      exists:
-        - docker/Dockerfile
+    if: $CI_COMMIT_BRANCH == "stable"
