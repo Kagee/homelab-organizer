@@ -89,8 +89,9 @@ echo "INFO: Running django migrations"
 gosu "${APP_USERNAME}" python3 manage.py migrate
 
 echo "INFO: Collecting static files"
-gosu "${APP_USERNAME}" python3 manage.py collectstatic
-
+set -x
+gosu "${APP_USERNAME}" python3 manage.py collectstatic --no-input
+set +x
 # Whatever build, if we supply a command, run it.
 [[ $# -ne 0 ]] && \
   cat /app/buildinfo && \
