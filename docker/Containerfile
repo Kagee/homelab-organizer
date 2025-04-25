@@ -99,6 +99,8 @@ COPY --from=builder --chown=0:0 /usr/sbin/gosu /usr/sbin/gosu
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# To install /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf
+# Consider installing it in builder and copy
 RUN apt-get update && \
     apt-get -y install \
     --no-install-recommends fonts-dejavu && \

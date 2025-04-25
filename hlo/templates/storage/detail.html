@@ -130,13 +130,13 @@
 {% csrf_token %}
 <script type="text/javascript">
 
-    url_qr = "{% url 'label-print-sha1-size' storage.sha1_id 4 %}"
+    url_label = "{% url 'label-print-sha1-size' storage.sha1_id 4 %}"
     url_identicon = "{% url 'label-print-identicon-sha1' storage.sha1_id %}"
 
-    function print_label(url) {
+    function send_print(url, btn_type, ask_reprint) {
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         // url = "{% url 'label-print-sha1-size' storage.sha1_id 4 %}"
-        if ({{ storage.label_printed | yesno:"true,false" }}) {
+        if ({{ storage.label_printed | yesno:"true,false" }} && ask_reprint) {
             if (confirm("A label for this item has already been printed.\n\nAre you sure you want to print a new label?") != true) {
                 return
             }
@@ -148,7 +148,13 @@
             headers: {'X-CSRFToken': csrftoken},
             success: function()
             {
-                $('#print-label').hide()
+                console.log(`Hiding buttons of type ${btn_type}`)
+                if (btn_type == "label") {
+                    $('#print-label').hide()
+                    $('#print-three-labels').hide()
+                } else {
+                    $('#print-identicon').hide()
+                }
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 if (Object.hasOwn(jqXHR, 'responseJSON')) {
@@ -160,19 +166,19 @@
         });
     }
 
-    $('#print-qr').click(function() 
+    $('#print-label').click(function() 
     {
-        print_label(url_qr);
+        send_print(url_label, "label", true);
     });
-    $('#print-three-qr').click(function() 
+    $('#print-three-labels').click(function() 
     {
-        print_label(url_qr);
-        print_label(url_qr);
-        print_label(url_qr);
+        send_print(url_label, "label", true);
+        send_print(url_label, "label", false);
+        send_print(url_label, "label", false);
     });
     $('#print-identicon').click(function() 
     {
-        print_label(url_identicon);
+        send_print(url_identicon, "identicon", true);
     });
 
 </script>
