@@ -155,7 +155,7 @@ def label_render_sha1_size(
     img = _get_label_size(qr_data, label_text, multiplier)
 
     # Save cache image
-    cache_file.parent.mkdir(exist_ok=True)
+    cache_file.parent.mkdir(parents=True, exist_ok=True)
     img.save(cache_file, format="PNG")
 
     return _nocache_png_response(img)

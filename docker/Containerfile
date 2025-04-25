@@ -97,6 +97,14 @@ ENV PYTHONUNBUFFERED=1
 COPY --from=builder --chown=1000:1000 /app /app
 COPY --from=builder --chown=0:0 /usr/sbin/gosu /usr/sbin/gosu
 
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get -y install \
+    --no-install-recommends fonts-dejavu && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 RUN cat /app/buildinfo; cp /app/buildinfo /app/hlo/templates/common/buildinfo.txt;
