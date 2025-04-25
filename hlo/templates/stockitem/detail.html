@@ -1,10 +1,11 @@
 {% extends "common/base.html" %}
-{% load django_bootstrap5 %}
-{% load bootstrap_icons %}
-{% load mptt_tags %}
+{% load django_bootstrap5 bootstrap_icons %}
+{% load mptt_tags i18n %}
 {% block title %}
   Details for {{ stock_item.name }}
 {% endblock title %}
+{% translate "Print label" as print_label_test %}
+{% translate "Reprint label" as reprint_label_test %}
 {% block head %}
   <script type="text/javascript">
     var print_urls = {
@@ -30,7 +31,7 @@
           const json = await response.json();
           alert(json["reason"] + ": " + json["text"] )
         } else {
-          document.querySelector('#print-label').innerHTML = "Reprint label";
+          document.querySelector('#print-label').innerHTML = "{{ reprint_label_test }}";
         }
       } catch (error) {
         alert(`Serverside error: ${error.message}`)
@@ -209,9 +210,9 @@
                       </select>
                         <a id="print-label" class="btn btn-primary">
                           {% if stockitem.label_printed %}
-                            Reprint label
+                            {{ reprint_label_test }}
                           {% else %}
-                            Print label
+                            {{ print_label_test }}
                           {% endif %}
                         </a>
                     </div>

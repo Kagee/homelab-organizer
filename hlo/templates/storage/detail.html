@@ -1,12 +1,18 @@
 {% extends "common/base.html" %}
-{% load django_bootstrap5 %}
-{% load bootstrap_icons %}
+{% load django_bootstrap5 bootstrap_icons %}
 {% load hlo_debug_tags %}
+{% load i18n %}
+{% load mptt_tags %}
 {% block title %}
     Details for {{ stock_item.name }}
 {% endblock title %}
+{% translate "Print label" as print_label %}
+{% translate "Reprint label" as reprint_label %}
+{% translate "Print three labels" as print_label_three %}
+{% translate "Reprint three labels" as reprint_label_three %}
+{% translate "Print identicon" as print_identicon %}
+{% translate "Reprint identicon" as reprint_identicon %}
 {% block content %}
-    {% load mptt_tags %}
     <div class="row mt-3">
         <div class="col-12 col-lg-7 col-xl-7 col-xxl-7">
             <div class="row">
@@ -83,16 +89,16 @@
                                     <p>
                                         <a id="print-three-labels" class="btn btn-primary btn-sm">
                                             {% if storage.label_printed %}
-                                                Reprint three labels
+                                                {{ reprint_label_three }}
                                             {% else %}
-                                                Print three labels
+                                                {{ print_label_three }}
                                             {% endif %}
                                         </a>
                                         <a id="print-label" class="btn btn-primary btn-sm">
                                             {% if storage.label_printed %}
-                                                Reprint label
+                                              {{ reprint_label }}
                                             {% else %}
-                                                Print label
+                                              {{ print_label }}
                                             {% endif %}
                                         </a>
 
@@ -110,9 +116,9 @@
                                     <p>
                                         <a id="print-identicon" class="btn btn-primary btn-sm">
                                             {% if storage.label_printed %}
-                                                Reprint identicon
+                                               {% translate "Reprint identicon" %}
                                             {% else %}
-                                                Print identicon
+                                              {% translate "Print identicon" %}
                                             {% endif %}
                                         </a>
 
@@ -150,10 +156,10 @@
             {
                 console.log(`Hiding buttons of type ${btn_type}`)
                 if (btn_type == "label") {
-                    $('#print-label').hide()
-                    $('#print-three-labels').hide()
+                    document.querySelector('#print-label').innerHTML = "JS: {{ reprint_label }}";
+                    document.querySelector('#print-three-labels').innerHTML = "JS: {{ reprint_label_three }}";
                 } else {
-                    $('#print-identicon').hide()
+                    document.querySelector('#print-identicon').innerHTML = "JS: {{ reprint_identicon }}";
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
