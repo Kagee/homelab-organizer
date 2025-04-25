@@ -5,6 +5,7 @@ from crispy_forms.layout import (
 )
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.shortcuts import render
 
 from hlo.forms import ShopForm
 
@@ -19,6 +20,13 @@ class ShopListView(PermissionRequiredMixin, ListView):
     template_name = "shop/list.html"
     context_object_name = "shops"
     permission_required = ["hlo.view_shop"]
+
+    #def handle_no_permission(self):
+    #    logger.debug("no permission")
+    #    return render(self.request, "common/no_access.html")
+
+    #def get_permission_denied_message(self):
+    #    return "Fuck off"
 
 
 class ShopDetailView(PermissionRequiredMixin, DetailView):
