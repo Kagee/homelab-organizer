@@ -5,6 +5,7 @@ services:
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - apk --no-cache add curl
 
 build-dev:
   script:
@@ -19,5 +20,10 @@ build-prod:
     - docker push "$CI_REGISTRY_IMAGE:prod"
     - docker tag "$CI_REGISTRY_IMAGE:prod" "$CI_REGISTRY_IMAGE:latest"
     - docker push "$CI_REGISTRY_IMAGE:latest"
+    - |
+        curl -u "${PUSHBULLET_ACCESS_TOKEN}:" \
+        -X POST https://api.pushbullet.com/v2/pushes \
+        --header 'Content-Type: application/json' \
+        --data-binary "{\"type\": \"note\", \"title\": \"hlo:prod pushed\", \"body\": \"hlo:prod pushed at @ $(date --iso=m)\"}"
   rules:
     - if: $CI_COMMIT_BRANCH == "stable"
