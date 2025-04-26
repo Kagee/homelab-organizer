@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homelab Organizer is starting...</title>
+    <script>
+        async function checkForChanges() {
+            try {
+                const response = await fetch('/', { cache: 'no-store' });
+                if (!response.ok) {
+                    // If there's an HTTP error, just ignore and retry later
+                    return;
+                }
+                const text = await response.text();
+                const currentHtml = document.documentElement.outerHTML;
+                if (text.trim() !== currentHtml.trim()) {
+                    // Content has changed, reload the page
+                    location.reload();
+                }
+            } catch (error) {
+                // Ignore fetch errors silently
+            }
+        }
+
+        setInterval(checkForChanges, 3000); // check every 3 seconds
+    </script>
+</head>
+<body>
+    <h1 style="text-align: center;">Please wait, Homelab Organizer is starting...</h1>
+</body>
+</html>
