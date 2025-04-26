@@ -7,33 +7,29 @@
     Details for {{ stock_item.name }}
 {% endblock title %}
 {% block content %}
-{% translate "Print label" as print_label %}
-{% translate "Reprint label" as reprint_label %}
-{% translate "Print three labels" as print_label_three %}
-{% translate "Reprint three labels" as reprint_label_three %}
-{% translate "Print identicon" as print_identicon %}
-{% translate "Reprint identicon" as reprint_identicon %}
-<div class="row mt-3">
+    <div class="row mt-3">
         <div class="col-12 col-lg-7 col-xl-7 col-xxl-7">
             <div class="row">
                 <!-- title -->
                 <div class="col-12">
                     <h3>
-                        {{ storage.name }}{% if storage.name_secondary %} <span class="text-body-tertiary">({{ storage.name_secondary }})</span>{% endif %}
+                        {{ storage.name }}
+                        {% if storage.name_secondary %}<span class="text-body-tertiary">({{ storage.name_secondary }})</span>{% endif %}
                         {% if not storage.is_root_node %}
                             <a class="btn btn-outline-secondary btn-sm"
                                href="{% url "storage-detail" storage.parent.pk %}">{{ storage.parent }}</a>
                         {% endif %}
                         <a class="btn btn-outline-secondary btn-sm"
-                    href="{% url 'storage-update' storage.id %}"
-                    role="button">Edit</a>
-                    {% if request.user.is_staff %}
-                    <a class="btn btn-outline-secondary btn-sm"
-                       href="{% url 'admin:hlo_storage_change' storage.id %}"
-                       role="button" target="_blank">Open admin view</a>
-                  {% endif %}
+                           href="{% url 'storage-update' storage.id %}"
+                           role="button">Edit</a>
+                        {% if request.user.is_staff %}
+                            <a class="btn btn-outline-secondary btn-sm"
+                               href="{% url 'admin:hlo_storage_change' storage.id %}"
+                               role="button"
+                               target="_blank">Open admin view</a>
+                        {% endif %}
                     </h3>
-                    <p class="text-body-secondary">{{ storage.comment | linebreaks  }}</p>
+                    <p class="text-body-secondary">{{ storage.comment | linebreaks }}</p>
                 </div>
             </div>
             <div class="row mt-3">
@@ -41,19 +37,21 @@
                 <div class="col-12">
                     <div class="table-responsive">
                         <table class="table">
-                                <tr class="table-dark">
-                                    <td colspan="2">Children PL:{{ print_label }}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        {% for node in storage.get_children %}
-                                            <a class="btn btn-outline-secondary btn-sm mt-2"
-                                               href="{% url "storage-detail" node.pk %}">{{ node.name }}{% if node.name_secondary %}<span class="text-secondary"> ({{ node.name_secondary }})</span>{% endif %}</a>
-                                        {% endfor %}
-                                        <a class="btn btn-outline-info btn-sm mt-2"
-                                               href="{% url "storage-create-parent" storage.pk %}">Create new child</a>
-                                    </td>
-                                </tr>
+                            <tr class="table-dark">
+                                <td colspan="2">Children</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    {% for node in storage.get_children %}
+                                        <a class="btn btn-outline-secondary btn-sm mt-2"
+                                           href="{% url "storage-detail" node.pk %}">{{ node.name }}
+                                            {% if node.name_secondary %}<span class="text-secondary">({{ node.name_secondary }})</span>{% endif %}
+                                        </a>
+                                    {% endfor %}
+                                    <a class="btn btn-outline-info btn-sm mt-2"
+                                       href="{% url "storage-create-parent" storage.pk %}">Create new child</a>
+                                </td>
+                            </tr>
                             {% if storage.stockitems.all.count %}
                                 <tr class="table-dark">
                                     <td colspan="2">Items ({{ storage.stockitems.all.count }})</td>
@@ -64,14 +62,13 @@
                                             {% for stockitem in storage.stockitems.all %}
                                                 <a href="{{ stockitem.get_absolute_url }}"
                                                    class="list-group-item list-group-item-action">
-                                                   {% if stockitem.thumbnail_url %}
-                                                   <img style="min-height: 6em;
-                                                                max-width: 6em"
-                                                         src="{{ stockitem.thumbnail_url }}" />
-                                                         {% else %}
-                                                         {% md_icon 'image-off' color='grey' size="6em" %}
-                                                         {% endif %}
-                                                    
+                                                    {% if stockitem.thumbnail_url %}
+                                                        <img style="min-height: 6em;
+                                                                    max-width: 6em"
+                                                             src="{{ stockitem.thumbnail_url }}" />
+                                                    {% else %}
+                                                        {% md_icon 'image-off' color='grey' size="6em" %}
+                                                    {% endif %}
                                                 {{ stockitem.name }}</a>
                                             {% endfor %}
                                         </div>
@@ -84,24 +81,24 @@
                             <tr>
                                 <td>
                                     <p>
-                                        <img src="{% url 'label-render-sha1-size' storage.sha1_id 4 %}" width="300" />
+                                        <img src="{% url 'label-render-sha1-size' storage.sha1_id 4 %}"
+                                             width="300" />
                                     </p>
                                     <p>
                                         <a id="print-three-labels" class="btn btn-primary btn-sm">
                                             {% if storage.label_printed %}
-                                                {{ reprint_label_three }}
+                                                {% translate "Reprint three labels" %}
                                             {% else %}
-                                                {{ print_label_three }}
+                                                {% translate "Print three labels" %}
                                             {% endif %}
                                         </a>
                                         <a id="print-label" class="btn btn-primary btn-sm">
                                             {% if storage.label_printed %}
-                                              {{ reprint_label }}
+                                                {% translate "Reprint label" %}
                                             {% else %}
-                                              {{ print_label }}
+                                                {% translate "Print label" %}
                                             {% endif %}
                                         </a>
-
                                     </p>
                                 </td>
                             </tr>
@@ -111,17 +108,17 @@
                             <tr>
                                 <td>
                                     <p>
-                                        <img src="{% url 'label-render-identicon-sha1' storage.sha1_id %}" width="100" />
+                                        <img src="{% url 'label-render-identicon-sha1' storage.sha1_id %}"
+                                             width="100" />
                                     </p>
                                     <p>
                                         <a id="print-identicon" class="btn btn-primary btn-sm">
                                             {% if storage.label_printed %}
-                                               {% translate "Reprint identicon" %}
+                                                {% translate "Reprint identicon" %}
                                             {% else %}
-                                              {% translate "Print identicon" %}
+                                                {% translate "Print identicon" %}
                                             {% endif %}
                                         </a>
-
                                     </p>
                                 </td>
                             </tr>
@@ -133,8 +130,8 @@
     </div>
 {% endblock content %}
 {% block bodybottom %}
-{% csrf_token %}
-<script type="text/javascript">
+    {% csrf_token %}
+    <script type="text/javascript">
 
     url_label = "{% url 'label-print-sha1-size' storage.sha1_id 4 %}"
     url_identicon = "{% url 'label-print-identicon-sha1' storage.sha1_id %}"
@@ -156,10 +153,10 @@
             {
                 console.log(`Hiding buttons of type ${btn_type}`)
                 if (btn_type == "label") {
-                    document.querySelector('#print-label').innerHTML = "JS: {{ reprint_label }}";
-                    document.querySelector('#print-three-labels').innerHTML = "JS: {{ reprint_label_three }}";
+                    document.querySelector('#print-label').innerHTML = "{% translate "Reprint label" %}";
+                    document.querySelector('#print-three-labels').innerHTML = "{% translate "Reprint three labels" %}";
                 } else {
-                    document.querySelector('#print-identicon').innerHTML = "JS: {{ reprint_identicon }}";
+                    document.querySelector('#print-identicon').innerHTML = "{% translate "Reprint identicon" %}";
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -187,5 +184,5 @@
         send_print(url_identicon, "identicon", true);
     });
 
-</script>
+    </script>
 {% endblock bodybottom %}
