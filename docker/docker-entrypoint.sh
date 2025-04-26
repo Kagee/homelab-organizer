@@ -25,6 +25,10 @@ APP_GID="${APP_GID:-${APP_UID}}"
 APP_SUPERUSER_EMAIL="${APP_SUPERUSER_EMAIL:-admin@admin.test}" 
 APP_SUPERUSER_USERNAME="${APP_SUPERUSER_EMAIL:-${APP_SUPERUSER_EMAIL}}" 
 
+# Start waitserver
+cd "$APP_DIR"
+gunicorn --pid /app/waitserver.pid waitserver:application -b 0.0.0.0:8000 &
+
 # check to see if group exists; if not, create it
 if grep -q -E "^${APP_GROUP}:" /etc/group > /dev/null 2>&1
 then
@@ -115,11 +119,15 @@ $DEBUG_BUILD && {
   --noinput;
 
   # Exex as APP_USERNAME a development server on port 8000
-  cat /app/buildinfo && \
-    echo "INFO: Debug mode with runserver" && \
-    exec gosu "${APP_USERNAME}" python3 manage.py runserver 0.0.0.0:8000
+  cat /app/buildinfo;
+  echo "INFO: Debug mode with runserver";
+  kill $(cat /app/waitserver.pid);
+  exec gosu "${APP_USERNAME}" python3 manage.py runserver 0.0.0.0:8000;
 }
 # exec as APP_USERNAME a production server on port 8000
-$DEBUG_BUILD || cat /app/buildinfo && \
-  echo "INFO: Production mode with gunicorn" && \
-  exec gosu "${APP_USERNAME}" gunicorn hlo.wsgi:application -w 4 --bind 0.0.0.0:8000
+$DEBUG_BUILD || {
+  cat /app/buildinfo;
+  echo "INFO: Production mode with gunicorn";
+  kill $(cat /app/waitserver.pid);
+  exec gosu "${APP_USERNAME}" gunicorn hlo.wsgi:application -w 4 --bind 0.0.0.0:8000;
+}
