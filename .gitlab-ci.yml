@@ -11,7 +11,7 @@ build-dev:
     - docker build -f docker/Containerfile --pull --tag "$CI_REGISTRY_IMAGE:dev" --build-arg=DEBUG_BUILD=true .
     - docker push "$CI_REGISTRY_IMAGE:dev"
   rules:
-    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
 
 build-prod:
   script:
