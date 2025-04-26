@@ -68,8 +68,8 @@ def index(request):
 
 
 def no_access(request):
-    return render(request, "no_access.html")
+    return render(request, "common/no_access.html")
 
 
 def render404(request, _exception):
-    return render(request, "404.html")
+    return render(request, "common/404.html")
