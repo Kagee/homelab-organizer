@@ -86,6 +86,8 @@ RUN rm -r ./node_modules
 FROM docker.io/library/python:3.13-slim-bullseye AS app
 
 ARG DEBUG_BUILD=false
+ARG CI_COMMIT_SHORT_SHA="dev"
+ENV CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA
 ENV DEBUG_BUILD=$DEBUG_BUILD
 
 # Prevents Python from writing pyc files to disk
@@ -96,6 +98,7 @@ ENV PYTHONUNBUFFERED=1
 # Copy venv, app code, static files etc from builder
 COPY --from=builder --chown=1000:1000 /app /app
 COPY --from=builder --chown=0:0 /usr/sbin/gosu /usr/sbin/gosu
+
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -109,7 +112,9 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-RUN cat /app/buildinfo; cp /app/buildinfo /app/hlo/templates/common/buildinfo.txt;
+RUN cat /app/buildinfo; cp /app/buildinfo /app/hlo/templates/common/buildinfo.txt; \
+      echo $CI_COMMIT_SHORT_SHA > /app/hlo/templates/common/image_commit_short_sha.txt; \
+      date --iso=m > /app/hlo/templates/common/image_build_timestamp.txt;
 
 ENV HLO_STATIC_ROOT=/app/static_root
 ENV HLO_MEDIA_ROOT=/app/media_root

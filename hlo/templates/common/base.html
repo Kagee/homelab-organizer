@@ -12,9 +12,8 @@
       {% endblock title %}
     </title>
     <!--
-=== buildinfo.txt ===
-
-{% include "common/buildinfo.txt" %}
+        Build commit: {% include "common/image_commit_short_sha.txt" %}
+        Build timestamp: {% include "common/image_build_timestamp.txt" %}
     -->
     <link rel="icon"
           href="{% static 'images/logo/hlo-cc0-logo-favicon.ico' %}"
