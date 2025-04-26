@@ -6,14 +6,14 @@
 {% block title %}
     Details for {{ stock_item.name }}
 {% endblock title %}
+{% block content %}
 {% translate "Print label" as print_label %}
 {% translate "Reprint label" as reprint_label %}
 {% translate "Print three labels" as print_label_three %}
 {% translate "Reprint three labels" as reprint_label_three %}
 {% translate "Print identicon" as print_identicon %}
 {% translate "Reprint identicon" as reprint_identicon %}
-{% block content %}
-    <div class="row mt-3">
+<div class="row mt-3">
         <div class="col-12 col-lg-7 col-xl-7 col-xxl-7">
             <div class="row">
                 <!-- title -->
@@ -42,7 +42,7 @@
                     <div class="table-responsive">
                         <table class="table">
                                 <tr class="table-dark">
-                                    <td colspan="2">Children</td>
+                                    <td colspan="2">Children PL:{{ print_label }}</td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">

@@ -168,6 +168,7 @@ MIDDLEWARE: list[str] = [
     "hlo.utils.custompersistentremoteusermiddleware.CustomPersistentRemoteUserMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.locale.LocaleMiddleware"
 ]
 
 ROOT_URLCONF: str = "hlo.urls"
