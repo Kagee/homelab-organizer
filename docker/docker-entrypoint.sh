@@ -44,7 +44,7 @@ else
     (echo "INFO: Group ${APP_GROUP} exists but with a different name; renaming..."; \
       groupmod --gid "${APP_GID}" --new-name "${APP_GROUP}" \
       "$( \
-        awk -F ':' '{print $1":"$3}' < /etc/group | grep ":${APP_GID}$" | awk -F ":" '{print $1}' \ 
+        awk -F ':' '{print $1":"$3}' < /etc/group | grep ":${APP_GID}$" | awk -F ":" '{print $1}' \
       )")
   set +x
 fi
@@ -121,13 +121,18 @@ $DEBUG_BUILD && {
   # Exex as APP_USERNAME a development server on port 8000
   cat /app/buildinfo;
   echo "INFO: Debug mode with runserver";
-  kill $(cat /app/waitserver.pid);
+  kill "$(cat /app/waitserver.pid)";
   exec gosu "${APP_USERNAME}" python3 manage.py runserver 0.0.0.0:8000;
 }
 # exec as APP_USERNAME a production server on port 8000
 $DEBUG_BUILD || {
   cat /app/buildinfo;
   echo "INFO: Production mode with gunicorn";
-  kill $(cat /app/waitserver.pid);
-  exec gosu "${APP_USERNAME}" gunicorn hlo.wsgi:application -w 4 --bind 0.0.0.0:8000;
+  kill "$(cat /app/waitserver.pid)";
+  exec gosu "${APP_USERNAME}" gunicorn \
+    --error-logfile - \
+    --access-logfile - \
+    -w 4 \
+    --bind 0.0.0.0:8000 \
+    hlo.wsgi:application;
 }
