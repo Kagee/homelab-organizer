@@ -130,9 +130,5 @@ $DEBUG_BUILD || {
   echo "INFO: Production mode with gunicorn";
   kill "$(cat /app/waitserver.pid)";
   exec gosu "${APP_USERNAME}" gunicorn \
-    --error-logfile - \
-    --access-logfile - \
-    -w 4 \
-    --bind 0.0.0.0:8000 \
-    hlo.wsgi:application;
+    --config /app/hlo/settings/gunicorn.conf.py;
 }
