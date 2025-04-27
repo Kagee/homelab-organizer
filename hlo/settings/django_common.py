@@ -41,6 +41,12 @@ MEDIA_URL: str = "files/"
 # Take environment variables from .env file
 DEBUG: bool = env("DEBUG", default=False)
 
+# Required for tracebacks for i.e. render404 exceptions
+DEBUG_PROPAGATE_EXCEPTIONS: bool = env(
+    "DEBUG_PROPAGATE_EXCEPTIONS",
+    default=False,
+)
+
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
@@ -168,7 +174,7 @@ MIDDLEWARE: list[str] = [
     "hlo.utils.custompersistentremoteusermiddleware.CustomPersistentRemoteUserMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.locale.LocaleMiddleware"
+    "django.middleware.locale.LocaleMiddleware",
 ]
 
 ROOT_URLCONF: str = "hlo.urls"

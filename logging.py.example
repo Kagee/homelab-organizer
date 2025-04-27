@@ -22,7 +22,7 @@ LOGGING = {
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
-            "formatter": "coloredlogs",
+            # "formatter": "coloredlogs",
         },
         # ruff: noqa: ERA001
         # "file": {
@@ -48,6 +48,10 @@ LOGGING = {
             "level": "DEBUG",
         },
         "django.server": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+        "django.request": {
             "handlers": ["console"],
             "level": "DEBUG",
         },
@@ -78,11 +82,11 @@ LOGGING = {
         "factory.generate": {"level": "INFO"},
         "faker.factory": {"level": "INFO"},
         # Prod level server
-        #'daphne': {
-        #    'handlers': [
-        #        'console',
-        #    ],
-        #    'level': 'DEBUG'
-        # },
+        'gunicorn': {
+            'handlers': [
+                'console',
+            ],
+            'level': 'DEBUG'
+        },
     },
 }
