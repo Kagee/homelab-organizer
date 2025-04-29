@@ -4,8 +4,6 @@
 {% block title %}
   Details for {{ stock_item.name }}
 {% endblock title %}
-{% translate "Print label" as print_label_test %}
-{% translate "Reprint label" as reprint_label_test %}
 {% block head %}
   <script type="text/javascript">
     var print_urls = {
@@ -31,7 +29,7 @@
           const json = await response.json();
           alert(json["reason"] + ": " + json["text"] )
         } else {
-          document.querySelector('#print-label').innerHTML = "{{ reprint_label_test }}";
+          document.querySelector('#print-label').innerHTML = "{% translate "Reprint label" %}";
         }
       } catch (error) {
         alert(`Serverside error: ${error.message}`)
@@ -210,9 +208,9 @@
                       </select>
                         <a id="print-label" class="btn btn-primary">
                           {% if stockitem.label_printed %}
-                            {{ reprint_label_test }}
+                            {% translate "Reprint label" %}
                           {% else %}
-                            {{ print_label_test }}
+                            {% translate "Print label" %}
                           {% endif %}
                         </a>
                     </div>
