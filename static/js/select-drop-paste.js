@@ -136,8 +136,8 @@ class SDP {
     }
 
     async _pastEventHandler(ev) {
-        ev.preventDefault();
         for (const file of ev.clipboardData.files) {
+            ev.preventDefault();
             if (this._isAcceptableMIMEType(file)) {
                 this._newFile(file)
             } else if (this._config.showErrorCallback) {
