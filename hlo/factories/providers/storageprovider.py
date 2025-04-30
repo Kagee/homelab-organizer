@@ -5,6 +5,8 @@ from faker.providers import BaseProvider, ElementsType
 
 class StorageProvider(BaseProvider):
     room_locations: ElementsType[str] = ["{{room}} {{location}}"]
+    three_items: ElementsType[str] = ["{{item}}, {{item}}, {{item}}"]
+
     buildings: ElementsType[str] = [
         "Apartment",
         "Barn",
@@ -105,6 +107,83 @@ class StorageProvider(BaseProvider):
         "Toolbox",
     ]
 
+    items: ElementsType[str] = [
+        "Axe",
+        "Backpack",
+        "Ball",
+        "Belt",
+        "Binoculars",
+        "Book",
+        "Bow",
+        "Camera",
+        "Candle",
+        "Canteen",
+        "Compass",
+        "Dagger",
+        "Fishing rod",
+        "Flashlight",
+        "Flute",
+        "Guitar",
+        "Hammer",
+        "Hatchet",
+        "Hiking stick",
+        "Knife",
+        "Map",
+        "Machete",
+        "Maple syrup bottle",
+        "Notebook",
+        "Paddle",
+        "Pickaxe",
+        "Rope",
+        "Saddlebag",
+        "Saw",
+    ]
+
+    items_plural: ElementsType[str] = [
+        "Axes",
+        "Backpacks",
+        "Balls",
+        "Belts",
+        "Binoculars",
+        "Books",
+        "Bows",
+        "Cameras",
+        "Candles",
+        "Canteens",
+        "Compasses",
+        "Daggers",
+        "Fishing rods",
+        "Flashlights",
+        "Flutes",
+        "Guitars",
+        "Hammers",
+        "Hatchets",
+        "Hiking sticks",
+        "Knives",
+        "Maps",
+        "Machetes",
+        "Maple syrup bottles",
+        "Notebooks",
+        "Paddles",
+        "Pickaxes",
+        "Ropes",
+        "Saddlebags",
+        "Saws",
+    ]
+
+    def multiple_items(
+        self,
+        count: int = -1,
+        minimun: int = -1,
+        maximum: int = -1,
+    ) -> str:
+        mitems = []
+        if count == -1:
+            count = self.generator.random_int(minimun, maximum)
+        for _ in range(count):
+            mitems.append(self.random_element(self.items_plural))  # noqa: PERF401
+        return ", ".join(mitems).capitalize()
+
     def room_location(self) -> str:
         pattern: str = self.random_element(self.room_locations)
         return self.generator.parse(pattern)
@@ -120,3 +199,6 @@ class StorageProvider(BaseProvider):
 
     def container(self) -> str:
         return self.random_element(self.containers)
+
+    def item(self) -> str:
+        return self.random_element(self.items)

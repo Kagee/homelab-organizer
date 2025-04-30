@@ -32,8 +32,8 @@ NUM_ORDER_ITEMS = 1000
 
 NUM_BUILDINGS = 5
 NUM_ROOMS = 10
-NUM_LOCATIONS = 10
-NUM_CONTIANERS = 10
+NUM_LOCATIONS = 20
+NUM_CONTAINERS = 40
 # https://mattsegal.dev/django-factoryboy-dummy-data.html
 
 
@@ -41,10 +41,6 @@ class Command(BaseCommand):
     help = "Generates test data"
 
     def storage(self):
-        # NUM_BUILDINGS = 3
-        # NUM_ROOMS = 10
-        # NUM_LOCATIONS = 10
-        # NUM_CONTIANERS = 10
         buildings = []
         for _ in range(NUM_BUILDINGS):
             building = StorageFactory(
@@ -75,9 +71,10 @@ class Command(BaseCommand):
             locations.append(location)
 
         containers = []
-        for _ in range(NUM_CONTIANERS):
+        for _ in range(NUM_CONTAINERS):
             container = StorageFactory(
-                name=factory.Faker("container"),
+                name=factory.Faker("multiple_items", minimun=2, maximum=10),
+                name_secondary=factory.Faker("container"),
                 uuid=factory.Faker("uuid4"),
                 parent=random.choice(locations),  # noqa: S311
             )
