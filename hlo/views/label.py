@@ -152,6 +152,8 @@ def label_render_sha1_size(
         return HttpResponseNotFound(f"No object with SHA1 {sha1} found.")
 
     qr_data, label_text = _obj_get_label_data(obj)
+    if settings.DEBUG:
+        label_text = "DEV# " + label_text + " #"
     img = _get_label_size(qr_data, label_text, multiplier)
 
     # Save cache image
@@ -192,6 +194,8 @@ def label_print_sha1_size(
         )
 
     qr_data, label_text = _obj_get_label_data(obj)
+    if settings.DEBUG:
+        label_text = "DEV# " + label_text + " #"
     img = _get_label_size(qr_data, label_text, multiplier)
 
     response: requests.Response
