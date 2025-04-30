@@ -33,7 +33,7 @@ COPY requirements.txt requirements-dev.txt  /app/
 COPY hlo /app/hlo
 COPY static /app/static
 COPY manage.py LICENSE pyproject.toml package.json waitserver.py /app/
-COPY docker/copy_django_bootstrap_icons.sh /copy_django_bootstrap_icons.sh
+COPY container/copy_django_bootstrap_icons.sh /copy_django_bootstrap_icons.sh
 
 
 # Install all dependencies
@@ -70,7 +70,7 @@ RUN npm install .
 # Convert all soft symlinks in static to hard symlinks (js and css from node_modules)
 RUN find /app/static -type l -exec bash -c 'ln -f "$(readlink -m "$0")" "$0"' {} \;
 
-COPY docker/copy_django_bootstrap_icons.sh /copy_django_bootstrap_icons.sh
+COPY container/copy_django_bootstrap_icons.sh /copy_django_bootstrap_icons.sh
 RUN /copy_django_bootstrap_icons.sh
 
 # Remove the resto of the node data, as we now don't need it anymore
@@ -139,7 +139,7 @@ RUN export \
     python3 manage.py check && rm -r /tmp/*
 
 # Do this late to ease development
-COPY docker/docker-entrypoint.sh /docker-entrypoint.sh
+COPY container/entrypoint.sh /entrypoint.sh
 
 RUN cat /app/buildinfo
 
@@ -147,4 +147,4 @@ RUN cat /app/buildinfo
 VOLUME /app/static_root /app/db /app/media_root /app/whoosh_index
 EXPOSE 8000
 
-ENTRYPOINT [ "/docker-entrypoint.sh" ]
+ENTRYPOINT [ "/entrypoint.sh" ]
