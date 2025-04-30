@@ -1,17 +1,3 @@
-__all__ = [
-    "Attachment",
-    "Category",
-    "Order",
-    "OrderItem",
-    "OrderItemMeta",
-    "OrderStockItemLink",
-    "Project",
-    "Shop",
-    "StockItem",
-    "Storage",
-    "User",
-    "get_object_from_sha1",
-]
 import contextlib
 import logging
 
@@ -49,3 +35,19 @@ def get_object_from_sha1(
         return obj, OrderItem
     logger.debug("SHA1 did not match anything: %s", sha1)
     return None, None
+
+
+__all__ = [
+    "Attachment",
+    "Category",
+    "Order",
+    "OrderItem",
+    "OrderItemMeta",
+    "OrderStockItemLink",
+    "Project",
+    "Shop",
+    "StockItem",
+    "Storage",
+    "User",
+    "get_object_from_sha1",
+]

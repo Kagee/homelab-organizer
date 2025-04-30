@@ -27,9 +27,6 @@ class OrderStockItemLink(models.Model):
 
     def __str__(self):
         return (
-            # pylint: disable=no-member
-            str(
-                f"\nOrderitem: {self.orderitem_link.name}\n"
-                f"Stockitem: {self.stockitem_link.name}",
-            )
+            f"\nOrderitem: {self.orderitem_link.name}\n"
+            f"Stockitem: {self.stockitem_link.name}"
         )

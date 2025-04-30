@@ -55,9 +55,7 @@ class OrderFormSimple(ModelForm):
             Column(
                 Row(
                     Column(Field("order_id")),
-                    Column(
-                        Field("date"),
-                    ),
+                    Column(Field("date")),
                     Column(FieldWithButtons("total")),
                 ),
             ),
