@@ -237,7 +237,7 @@ class OrderItem(models.Model):  # type: ignore[django-manager-missing]
             )
         return mark_safe(  # noqa: S308
             f'<img style="max-height: 100%; '
-            f'width: { f"{max_width} px" if max_width else "auto" };"'
+            f'width: {f"{max_width} px" if max_width else "auto"};"'
             f' src="{self.thumbnail.url}" />',
         )
 
