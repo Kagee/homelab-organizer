@@ -8,7 +8,7 @@ cd .. # move to base dir
   --name hlo-dev \
   --env-file ./.env-dev \
   --publish 127.0.0.1:8005:8000 \
-  --volume "$PWD/docker/docker-entrypoint.sh:/custom-entrypoint.sh" \
+  --volume "$PWD/container/entrypoint.sh:/custom-entrypoint.sh" \
   --volume "$PWD/hlo/:/app/hlo/" \
   --volume "$PWD/static/:/app/static/" \
   --volume "$PWD/node_modules/:/app/node_modules/" \
@@ -20,7 +20,7 @@ cd .. # move to base dir
   --name hlo-dev \
   --env-file ./.env-dev \
   --publish 127.0.0.1:8005:8000 \
-  --volume "$PWD/docker/docker-entrypoint.sh:/custom-entrypoint.sh" \
+  --volume "$PWD/container/entrypoint.sh:/custom-entrypoint.sh" \
   --volume "$PWD/hlo/:/app/hlo/" \
   --volume "$PWD/static/:/app/static/" \
   --volume "$PWD/node_modules/:/app/node_modules/" \
