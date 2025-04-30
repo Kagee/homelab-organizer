@@ -28,6 +28,8 @@ class ShopFactory(DjangoModelFactory):
     _branch = fuzzy.FuzzyChoice(
         [".no", ".com", " South Branch", " China"],
     )
+
+    # factory.SelfAttribute('birthdate.month') ?
     branch_name = factory.LazyAttribute(
         lambda p: f"{p.name}{p._branch}",  # noqa: SLF001
     )
