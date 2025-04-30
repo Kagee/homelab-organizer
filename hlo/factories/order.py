@@ -64,7 +64,8 @@ class OrderFactory(DjangoModelFactory):
         related_name="order",
         blank=True,
     )
-
+    
+    fake.numerify("@%#,##")
     total = MoneyField(
         max_digits=19,
         decimal_places=4,

@@ -10,27 +10,79 @@ from django.db import transaction
 from factory.fuzzy import FuzzyDateTime
 from faker import Faker
 
-from hlo.models import Shop
+from hlo.factories import (
+    OrderFactory,  # noqa: E402
+    ShopFactory,  # noqa: E402
+    StorageFactory,  # noqa: E402
+)
+from hlo.factories.providers import StorageProvider
+from hlo.models import Order, OrderItem, Shop, StockItem, Storage
+
+factory.Faker.add_provider(StorageProvider)
 
 # Preseed the random generators to a spesific seed
 # to make the test data reproducible
 random.seed(settings.FACTORY_SEED)
 factory.random.reseed_random(settings.FACTORY_SEED)
 
-from hlo.factories import (
-    OrderFactory,  # noqa: E402
-    ShopFactory,  # noqa: E402
-)
 
 NUM_SHOPS = 10
 NUM_ORDERS = 40
 NUM_ORDER_ITEMS = 1000
 
+NUM_BUILDINGS = 5
+NUM_ROOMS = 10
+NUM_LOCATIONS = 10
+NUM_CONTIANERS = 10
 # https://mattsegal.dev/django-factoryboy-dummy-data.html
 
 
 class Command(BaseCommand):
     help = "Generates test data"
+
+    def storage(self):
+        # NUM_BUILDINGS = 3
+        # NUM_ROOMS = 10
+        # NUM_LOCATIONS = 10
+        # NUM_CONTIANERS = 10
+        buildings = []
+        for _ in range(NUM_BUILDINGS):
+            building = StorageFactory(
+                name=factory.Faker("building"),
+                uuid=factory.Faker("uuid4"),
+            )
+            building.save()
+            buildings.append(building)
+
+        rooms = []
+        for _ in range(NUM_ROOMS):
+            room = StorageFactory(
+                name=factory.Faker("room"),
+                uuid=factory.Faker("uuid4"),
+                parent=random.choice(buildings),  # noqa: S311
+            )
+            room.save()
+            rooms.append(room)
+
+        locations = []
+        for _ in range(NUM_LOCATIONS):
+            location = StorageFactory(
+                name=factory.Faker("location"),
+                uuid=factory.Faker("uuid4"),
+                parent=random.choice(rooms),  # noqa: S311
+            )
+            location.save()
+            locations.append(location)
+
+        containers = []
+        for _ in range(NUM_CONTIANERS):
+            container = StorageFactory(
+                name=factory.Faker("container"),
+                uuid=factory.Faker("uuid4"),
+                parent=random.choice(locations),  # noqa: S311
+            )
+            container.save()
+            containers.append(container)
 
     @transaction.atomic
     def handle(self, *_args, **_kwargs):
@@ -39,7 +91,7 @@ class Command(BaseCommand):
             sys.exit(1)
 
         self.stdout.write("Deleting old data...")
-        models = [Shop]
+        models = [Shop, Order, Storage, OrderItem, StockItem]
         for m in models:
             m.objects.all().delete()
 
@@ -48,6 +100,7 @@ class Command(BaseCommand):
         shops = []
         for _ in range(NUM_SHOPS):
             shop = ShopFactory()
+            shop.save()
             shops.append(shop)
 
         shop_index = list(range(len(shops)))
@@ -60,14 +113,15 @@ class Command(BaseCommand):
             k=NUM_ORDERS,
         )
 
+        self.storage()
         # Faker.date_between_dates(
         #    date_start=
         #    date_end=
         # )
-        orders = []
-        for _i, shop_index in enumerate(shop_index_list):
-            order = OrderFactory.create(shop=shops[shop_index])
-            orders.append(order)
+        # orders = []
+        # for _i, shop_index in enumerate(shop_index_list):
+        #    order = OrderFactory.create(shop=shops[shop_index])
+        #    orders.append(order)
 
         # Create all the threads
         # for _ in range(NUM_THREADS):
