@@ -2,36 +2,88 @@ from faker.providers import BaseProvider, ElementsType
 
 # https://github.com/joke2k/faker/blob/master/faker/providers/person/__init__.py
 
+
 class StorageProvider(BaseProvider):
     room_locations: ElementsType[str] = ["{{room}} {{location}}"]
     buildings: ElementsType[str] = [
-            "Warehouse",
-            "Apartment",
-            "Barn",
-            ]
+        "Apartment",
+        "Barn",
+        "Bungalow",
+        "Cabin",
+        "Castle",
+        "Condo",
+        "Cottage",
+        "Dormitory",
+        "Flat",
+        "Garage",
+        "Hangar",
+        "House",
+        "Mansion",
+        "Office",
+        "Penthouse",
+        "Residence",
+        "Shed",
+        "Shop",
+        "Studio",
+        "Townhouse",
+        "Villa",
+        "Warehouse",
+        "Workshop",
+        "Yard",
+        "Ziggurat",
+    ]
     rooms: ElementsType[str] = [
-            "Kitchen",
-            "Shed",
-            "Bedroom",
-            "Storage room",
-            "Office",
-            ]
+        "Atrium",
+        "Attic",
+        "Basement",
+        "Bathroom",
+        "Bedroom",
+        "Breezeway",
+        "CaveFamily room",
+        "Cellar",
+        "Closet",
+        "Crawl space",
+        "Craft room",
+        "Dining room",
+        "Den",
+        "Exercise room",
+        "Foyer",
+        "Game room",
+        "Garage",
+        "Guest room",
+        "Hall",
+        "Home theater",
+        "Kitchen",
+        "Laundry room",
+        "Library",
+        "Living room",
+        "Office",
+        "Pantry",
+        "Playroom",
+        "Rec room",
+        "Shed",
+        "Storage area",
+        "Storage room",
+        "Study",
+        "Utility room",
+        "Workshop",
+    ]
     locations: ElementsType[str] = [
-            "Closet",
-            "Shelf",
-            "Wardrobe",
-            "Pantry",
-            "Locker",
-            "Dresser",
-            "Counter",
-            "Table",
-            "Desk",
-            ]
+        "Closet",
+        "Shelf",
+        "Wardrobe",
+        "Pantry",
+        "Locker",
+        "Dresser",
+        "Counter",
+        "Table",
+        "Desk",
+    ]
     containers: ElementsType[str] = [
-            "Cardbord box",
-            "Plastic box",
-            "Binder",
-            ]
+        "Cardbord box",
+        "Plastic box",
+        "Binder",
+    ]
 
     def room_location(self) -> str:
         pattern: str = self.random_element(self.room_locations)
