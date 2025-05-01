@@ -5,8 +5,10 @@ from django.conf import settings
 from factory import fuzzy
 from factory.django import DjangoModelFactory
 
+from hlo.factories.providers import MoneyProvider
 from hlo.models import Order
 
+factory.Faker.add_provider(MoneyProvider)
 from . import AttachmentFactory
 
 
@@ -24,20 +26,25 @@ class OrderFactory(DjangoModelFactory):
     # "confused with the internal database id."
     order_id = factory.Faker("uuid4")
 
-    attachments = AttachmentFactory.generate_batch(
-        strategy=factory.CREATE_STRATEGY,
-        size=2,
-    )
+    # attachments = AttachmentFactory.generate_batch(
+    #    strategy=factory.CREATE_STRATEGY,
+    #    size=2,
+    # )
+
+    subtotal = factory.Faker("money", text="@%#,##")
+    shipping = factory.Faker("money", text="@%#,##")
 
     @factory.post_generation
-    def my_m2m(self, create, value, **_kwargs):
+    def total(self, create, _value, **_kwargs):
         if not create:
             return
+        self.tax = (self.subtotal + self.shipping) * 0.25
+        self.total = self.subtotal + self.tax + self.shipping
 
-        if value:
-            # User called MyFactory(my_m2m=an_instance)
-            for a in value:
-                self.my_m2ms.add(a)
+    # if value:
+    #    # User called MyFactory(my_m2m=an_instance)
+    #    for a in value:
+    #        self.my_m2ms.add(a)
 
     # [
     #    factory.Faker(

@@ -81,6 +81,23 @@ class Command(BaseCommand):
             container.save()
             containers.append(container)
 
+    def orders(self, shops):
+        shop_index = list(range(len(shops)))
+        weights = [x + 1 * 2 for x in range(len(shops))]
+        random.shuffle(weights)
+        shop_index_list = random.choices(  # noqa: S311
+            shop_index,
+            weights=weights,
+            k=NUM_ORDERS,
+        )
+
+        orders = []
+        for _i, shop_index in enumerate(shop_index_list):
+            order = OrderFactory.create(shop=shops[shop_index])
+            order.save()
+            orders.append(order)
+        return orders
+
     @transaction.atomic
     def handle(self, *_args, **_kwargs):
         if settings.PROD:
@@ -100,17 +117,8 @@ class Command(BaseCommand):
             shop.save()
             shops.append(shop)
 
-        shop_index = list(range(len(shops)))
-        weights = [x + 1 * 2 for x in range(len(shops))]
-        random.shuffle(weights)
-        # print(shop_index, weights)
-        shop_index_list = random.choices(  # noqa: S311
-            shop_index,
-            weights=weights,
-            k=NUM_ORDERS,
-        )
-
         self.storage()
+        orders = self.orders(shops)
         # Faker.date_between_dates(
         #    date_start=
         #    date_end=
