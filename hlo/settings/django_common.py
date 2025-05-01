@@ -31,7 +31,7 @@ PROD: bool = env("PROD", default=False)
 BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
 
 
-env_file = ".env-prod" if PROD else ".env-dev"
+env_file = ".env-prod" if PROD else ".env-host"
 
 env.read_env(BASE_DIR / env_file)
 
