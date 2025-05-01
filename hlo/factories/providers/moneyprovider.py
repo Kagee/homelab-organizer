@@ -26,12 +26,9 @@ class MoneyProvider(BaseProvider):
                 )
             else:
                 logger.debug("Money is not Money: %s", money)
-                print(dir(money[0]))
-                # print(dir(money[0].evaluate()))
-                new_money = Money(amout=0, currency=money[0].currency)
+                new_money = Money(amount=0, currency=money[0].currency)
                 for m in money:
-                    m2 = m
-                    new_money += m2
+                    new_money += m
                 # new_money = sum(money) * Decimal(multiplier)
             logger.debug("Money: %s, New money: %s", money, new_money)
             return new_money
