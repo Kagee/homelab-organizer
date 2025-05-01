@@ -29,7 +29,7 @@ class MoneyProvider(BaseProvider):
                 new_money = Money(amount=0, currency=money[0].currency)
                 for m in money:
                     new_money += m
-                # new_money = sum(money) * Decimal(multiplier)
+                new_money = new_money * Decimal(multiplier)
             logger.debug("Money: %s, New money: %s", money, new_money)
             return new_money
         if not currency:
