@@ -26,6 +26,11 @@
                     <a class="btn btn-outline-secondary btn-sm"
                        href="{% url 'orderitem-create-order' order.id %}"
                        role="button">add item</a>
+                       {% if request.user.is_staff %}
+                       <a class="btn btn-outline-secondary btn-sm"
+                          href="{% url 'admin:hlo_order_change' order.id %}"
+                          role="button" target="_blank">admin</a>
+                   {% endif %}
                 </h1>
                 <h6 class="text-body-secondary">{{ order.items.count }} items, {{ order.date }}</h6>
                 <h3>Total: {{ order.total }}</h3>
