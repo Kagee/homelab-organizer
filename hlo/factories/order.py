@@ -17,7 +17,7 @@ factory.Faker.add_provider(MoneyProvider)
 class OrderFactory(DjangoModelFactory):
     class Meta:
         model = Order
-        exclude = ["_currency", "subtotal2"]
+        exclude = ["_currency"]
 
     _currency = fuzzy.FuzzyChoice(
         settings.CURRENCIES,
@@ -39,22 +39,36 @@ class OrderFactory(DjangoModelFactory):
     # )
 
     # Money returned: ¥2,748
-    subtotal = factory.Faker("djmoney", currency=_currency)
-    subtotal2 = factory.Faker("djmoney", currency=_currency)
-    # Money is Money: ¥2,748 / <class 'djmoney.money.Money'>
+    subtotal = factory.Faker(
+        "djmoney",
+        currency=factory.SelfAttribute(".._currency"),
+    )
+
+    # Let's assume a shipping price of 10% of the subtotal
+    shipping = factory.Faker(
+        "djmoney",
+        currency=factory.SelfAttribute(".._currency"),
+        multiplier=0.10,
+    )
+
+    # Norwegian tax is calculated as 25% of the subtotal+shipping
     tax = factory.Faker(
         "djmoney",
-        # money=factory.LazySelfAttribute("..subtotal"),
-        money=factory.LazyAttribute(lambda o: o.factory_parent.subtotal),
+        money=factory.List(
+            [
+                factory.SelfAttribute("..factory_parent.subtotal"),
+                factory.SelfAttribute("..factory_parent.shipping"),
+            ],
+        ),
         multiplier=0.25,
     )
 
-    # Money is not Money: [<SelfAttribute('subtotal', default=<class 'factory.declarations._UNSPECIFIED'>)>]
     total = factory.Faker(
         "djmoney",
         money=factory.List(
             [
                 factory.SelfAttribute("..factory_parent.subtotal"),
+                factory.SelfAttribute("..factory_parent.shipping"),
                 factory.SelfAttribute("..factory_parent.tax"),
             ],
         ),
