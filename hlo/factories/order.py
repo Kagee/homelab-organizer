@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 import factory
 from django.conf import settings
@@ -8,13 +9,19 @@ from factory.django import DjangoModelFactory
 from hlo.factories.providers import MoneyProvider
 from hlo.models import Order
 
+logger = logging.getLogger(__name__)
+
 factory.Faker.add_provider(MoneyProvider)
-from . import AttachmentFactory
 
 
 class OrderFactory(DjangoModelFactory):
     class Meta:
         model = Order
+        exclude = "_currency"
+
+    _currency = fuzzy.FuzzyChoice(
+        settings.CURRENCIES,
+    )
 
     date = factory.Faker(
         "date_between_dates",
@@ -31,15 +38,49 @@ class OrderFactory(DjangoModelFactory):
     #    size=2,
     # )
 
-    subtotal = factory.Faker("money", text="@%#,##")
-    shipping = factory.Faker("money", text="@%#,##")
+    # Money returned: ¥2,748
+    subtotal = factory.Faker("djmoney", currency=_currency)
 
-    @factory.post_generation
-    def total(self, create, _value, **_kwargs):
-        if not create:
-            return
-        self.tax = (self.subtotal + self.shipping) * 0.25
-        self.total = self.subtotal + self.tax + self.shipping
+    # Money is Money: ¥2,748 / <class 'djmoney.money.Money'>
+    tax = factory.Faker(
+        "djmoney",
+        money=factory.SelfAttribute("..subtotal"),
+        multiplier=0.25,
+    )
+    # Money is not Money: [<SelfAttribute('subtotal', default=<class 'factory.declarations._UNSPECIFIED'>)>]
+    total = factory.Faker(
+        "djmoney",
+        money=[
+            factory.SelfAttribute("..subtotal"),
+            # factory.SelfAttribute("..tax"),
+        ],
+    )
+
+    # total = factory.Faker(
+    #    "djmoney",
+    #    money=[
+    #        factory.LazyAttribute(lambda o: o.subtotal),
+    #        factory.LazyAttribute(lambda o: o.tax),
+    #    ],
+    # )
+    # shipping = factory.Faker("djmoney", currency=_currency, multiplier=0.10)
+    # tax = factory.Faker("djmoney", money=subtotal, multiplier=0.25)
+
+    # @factory.lazy_attribute
+    # def subtotal(self):
+    #    return factory.Faker("djmoney", currency=self._currency)
+    # return Money(amount="1220.90", currency=self._currency)
+
+    # factory.Faker("money", text="@%#,##")
+
+    # @factory.post_generation
+    # def total(self, create, _value, **_kwargs):
+    #    if not create:
+    #        return
+    #    self.tax = ((self.subtotal or 0.0) + (self.shipping or 0.0)) * 0.25
+    #    self.total = (
+    #        (self.subtotal or 0.0) + (self.tax or 0.0) + (self.shipping or 0.0)
+    #    )
 
     # if value:
     #    # User called MyFactory(my_m2m=an_instance)
