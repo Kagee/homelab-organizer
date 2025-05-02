@@ -1,9 +1,11 @@
 import hashlib
 import logging
+from io import BytesIO
 from pathlib import Path
 
 from django.contrib import admin
 from django.core.cache import cache
+from django.core.files import File
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
@@ -58,19 +60,29 @@ class Attachment(models.Model):
     def save(self, *args, **kwargs):
         # pylint: disable=no-member
         if self.file:
+            #  if self.file and not self.sha1:
+            # Maybe do something like checking and
+            # saving modification date and recalculate sha1
+            # if it is changed
+            # buf = BytesIO()
             with self.file.open("rb") as f:
                 sha1hash = hashlib.sha1()  # noqa: S324
                 if f.multiple_chunks():
                     for chunk in f.chunks():
                         sha1hash.update(chunk)
+                        # buf.write(chunk)
                 else:
-                    sha1hash.update(f.read())
+                    data = f.read()
+                    sha1hash.update(data)
+                    # buf.write(data)
                 self.sha1 = sha1hash.hexdigest()
-                logger.debug("Attachment SHA1 was %s", self.sha1)
-                super().save(*args, **kwargs)
-        else:
-            self.sha1 = self.sha1 if self.sha1 else None
-        super().save(*args, **kwargs)
+                # buffer_file = File(buf)
+                # self.file.file = buffer_file
+                logger.debug("Attachment SHA1 set to %s", self.sha1)
+                # We must save here because "with self.file above"
+                return super().save(*args, **kwargs)
+        self.sha1 = self.sha1 if self.sha1 else None
+        return super().save(*args, **kwargs)
 
     def clear_attachment_caches(self):
         """Update cache keys that depend on StockItems."""

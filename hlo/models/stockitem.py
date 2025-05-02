@@ -128,23 +128,26 @@ class StockItem(models.Model):
         """
         # pylint: disable=no-member
         self.thumbnail_sha1 = ""
-        buf = BytesIO()
+        # buf = BytesIO()
         if self.thumbnail:
             with self.thumbnail.open("rb") as f:
                 thumbnail_hash = hashlib.sha1()  # noqa: S324
                 if f.multiple_chunks():
                     for chunk in f.chunks():
                         thumbnail_hash.update(chunk)
-                        buf.write(chunk)
+                        # buf.write(chunk)
                 else:
                     data = f.read()
                     thumbnail_hash.update(data)
-                    buf.write(data)
+                    # buf.write(data)
                 self.thumbnail_sha1 = thumbnail_hash.hexdigest()
-            buffer_file = ImageFile(buf)
-            self.thumbnail.file = buffer_file
+                # we must super here because "with self.thumbnail above"
+                super().save(*args, **kwargs)
+                return self.clear_stockitem_caches()
+            # buffer_file = ImageFile(buf)
+            # self.thumbnail.file = buffer_file
         super().save(*args, **kwargs)
-        self.clear_stockitem_caches()
+        return self.clear_stockitem_caches()
 
     def get_absolute_url(self) -> str:
         return reverse("stockitem-detail", kwargs={"pk": self.pk})
