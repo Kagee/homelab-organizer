@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 
 from hlo.models import Order
@@ -12,6 +11,7 @@ class OrderAdmin(admin.ModelAdmin):
         "shop_name",
         "text_manual_input",
         "total",
+        "subtotal",
     ]
     list_filter = [
         "shop__name",

@@ -102,16 +102,21 @@ class Order(models.Model):  # type: ignore[django-manager-missing]
     def text_manual_input(self) -> str:
         return "Yes" if self.manual_input else "No"
 
-    @admin.display(description="Items")
+    @admin.display(description="Attachments")
     def attachments_tag(self):
         # pylint: disable=no-member
         if self.attachments.count() == 0:
             return "No attachments"
         html = '<ul style="margin: 0;">'
         for attachment in self.attachments.all():
+            admin_url = reverse(
+                "admin:hlo_attachment_change",
+                args=[attachment.id],
+            )
             html += (
                 f'<li><a href="{attachment.file.url}"'
-                f' target="_blank">{attachment}</a></li>'
+                f' target="_blank">{attachment}</a>&nbsp'
+                f'<a href="{admin_url}">(admin)</li>'
             )
         html += "</ul>"
         return mark_safe(html)  # noqa: S308
