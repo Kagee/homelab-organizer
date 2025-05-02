@@ -1,10 +1,14 @@
 # setup_test_data.py
 import datetime
+import os
 import random
+import shutil
 import sys
+from pathlib import Path
 
 import factory.random
 from django.conf import settings
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from factory.fuzzy import FuzzyDateTime
@@ -16,7 +20,7 @@ from hlo.factories import (
     StorageFactory,  # noqa: E402
 )
 from hlo.factories.providers import StorageProvider
-from hlo.models import Order, OrderItem, Shop, StockItem, Storage
+from hlo.models import Attachment, Order, OrderItem, Shop, StockItem, Storage
 
 factory.Faker.add_provider(StorageProvider)
 
@@ -105,9 +109,13 @@ class Command(BaseCommand):
             sys.exit(1)
 
         self.stdout.write("Deleting old data...")
-        models = [Shop, Order, Storage, OrderItem, StockItem]
+        models = [Shop, Order, Storage, OrderItem, StockItem, Attachment]
         for m in models:
             m.objects.all().delete()
+        Attachment.objects.update()
+        # call_command("rebuild_index", interactive=False)
+        self.stdout.write("Clearing haystack index...")
+        call_command("clear_index", interactive=False)
 
         self.stdout.write("Creating new data...")
         # Create all the users
