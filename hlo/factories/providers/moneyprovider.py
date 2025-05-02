@@ -1,10 +1,11 @@
 import logging
 from decimal import Decimal
 
-logger = logging.getLogger(__name__)
 from django.conf import settings
 from djmoney.money import Money
-from faker.providers import BaseProvider  # , ElementsType
+from faker.providers import BaseProvider
+
+logger = logging.getLogger(__name__)
 
 
 class MoneyProvider(BaseProvider):
@@ -19,18 +20,18 @@ class MoneyProvider(BaseProvider):
         if money:
             # Use the input currency
             if isinstance(money, Money):
-                logger.debug("Money is Money: %s / %s", money, type(money))
+                # logger.debug("Money is Money: %s / %s", money, type(money))
                 new_money = Money(
                     amount=money.amount * Decimal(multiplier),
                     currency=money.currency,
                 )
             else:
-                logger.debug("Money is not Money: %s", money)
+                # logger.debug("Money is not Money: %s", money)
                 new_money = Money(amount=0, currency=money[0].currency)
                 for m in money:
                     new_money += m
                 new_money = new_money * Decimal(multiplier)
-            logger.debug("Money: %s, New money: %s", money, new_money)
+            # logger.debug("Money: %s, New money: %s", money, new_money)
             return new_money
         if not currency:
             currency = self.random_choices(settings.CURRENCIES, length=1)[0]
@@ -52,5 +53,5 @@ class MoneyProvider(BaseProvider):
             * Decimal(multiplier),
             currency=currency,
         )
-        logger.debug("Money returned: %s", m)
+        # logger.debug("Money returned: %s", m)
         return m
