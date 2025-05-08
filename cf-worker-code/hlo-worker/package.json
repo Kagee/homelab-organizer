@@ -1,0 +1,16 @@
+{
+	"name": "hlo-worker",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev"
+	},
+	"devDependencies": {
+		"wrangler": "^4.14.4"
+	},
+	"dependencies": {
+		"cloudflare": "^4.2.0"
+	}
+}
