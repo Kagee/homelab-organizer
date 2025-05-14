@@ -16,7 +16,7 @@ from hlo.factories import (
     StorageFactory,  # noqa: E402
 )
 from hlo.factories.providers import StorageProvider
-from hlo.models import Order, OrderItem, Shop, StockItem, Storage
+from hlo.models import Attachment, Order, OrderItem, Shop, StockItem, Storage
 
 factory.Faker.add_provider(StorageProvider)
 
@@ -105,7 +105,7 @@ class Command(BaseCommand):
             sys.exit(1)
 
         self.stdout.write("Deleting old data...")
-        models = [Shop, Order, Storage, OrderItem, StockItem]
+        models = [Shop, Order, Storage, OrderItem, StockItem, Attachment]
         for m in models:
             m.objects.all().delete()
 
