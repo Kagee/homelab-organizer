@@ -5,10 +5,12 @@ import environ
 env = environ.FileAwareEnv()
 env.prefix = "HLO_"
 
+WHOOSH_INDEX = Path(env("WHOOSH_INDEX", default="./whoosh_index")).resolve()
+
 HAYSTACK_CONNECTIONS = {
     "default": {
         "ENGINE": "haystack.backends.whoosh_backend.WhooshEngine",
-        "PATH": Path(env("WHOOSH_INDEX", default="./whoosh_index")).resolve(),
+        "PATH": WHOOSH_INDEX,
     },
 }
 HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"

@@ -1,10 +1,14 @@
 # setup_test_data.py
 import datetime
+import os
 import random
+import shutil
 import sys
+from pathlib import Path
 
 import factory.random
 from django.conf import settings
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from factory.fuzzy import FuzzyDateTime
@@ -109,6 +113,18 @@ class Command(BaseCommand):
         for m in models:
             m.objects.all().delete()
 
+        self.stdout.write("Deleting haystack index...")
+        for filename in settings.WHOOSH_INDEX.iterdir():
+            path: Path = settings.WHOOSH_INDEX / filename
+            if path.is_file() or path.is_link():
+                path.unlink()
+            elif path.isdir():
+                shutil.rmtree(path)
+
+        # This will rebuild an empty index
+        self.stdout.write("Rebuild haystack index...")
+        call_command("rebuild_index", interactive=False)
+
         self.stdout.write("Creating new data...")
         # Create all the users
         shops = []
@@ -119,6 +135,7 @@ class Command(BaseCommand):
 
         self.storage()
         orders = self.orders(shops)
+
         # Faker.date_between_dates(
         #    date_start=
         #    date_end=
