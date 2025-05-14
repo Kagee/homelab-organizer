@@ -29,7 +29,7 @@ cd .. # move to base dir
   --volume /tank/tmp/hlo-dev/whoosh:/app/whoosh_index/ \
   localhost/hlo:dev
 
-figlet DEV-TEMP && exec podman run \
+[[ "$1" = "dev-temp" ]] && figlet DEV-TEMP && exec podman run \
   --init \
   --rm \
   --name hlo-dev \

@@ -80,6 +80,8 @@ chown "${APP_UID}:${APP_GID}" "${APP_DIR}"
 echo "INFO: Cleanup permissions in subdirectories of ${APP_DIR} to ${APP_UID}:${APP_GID}"
 FOLDERS=("${HLO_STATIC_ROOT}" "${HLO_MEDIA_ROOT}" "${HLO_WHOOSH_INDEX}" "$(dirname "${HLO_SQLITE3_FILE}")")
 
+mkdir -p "${FOLDERS[@]}"
+
 set -x
 find "${FOLDERS[@]}" \
     -type d -not -perm 755 -exec chmod 755 {} \;
