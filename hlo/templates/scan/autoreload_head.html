@@ -1,0 +1,30 @@
+  <script>
+        let previousHTML = ""
+        async function checkForChanges() {
+            try {
+                const response = await fetch(location, { cache: 'no-store' });
+                if (!response.ok) {
+                    // If there's an HTTP error, just ignore and retry later
+                    return;
+                }
+                let text = await response.text();
+                text = text.trim()
+                let currentHtml = document.documentElement.outerHTML.trim();
+                if (previousHTML === "") {
+                    console.log('First check! Initializing previousHTML..');
+                    previousHTML = text;
+                } else if (previousHTML !== text) {
+                    // If the HTML has changed, update the previousHTML
+                    console.log('Content has changed, reloading the page..');
+                    location.reload();
+                } else {
+                    //console.log('No changes detected.');
+                }
+            } catch (error) {
+                // Ignore fetch errors silently
+                console.log(error);
+            }
+        }
+
+        setInterval(checkForChanges, 3000); // check every 3 seconds
+    </script>

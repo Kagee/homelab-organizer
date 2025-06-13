@@ -16,6 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 class WebappView(TemplateView):
+    template_name = "scan/webapp2.html"
+
+
+class WebappView2(TemplateView):
     template_name = "scan/webapp.html"
 
     def post(self, request, *_args, **_kwargs):
