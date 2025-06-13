@@ -268,11 +268,14 @@ def show_toolbar_callback(request: HttpRequest) -> bool:
     return request.META.get("HTTP_HOST") != "scan.h2x.no"
 
 
+SHOW_DEBUG_TOOLBAR = env.bool("SHOW_DEBUG_TOOLBAR", default=DEBUG)
+
 DEBUG_TOOLBAR_CONFIG = {
     # "DISABLE_PANELS": {"debug_toolbar.panels.staticfiles.StaticFilesPanel"}
     "SHOW_TOOLBAR_CALLBACK": lambda request: request.META.get("HTTP_HOST")
     != "scan.h2x.no"
-    and not PROD,
+    and not PROD
+    and SHOW_DEBUG_TOOLBAR,
 }
 
 # django-crispy-forms / crispy-bootstrap5
