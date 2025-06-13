@@ -1,71 +1,77 @@
-
 let wakeLockSupported = false;
 let wakeLock = null;
-const changeUI = (status = 'acquired') => {
-    const acquired = status === 'acquired' ? true : false;
-    console.log(`Wake lock status changed to ${status}`)
-    if (acquired) {
-        $("#wake-lock-btn").addClass("btn-danger")
-        $("#wake-lock-btn").removeClass("btn-primary")
-        $("#wake-lock-btn").html(`Wake lock (press to unlock)`)
-    } else {
-        $("#wake-lock-btn").addClass("btn-primary")
-        $("#wake-lock-btn").removeClass("btn-danger")
-        $("#wake-lock-btn").html(`Wake lock (press to lock)`)
-    }
-}
+let wakeLockStatus = 'off';
+let wakeLockBtn = null;
 
-let wakeButton = 'off';
-// create an async function to request a wake lock
+const changeUI = (status = 'acquired') => {
+    const acquired = status === 'acquired';
+    console.log(`Wake lock status changed to ${status}`);
+    if (!wakeLockBtn) return;
+    if (acquired) {
+        wakeLockBtn.classList.add("btn-danger");
+        wakeLockBtn.classList.remove("btn-primary");
+    } else {
+        wakeLockBtn.classList.add("btn-primary");
+        wakeLockBtn.classList.remove("btn-danger");
+    }
+};
+
+// async function to request a wake lock
 const requestWakeLock = async () => {
     try {
         wakeLock = await navigator.wakeLock.request('screen');
-        wakeButton = 'on';
+        wakeLockStatus = 'on';
         // change up our interface to reflect wake lock active
         changeUI();
 
-        // listen for our release event
-        //wakeLock.onrelease = function(ev) {
-        //    console.log(ev);
-        //}
         wakeLock.addEventListener('release', () => {
             // if wake lock is released alter the button accordingly
             changeUI('released');
         });
 
     } catch (err) {
-        changeUI(`${err.name}, ${err.message}`)
+        changeUI(`${err.name}, ${err.message}`);
     }
 } // requestWakeLock()
 
 function init_wakeLock() {
+    // check if the browser supports wake lock API
     if ('wakeLock' in navigator) {
         wakeLockSupported = true;
-        $("wake-lock-div").show(0)
-        console.log("Wake lock supported")
+        console.log("Wake lock supported");
     } else {
-        $("wake-lock-div").hide()
-        console.log("Wake lock not supported")
+        console.log("Wake lock not supported");
+        wakeLockBtn.style.display = 'none';
+        return; // exit if not supported
     }
-    if (wakeLockSupported) {
-        $("#wake-lock-btn").on('click', function() {
+
+    wakeLockBtn = document.getElementById("wake-lock-btn");
+   
+    if (wakeLockSupported && wakeLockBtn) {
+        wakeLockBtn.addEventListener('click', function() {
+            
             // if wakelock is off request it
-            if (wakeButton === 'off') {
-                requestWakeLock()
+            console.log("Wake lock button pressed...");
+            if (wakeLockStatus === 'off') {
+                console.log("Requesting wake lock...");
+                requestWakeLock();
             } else { // if it's on release it
+                console.log("Releasing wake lock...");
                 wakeLock.release()
                 .then(() => {
                     wakeLock = null;
-                    wakeButton = 'off';
-                })
+                    wakeLockStatus = 'off';
+                });
             }
-        }); // $("#wake-lock-btn").on('click', function() {
+        });
+        // re-request wake lock on visibility change
+        // this is useful if the user switches tabs or minimizes the browser
+        // and then returns to the page
         const handleVisibilityChange = () => {
             if (wakeLock !== null && document.visibilityState === 'visible') {
                 requestWakeLock();
             }
           }
         document.addEventListener('visibilitychange', handleVisibilityChange);
-    } // if (wakeLockSupported)
-
+    }
 }
