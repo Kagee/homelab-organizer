@@ -1,0 +1,148 @@
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
+{% load static %}
+{% load hlo_tags %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Scan test</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+              rel="stylesheet"
+              integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+              crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+                integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+                integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+                crossorigin="anonymous"></script>
+        {% include "scan/autoreload_head.html" %}
+    </head>
+    <body class="bg-light">
+        <!-- Top Bar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-3 py-2 d-flex justify-content-between align-items-center">
+            <div>
+                <i id="padlockIcon" class="bi bi-lock fs-3 me-2 text-success" role="button" aria-label="Padlock" tabindex="0"></i>
+            </div>
+            <div>
+                <i id="settingsIcon" class="mdi mdi-cog fs-2 text-secondary" role="button" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Settings" tabindex="0"></i>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container-fluid d-flex flex-column min-vh-100 px-0">
+            <div class="flex-grow-1 d-flex flex-column justify-content-center">
+                <div class="row g-0 flex-grow-1" style="min-height: 40vh;">
+                    <div class="col-md-7 d-flex flex-column justify-content-center p-4">
+                        <div class="mb-2"><strong>Name:</strong> Johnathan Alexander Maximillian Doe the Third</div>
+                        <div class="mb-2"><strong>Location:</strong> 1234 Long Address Lane, Springfield, State, Country, 12345-6789</div>
+                        <div class="mb-2">
+                            <strong>Description:</strong>
+                            <span class="d-block text-truncate" style="max-width: 100%; max-height: 4.5em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-clamp: 3;">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, nisi eu consectetur consectetur, nisl nisi consectetur nisi, eu consectetur nisl nisi euismod nisi. Etiam euismod, nisi eu consectetur consectetur, nisl nisi consectetur nisi, eu consectetur nisl nisi euismod nisi.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-5 d-flex align-items-center justify-content-center p-4">
+                        <div class="bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center w-100" style="aspect-ratio: 1/1; max-width: 220px; min-width: 120px; width: 35vw;">
+                            <span class="text-muted">Image<br>Placeholder</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Separator Bar with Buttons -->
+                <div class="d-flex justify-content-center align-items-center py-2 bg-white border-top border-bottom">
+                    <button class="btn btn-outline-primary mx-2"><i class="bi bi-arrow-left"></i></button>
+                    <button class="btn btn-outline-secondary mx-2"><i class="mdi mdi-dots-horizontal"></i></button>
+                    <button class="btn btn-outline-success mx-2"><i class="bi bi-arrow-right"></i></button>
+                </div>
+                <div class="row g-0 flex-grow-1" style="min-height: 40vh;">
+                    <div class="col-md-7 d-flex flex-column justify-content-center p-4">
+                        <div class="mb-2"><strong>Name:</strong> Alexandra Elizabeth von Habsburg-Lothringen</div>
+                        <div class="mb-2"><strong>Location:</strong> 9876 Very Long Street Name, Metropolis, Province, Country, 98765-4321</div>
+                        <div class="mb-2">
+                            <strong>Description:</strong>
+                            <span class="d-block text-truncate" style="max-width: 100%; max-height: 4.5em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-clamp: 3;">
+                                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-5 d-flex align-items-center justify-content-center p-4">
+                        <div class="bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center w-100" style="aspect-ratio: 1/1; max-width: 220px; min-width: 120px; width: 35vw;">
+                            <span class="text-muted">Image<br>Placeholder</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Bar -->
+            <div class="d-flex flex-column flex-md-row gap-2 p-3 bg-white border-top">
+                <button class="btn btn-outline-danger flex-fill">Cancel</button>
+                <button class="btn btn-primary flex-fill">Ok</button>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" value="" id="settingCheck">
+                            <label class="form-check-label" for="settingCheck">Enable feature</label>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="settingRadio" id="radio1" checked>
+                                <label class="form-check-label" for="radio1">Option 1</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="settingRadio" id="radio2">
+                                <label class="form-check-label" for="radio2">Option 2</label>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-secondary w-100 mb-2" id="fullscreenBtn" type="button"><i class="mdi mdi-fullscreen"></i> Fullscreen</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Padlock toggle
+            const padlockIcon = document.getElementById('padlockIcon');
+            let locked = true;
+            padlockIcon.addEventListener('click', function() {
+                locked = !locked;
+                if (locked) {
+                    padlockIcon.classList.remove('text-danger');
+                    padlockIcon.classList.add('text-success');
+                    padlockIcon.classList.remove('bi-unlock');
+                    padlockIcon.classList.add('bi-lock');
+                } else {
+                    padlockIcon.classList.remove('text-success');
+                    padlockIcon.classList.add('text-danger');
+                    padlockIcon.classList.remove('bi-lock');
+                    padlockIcon.classList.add('bi-unlock');
+                    alert('Padlock is now open!');
+                }
+            });
+            // Fullscreen button
+            document.getElementById('fullscreenBtn').addEventListener('click', function() {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else {
+                    document.documentElement.requestFullscreen();
+                }
+            });
+        </script>
+    </body>
+</html>

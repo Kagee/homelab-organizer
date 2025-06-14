@@ -1,0 +1,29 @@
+Using the included bootstrap framework, bootstrap-icons and materialdesignicons, design a full-viewport dashboard. The top should be two buttons in a bar with a padlock to the left, and a cog on the right. When i press the goc, a modal screen whit three checkboxes and a "OK" button should open. When i press "OK" the modal should close. On the bottom of the view terhe should be two button, one "Cancel" and one "Ok".
+Two middle button in the top bar.
+Remove all four buttons in the top bar.
+Replace the two bottom checkmoxes in the modal with a pair of radio buttons.
+I want the padlock in the top to work as a toggle. Toggle it between as it is now, and a red background. When i press it, show a alert message indicating if the button was activated or deactivated.
+Currently the padlock moves a bit when it is activated. Change the non-active version of the padlock so it has the same padding/margin/position as when it is in the active state.
+Add a button in the bottom row that makes the dashboard fullscreen.
+Remove the text from the fullscreen button, and move it from the bottom bar to the bottom row of the modal.
+Move the fullscreen button underneath the radio button, and make it a link with a text, not a button.
+Change the fullscreen link to a slim button that fill the whole modal, like the OK button does now.
+Split the main content into evenly sized areas separated by a bar with three buttons on it. The two areas should consist of a left-aligned image and a text on the right side. If the text is larger than the avaliable area, it should be hidden (overflow hidden.)
+Redesign the two evenly sized areas such that the image is "floating" to the left with some padding, and takes up about 35% of the width. Have the text on the left consist of the labels "Name", "Location", "Description" in bold and some example text.
+Make the image be a square placeholder image so it is obvious how large the image would look.
+Make the text able to flow below the left image.
+Make the tex able ton continue below the left iamge. At the same time, make the padding around the image some pixels smaller.
+Revert to the previous image padding.
+swap the left/right location of the image and the text.
+The images should be in the top right.
+Revert to the old location of the image and text.
+Revert to when the image was on the right and the text on the left.
+Revert to when the image was on the left and the text on the right..
+Clear all the content in the two equal sized aread.,
+Insert som example content into the two areas as follows:
+To the left, put some labels "Name", "Location", "Description" in bold and some example text. If the description text is so long that it would push down or overflow other elements, it should be hidden (owerlfow hidden). To the right there should be a "floating", padded example image with a placeholder.The image takes up about 35% of the width.
+Move the content to the top of the containers. Make the example name, location and description longer. Let the description consist of multiple lines.
+When the description text if cut of, end the text with elipcies (...)
+Let the text be able to flow below the image if there is room.
+Revert the latest change.
+From now on, including this one, add all my prompts to the "ai-promopts.txt"-file. (See <attachments> above for file contents. You may not need to search or read the file again.)

@@ -8,8 +8,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Scan test</title>
-        <link rel="stylesheet"
-              href="{% static 'bootstrap_icons/css/bootstrap_icons.css' %}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
               rel="stylesheet"
               integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
@@ -20,54 +20,140 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
                 integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
                 crossorigin="anonymous"></script>
-        <script type="text/javascript" src="{% static 'js/setup-wake-lock.js' %}"></script>
         {% include "scan/autoreload_head.html" %}
-        <style>
-            /* CSS to remove the lingering hover/focus on buttons */
-            .nofocus-hover:hover, .nofocus-hover:focus, .nofocus-hover:focus-visible {
-                 outline: none; box-shadow: none;
-                 color: var(--bs-btn-color);
-                 background-color: var(--bs-btn-bg);
-                 border: var(--bs-btn-border-width) solid var(--bs-btn-border-color);
-            }
-        </style>
-        <script type="text/javascript">
-            window.addEventListener("load", function () {
-                init_wakeLock();
-                // Add any additional JavaScript functionality here
-            });
-        </script>
     </head>
-    <body>
-        <div class="container-fluid">
-            <div>
-                <div class="row ps-0 pe-0 pt-1 pb-1"
-                     style="background-color: var(--bs-primary)">
-                    <div class="col">
-                        <span class="d-grid">
-                            <button type="button"
-                                    id="wake-lock-btn"
-                                    class="btn btn-primary btn-lg text-start nofocus-hover">{% md_icon 'lock-outline' %}</button>
-                        </span>
+    <body class="d-flex flex-column min-vh-100" style="background:#f8f9fa;">
+        <!-- Top Bar -->
+        <div class="d-flex align-items-center justify-content-between px-3 py-2 bg-white border-bottom" style="height:64px;">
+            <span id="padlockToggle" class="fs-3 text-primary padlock-toggle px-2 py-1 rounded" style="cursor:pointer;"><i class="bi bi-lock"></i></span>
+            <div></div>
+            <button class="btn btn-link p-0" id="settingsBtn" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                <i class="mdi mdi-cog fs-2 text-secondary"></i>
+            </button>
+        </div>
+
+        <!-- Main Content (split into two areas with a bar) -->
+        <div class="flex-fill d-flex flex-column">
+            <div class="d-flex flex-fill" style="min-height:0;">
+                <div class="flex-fill bg-white border-end p-4 d-flex align-items-start" style="overflow:hidden; position:relative;">
+                    <div class="flex-grow-1 d-flex flex-column align-items-start" style="overflow:hidden; min-width:0;">
+                        <div class="mb-2"><strong>Name:</strong> Example Name That Is Quite Long And Descriptive For Testing Purposes</div>
+                        <div class="mb-2"><strong>Location:</strong> Example Location, Building 5, Room 204, North Wing, City Center</div>
+                        <div class="mb-2 description-ellipsis">
+                            <strong>Description:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, nisi eu consectetur, facilisis velit magna, euismod dictum urna erat euismod erat. 
+                            This is a longer description to demonstrate overflow hidden. The text will not push down or overflow other elements. 
+                            Additional details: Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.
+                        </div>
                     </div>
-                    <div class="col">
-                        <span class="d-grid">
-                            <button type="button" class="btn btn-primary btn-lg text-end nofocus-hover">{% md_icon 'cog-outline' %}</button>
-                        </span>
+                    <div class="d-flex align-items-start justify-content-center ms-4" style="width:35%; min-width:120px; max-width:240px;">
+                        <img src="https://via.placeholder.com/240x240?text=Image" alt="Example Image" class="img-fluid rounded shadow" style="width:100%; aspect-ratio:1/1; object-fit:cover; background:#eee; padding:8px;" />
                     </div>
                 </div>
             </div>
-            <br><br><br><br>
-            <div id="footer" class="container-fluid text-center">
-                <div class="row nav-pills">
-                    <div class="col border border-success nav-item">
-                        <button type="button" class="btn btn-primary">CANCEL</button>
+            <div class="d-flex justify-content-center align-items-center bg-secondary py-2">
+                <button class="btn btn-outline-light mx-2">Bar Button 1</button>
+                <button class="btn btn-outline-light mx-2">Bar Button 2</button>
+                <button class="btn btn-outline-light mx-2">Bar Button 3</button>
+            </div>
+            <div class="d-flex flex-fill" style="min-height:0;">
+                <div class="flex-fill bg-white border-end p-4 d-flex align-items-start" style="overflow:hidden; position:relative;">
+                    <div class="flex-grow-1 d-flex flex-column align-items-start" style="overflow:hidden; min-width:0;">
+                        <div class="mb-2"><strong>Name:</strong> Second Example With Even Longer Name For Demonstration</div>
+                        <div class="mb-2"><strong>Location:</strong> Another Location, South Campus, Floor 3, Office 12, Downtown</div>
+                        <div class="mb-2 description-ellipsis">
+                            <strong>Description:</strong> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                            More info: Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                        </div>
                     </div>
-                    <div class="col border border-warning nav-item">
-                        <button type="button" class="btn btn-primary">OK</button>
+                    <div class="d-flex align-items-start justify-content-center ms-4" style="width:35%; min-width:120px; max-width:240px;">
+                        <img src="https://via.placeholder.com/240x240?text=Image" alt="Example Image" class="img-fluid rounded shadow" style="width:100%; aspect-ratio:1/1; object-fit:cover; background:#eee; padding:8px;" />
                     </div>
                 </div>
             </div>
         </div>
+        <style>
+        .description-ellipsis {
+            display: -webkit-box;
+            line-clamp: 3;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-height: 4.5em;
+            white-space: normal;
+        }
+        </style>
+
+        <!-- Bottom Bar -->
+        <div class="d-flex justify-content-between align-items-center px-4 py-3 bg-white border-top" style="height:72px;">
+            <button class="btn btn-outline-danger btn-lg flex-fill me-2">Cancel</button>
+            <button class="btn btn-success btn-lg flex-fill ms-2 me-2">Ok</button>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" value="" id="setting1">
+                  <label class="form-check-label" for="setting1">Enable feature 1</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="settingRadio" id="settingRadio1" value="option1">
+                  <label class="form-check-label" for="settingRadio1">Option 1</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="settingRadio" id="settingRadio2" value="option2">
+                  <label class="form-check-label" for="settingRadio2">Option 2</label>
+                </div>
+                <button type="button" class="btn btn-secondary w-100 mt-3" id="fullscreenBtnModal"><i class="bi bi-arrows-fullscreen me-1"></i>Fullscreen dashboard</button>
+              </div>
+              <div class="modal-footer d-flex gap-2">
+                <button type="button" class="btn btn-primary w-100" id="modalOkBtn">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        document.getElementById('modalOkBtn').addEventListener('click', function() {
+            var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('settingsModal'));
+            modal.hide();
+        });
+
+        // Padlock toggle logic
+        const padlock = document.getElementById('padlockToggle');
+        let padlockActive = false;
+        padlock.addEventListener('click', function() {
+            padlockActive = !padlockActive;
+            if (padlockActive) {
+                padlock.classList.add('bg-danger', 'text-white');
+            } else {
+                padlock.classList.remove('bg-danger', 'text-white');
+            }
+            alert('Padlock ' + (padlockActive ? 'activated' : 'deactivated'));
+        });
+
+        // Fullscreen button logic (now in modal body)
+        document.getElementById('fullscreenBtnModal').addEventListener('click', function(e) {
+            e.preventDefault();
+            const docElm = document.documentElement;
+            if (!document.fullscreenElement) {
+                if (docElm.requestFullscreen) {
+                    docElm.requestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+        </script>
     </body>
 </html>
