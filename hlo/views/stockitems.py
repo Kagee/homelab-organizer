@@ -69,6 +69,7 @@ class StockItemCreate(CreateView):
         query = settings.OPENAPI_TITLE_CLEANUP_QUERY.format(
             title=oi.name,
         )
+        # TODO: Try-catch openai.RateLimitError
         client = OpenAI(
             api_key=settings.OPENAPI_PROJECT_API_KEY,
         )

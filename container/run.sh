@@ -30,6 +30,8 @@ cd .. # move to base dir
   --volume /tank/tmp/hlo-dev/whoosh/:/app/whoosh_index/ \
   localhost/hlo:dev
 
+# --env HLO_SHOW_DEBUG_TOOLBAR=false \
+
 [[ "$1" = "dev-temp" ]] && figlet DEV-TEMP && exec podman run \
   --init \
   --rm \
