@@ -70,7 +70,6 @@ RUN npm install .
 # Convert all soft symlinks in static to hard symlinks (js and css from node_modules)
 RUN find /app/static -type l -exec bash -c 'ln -f "$(readlink -m "$0")" "$0"' {} \;
 
-COPY container/copy_django_bootstrap_icons.sh /copy_django_bootstrap_icons.sh
 RUN /copy_django_bootstrap_icons.sh
 
 # Remove the resto of the node data, as we now don't need it anymore
